@@ -9,7 +9,7 @@
 #
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
-# Copyright (c) 2002-2004 ActiveState Corporation.
+# Copyright (c) 2002-2005 ActiveState Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -42,6 +42,15 @@ package require plugin::common 1.0
 # start it, and make it available globally:
 SetupLogging $::plugin::NAME
 
+# These variables are set by the nptcl dll.  This check is to allow
+# simple testing by the user.
+if {![info exists plugin(patchLevel)]} {
+    puts stderr "WARNING: plugin(patchLevel) not found.\
+	\nplugin package is only to be loaded by nptcl library."
+    set plugin(patchLevel) TESTING
+    set plugin(pkgVersion) TESTING
+    set plugin(release)    TESTING
+}
 ::pluglog::log MAIN "PLUGIN(LIBRARY) = $plugin(library)"
 ::pluglog::log MAIN "PATCHLEVEL      = $plugin(patchLevel)"
 ::pluglog::log MAIN "PKGVERSION      = $plugin(pkgVersion)"

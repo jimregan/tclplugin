@@ -44,7 +44,7 @@ package require setup 1.0
 # start it, and make it available globally:
 
 SetupLogging
-#::pluglog::setup C:/temp/nptcllog.txt
+#::pluglog::setup C:/temp/plugmain-[pid].log
 
 ::pluglog::log MAIN "PLUGIN(LIBRARY) = $plugin(library)"
 ::pluglog::log MAIN "PATCHLEVEL      = $plugin(patchLevel)"
@@ -67,20 +67,23 @@ if {![info exists ::cfg::Tmp]} {
 	set ::cfg::Tmp $env(TEMP)
     } elseif {[info exists env(TMP)]} {
 	set ::cfg::Tmp $env(TMP)
+    } elseif {$tcl_platform(platform) eq "windows"} {
+	# should look in registry
+	set ::cfg::Tmp c:/tmp
+    } elseif {$tcl_platform(platform) eq "macintosh"} {
+	# The Mac always has an env var TEMP_FOLDER.
+	# (dln: never say always, use info exists instead ;-)
+	set ::cfg::Tmp $env(TEMP_FOLDER)
     } else {
-	if {$tcl_platform(platform) == "windows"} {
-	    set ::cfg::Tmp c:/tmp
-	} elseif {$tcl_platform(platform) == "macintosh"} {
-	    # The Mac always has an env var TEMP_FOLDER.
-	    # (dln: never say always, use info exists instead ;-)
-
-	    set ::cfg::Tmp $env(TEMP_FOLDER)
+	if {[info exists ::tcl_platform(user)]
+	    && $::tcl_platform(user) ne ""} {
+	    set username $::tcl_platform(user)
 	} else {
 	    set username unknown
 	    catch {set username $env(LOGNAME)}
 	    catch {set username $env(USER)}
-	    set ::cfg::Tmp /tmp/$username
 	}
+	set ::cfg::Tmp /tmp/$username
     }
 
     # Export our findings (for remoted).
@@ -121,8 +124,8 @@ proc npInit {} {
     if {($wish == "1") || ![file executable $wish]} {
 	set wish $plugin(executable)
 	if {![file executable $wish]} {
-	    ::pluglog::log npInit "revert to in-process execution, can't use \"$wish\"" \
-		ERROR
+	    ::pluglog::log npInit \
+		"revert to in-process execution, can't use \"$wish\"" ERROR
 	    inprocInit
 	    return
 	}
@@ -144,7 +147,8 @@ proc npInit {} {
 	if {[catch {fconfigure $curfname}]} {
 	    set newfname "[file rootname $curfname]D[file extension $curfname]"
 	    set env(TCL_PLUGIN_LOGFILE) $newfname
-	    ::pluglog::log npInit "$wish will use file \"$newfname\" for logging" WARNING
+	    ::pluglog::log npInit \
+		"$wish will use file \"$newfname\" for logging" WARNING
 	}
     }
 

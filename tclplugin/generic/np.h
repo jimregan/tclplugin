@@ -101,13 +101,6 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 #define MAXINPUTSIZE		0X0FFFFFFF
 
 /*
- * Define the name of the environment variable that will contain the
- * path to the Tcl plugin library.  Obsolete for v3, may be reused.
- */
-
-#define TCL_PLUGIN_DIR		"TCL_PLUGIN_DIR"
-
-/*
  * Define the names of token tables used in the plugin:
  */
 

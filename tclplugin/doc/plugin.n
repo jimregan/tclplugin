@@ -194,47 +194,21 @@ environment variable is ignored.
 .SH FILES
 .PP
 The plugin is partially written in Tcl; a library of scripts is provided
-with the distribution to implement various aspects of the plugin.
-These files are stored in a directory chosen at installation time and in a
-platform specific location.
-At runtime, the master interpreter can obtain the location of the library
-in the value of the global Tcl variable \fBplugin(library)\fR.
+with the distribution to implement various aspects of the plugin.  This
+runtime portion must be located with a Tcl installation chosen at
+installation time.
 .PP
-Here is how the library is located at startup time on each platform:
-.TP
-\fBUNIX\fR
-The plugin first checks whether an environment variable
-\fBTCL_PLUGIN_DIR\fR is set. If it is and the value denotes the name of an
-existing directory, the plugin library is found by appending the version
-number of the plugin (e.g. \fB2.0\fR) and \fBplugin\fR.
-If the environment variable is not set, the plugin attempts to use one of
-\fI$env(HOME)\fB/.netscape\fR,
-\fB/usr/local/lib/netscape\fR,
-the grandparent of the directory containing the executable of the browser,
-and the current working directory to compute the name of its library.
-The name of the library is computed by appending \fBtclplug\fR, the version
-number of the plugin (e.g. \fB2.0\fR) and \fBplugin\fR to the candidate
-directory, and checking whether that directory exists.
-The first directory that is found on the local file system is used as the
-location of the plugin library.
-If the plugin library can not be found, the plugin produces an error message
-and will not execute Tclets.
-.TP
-\fBWindows\fR
-The plugin first checks whether an environment variable
-\fBTCL_PLUGIN_DIR\fR is set. If it is and the value denotes the name of an
-existing directory, the plugin library is found by appending the version
-number of the plugin (e.g. \fB2.0\fR) and \fBplugin\fR.
-If the environment variable is not set, the plugin looks in the system
-registry for the value \fBDirectory\fR under the key
-\fBHKEY_LOCAL_MACHINE\\Software\\ActiveState\\ActiveTcl\fR and uses the
-stored value to compute the name of the library directory by appending the
-version number of the plugin and \fBplugin\fR.
-If the \fBTCL_PLUGIN_DIR\fR environment variable is not set and the
-system registry does not contain the required information,
-the plugin will produce an error message and will not execute Tclets.
-The installation script provided with the plugin
-distribution installs the key and value into the registry.
+At runtime, the plugin loads the Tcl dynamic library and requires the
+plugin package.  The master interpreter specifies the location of the
+library in the value of the global Tcl variable \fB::plugin(library)\fR.
+.PP
+The plugin find the Tcl dynamic library by first seeing if the
+TCL_PLUGIN_DLL env variable is defined.  If specified, then it will be
+loaded first.  If that fails, an attempt is made to load the Tcl library
+from a platform specific directory.  Failing that, an attempt to load
+the library from anywhere in the platform specific dynamic library
+loading path is made.  On Windows, on final check in the registry for
+the most recent ActiveTcl installation is made.
 .PP
 An initialization file is \fBsource\fRd into the master interpreter before
 the first Tclet interpreter is created.
@@ -245,8 +219,8 @@ The name of the initialization file and where it is found varies by platform:
 \fBUNIX\fR
 The plugin tries to source \fI$env(HOME)\fB/.tclpluginrc\fR.
 .TP
-\fBWindows,\ Mac\fR
-On Win32 and Macintosh systems, the plugin sources the file
+\fBWindows\fR
+On Windows systems, the plugin sources the file
 \fBtclplugin.rc\fR in the \fBplugin(library)\fR directory.
 .PP
 After potentially sourcing the intialization file, the plugin attempts to

@@ -1,5 +1,8 @@
 2005-01-04  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* doc/plugin.n: 
+	* generic/np.h: remove old refs to TCL_PLUGIN_DIR
+
 	* generic/np.h: bump to v3.0a4 (3.0.0.4)
 
 	* generic/npInit.c: remove v9plugin support (NS v4)

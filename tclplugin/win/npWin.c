@@ -3,7 +3,7 @@
  *
  * CONTACT:		tclplugin-core@lists.sourceforge.net
  *
- * Copyright (c) 2003 ActiveState Corporation.
+ * Copyright (c) 2003-2004 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -52,13 +52,13 @@ NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle)
     /*
      * Try based on full path.
      */
-    sprintf(libname, "%s/%s", LIB_RUNTIME_DIR, TCL_LIB_FILE);
+    sprintf(libname, "%s/%s", defaultLibraryDir, TCL_LIB_FILE);
     NpLog("Attempt to load Tcl dll '%s'\n", libname);
     hinst = LoadLibrary(libname);
     if (hinst) {
 	*tclHandle = hinst;
 
-	sprintf(libname, "%s/tk%s", LIB_RUNTIME_DIR,
+	sprintf(libname, "%s/tk%s", defaultLibraryDir,
 		TCL_LIB_FILE+3 /* skip 'tcl' */);
 	NpLog("Attempt to load Tk dll '%s'\n", libname);
 	hinst = LoadLibrary(libname);

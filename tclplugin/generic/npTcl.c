@@ -8,7 +8,7 @@
  *
  * Copyright (c) 1995-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
- * Copyright (c) 2002 ActiveState Corporation.
+ * Copyright (c) 2002-2004 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -25,7 +25,7 @@ static int nptcl_stack		= 0;
 static int nptcl_instances	= 0;
 static int nptcl_shutdown	= 0;
 
-TCL_DECLARE_MUTEX(pluginMutex);
+TCL_DECLARE_MUTEX(pluginMutex)
 
 static int		Plugin_Init _ANSI_ARGS_((Tcl_Interp *interp,
 	                    int inBrowserFlag));
@@ -150,10 +150,14 @@ NPError
 NPP_Initialize()
 {
     Tcl_Interp *interp;
+    char *logfile = NP_LOG;
 
-#ifdef NP_LOG
-    NpStartLog(NP_LOG);
-#endif
+    if (logfile == NULL) {
+	logfile = getenv("TCL_PLUGIN_DLL_LOGFILE");
+    }
+    if (logfile) {
+	NpStartLog(logfile);
+    }
 
     nptcl_stack		= 0;
     nptcl_instances	= 0;

@@ -271,6 +271,10 @@ The following environment variables affect the behavior of the Tcl Plugin.
 All of these variables are accessible in the master interpreter in the
 global Tcl array \fBenv\fR.
 .TP
+\fBTCL_PLUGIN_DLL\fR
+If set, this specifies the Tcl dll to attempt to load first,
+valid on unix only.
+.TP
 \fBTCL_PLUGIN_DIR\fR
 The value is used to find the runtime library for the Tcl plugin.
 This process is fully described in the section \fBFILES\fR, above.
@@ -311,6 +315,13 @@ so you can use this to interactively debug a Tclet or configuration
 problem.
 This is equivalent to watching the sequence of log events in the window
 created when \fBTCL_PLUGIN_LOGWINDOW\fR is set.
+.TP
+\fBTCL_PLUGIN_DLL_LOGFILE\fR
+If set, this specifies the name of a file on the local file system into
+which the dll logs initialization and other status.  You can follow the
+low-level operation of the plugin by using \fBtail\fR on this file; event
+log entries are flushed to this file as soon as they are added, so you can
+use this to debug initialization of the Tcl plugin.
 
 .SH "MASTER INTERPRETER ENVIRONMENT"
 .PP
@@ -610,7 +621,7 @@ is created.
 By default, the console is created using \fBtkCon\fR, a sophisticated
 console application written by Jeff Hobbs.
 For more information, see the \fBtkCon\fR documentation on the web, at
-\fBhttp://www.cs.uoregon.edu/~jhobbs/work/tkcon/docs/index.html\fR.
+\fBhttp://tkcon.sourceforge.net/\fR.
 If the environment variable is set to a value other than \fB0\fR or
 \fB1\fR, the value is used as the name of a file to \fBsource\fR to
 create the console.

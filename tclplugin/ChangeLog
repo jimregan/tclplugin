@@ -1,3 +1,8 @@
+2003-01-13  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/utils/pkgIndex.tcl:
+	* library/utils/logo.tcl: updated logo
+
 2003-01-10  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* win/pluginhostctrl.dll: Change ActiveX PluginHostControl ClassID

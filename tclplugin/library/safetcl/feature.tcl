@@ -14,7 +14,6 @@
 #
 # RCS:  @(#) $Id$
 
-
 # We provide the "safefeature" package
 # WARNING: Only the policy package is ever supposed to require
 #          this package. package loading here is used as a
@@ -25,7 +24,6 @@
 # to be changed whenever this version here is changed
 # because safefeature can not be required directly but only
 # through policy and it's init (path problem)
-
 package provide safefeature 1.1
 
 if {[llength [info command ::safe::policy]] == 0} {
@@ -50,14 +48,13 @@ if {[llength [info command ::safe::policy]] == 0} {
 # package require pluglog 1.0
 
 namespace eval ::safefeature {
-
     # Public entry point:
     namespace export setup importAndCheck checkArgs safelog
 
     # List of the namespaces from which we need import functions
     # into our child namespaces
     # (empty namespace mean the function is defined in this namespace)
-
+    variable importList
     set importList {
 	cfg  {allowed getConstant}
 	safe {error interpAlias invokeAndLog}
@@ -65,123 +62,113 @@ namespace eval ::safefeature {
 	{}   {checkArgs}
     }
 
-
     # List of procs in the application specific code that our sub-features
     # might use:
-
     variable implCmdList {iget iexists ISet IUnset}
 
     # What is the implNs (will be filled at init time (when policy's
     # initialize this package)
+    variable implNs
+}
 
+proc ::safefeature::safelog {args} {
+    catch {uplevel 1 [list ::pluglog::log] $args}
+}
+
+# Utility function that import and check that the import actually
+# worked from a source to a destination namespace a given command
+proc ::safefeature::importAndCheck {destNs srcNs cmd} {
+    if {$destNs eq $srcNs} { return }
+    namespace eval $destNs [list namespace import ${srcNs}::${cmd}]
+    if {[llength [info commands ${destNs}::${cmd}]] == 0} {
+	error "failed import \"$cmd\" from \"${srcNs}::\"\
+		    to \"${destNs}::\""
+    }
+}
+
+
+# Utility function to check if some configure like arguments are
+# in allowed set
+proc ::safefeature::checkArgs {allowedList usage flag {withDash 1}} {
+    safelog {} "flag=\"$flag\", withDash=$withDash,\
+		allowedList=\"$allowedList\""
+    if {$withDash} {
+	if {![string match "-*" $flag]} {
+	    error "bad option \"$flag\": $usage"
+	}
+	set testFlag [string range $flag 1 end]
+    } else {
+	set testFlag $flag
+    }
+    if {[lsearch -exact $allowedList $testFlag] >= 0} {
+	return $flag
+    } else {
+	error "disallowed option \"$flag\": $usage"
+    }
+}
+
+# Init
+proc ::safefeature::init {} {
+
+    # Where the actual implementation (application specific) is
+    # The application has to provide this namespace and the "iget"
+    # function in it (used in urlIsOk) and the actual implementation
+    # for some application specific aliases (like the url features set)
+
+    variable implNs $::cfg::implNs
+
+    # If the iget proc does not yet exist in the slave
+    # we get it from the "implNs"
+
+    if {[llength [info commands ::cfg::iget]] == 0} {
+	safelog {} "Installing iget in ::cfg"
+	importAndCheck ::cfg $implNs iget
+    }
+
+    # Now setup ourselves (we want access to common utilities
+    # (log, error...) too)
+    setup [namespace current]
+
+    return $implNs
+}
+
+# Setup common parts:
+proc ::safefeature::setup {namespace} {
+    safelog {} "setting up namespace $namespace"
+
+    variable importList
+    variable implCmdList
     variable implNs
 
-    proc safelog {args} {
-	catch {uplevel 1 [list ::pluglog::log] $args}
-    }
+    # Where we will install the alias in the slave
+    # (for the aliases which implements new functionality and 
+    #  hence are added  in a namespace in the target (url features set))
 
-    # Utility function that import and check that the import actually
-    # worked from a source to a destination namespace a given command
+    set slaveNs $::cfg::slaveNs
 
-    proc importAndCheck {destNs srcNs cmd} {
-	if {$destNs eq $srcNs} { return }
-	namespace eval $destNs [list namespace import ${srcNs}::${cmd}]
-	if {[llength [info commands ${destNs}::${cmd}]] == 0} {
-	    error "failed import \"$cmd\" from \"${srcNs}::\"\
-		    to \"${destNs}::\""
+    foreach {ns cmdList} $importList {
+	if {[string equal $ns ""]} {
+	    set ns [namespace current]
+	}
+	if {[string equal $ns $namespace]} {
+	    safelog {} "setting up $namespace, skipping $cmdList self imports"
+	    continue
+	}
+	foreach cmd $cmdList {
+	    importAndCheck $namespace ::$ns $cmd
 	}
     }
 
-
-    # Utility function to check if some configure like arguments are
-    # in allowed set
-
-    proc checkArgs {allowedList usage flag {withDash 1}} {
-	safelog {} "flag=\"$flag\", withDash=$withDash,\
-		allowedList=\"$allowedList\""
-	if {$withDash} {
-	    if {![string match "-*" $flag]} {
-		error "bad option \"$flag\": $usage"
-	    }
-	    set testFlag [string range $flag 1 end]
-	} else {
-	    set testFlag $flag
-	}
-	if {[lsearch -exact $allowedList $testFlag] >= 0} {
-	    return $flag
-	} else {
-	    error "disallowed option \"$flag\": $usage"
-	}
+    # Transfer a copy of needed variables
+    foreach var {implNs slaveNs} {
+	namespace eval $namespace [list variable $var [set $var]]
     }
 
-    # Init
-
-    proc init {} {
-
-	# Where the actual implementation (application specific) is
-	# The application has to provide this namespace and the "iget"
-	# function in it (used in urlIsOk) and the actual implementation
-	# for some application specific aliases (like the url features set)
-
-	variable implNs $::cfg::implNs
-
-	# If the iget proc does not yet exist in the slave
-	# we get it from the "implNs"
-
-	if {[llength [info commands ::cfg::iget]] == 0} {
-	    safelog {} "Installing iget in ::cfg"
-	    importAndCheck ::cfg $implNs iget
-	}
-
-	# Now setup ourselves (we want access to common utilities
-	# (log, error...) too)
-	setup [namespace current]
-
-	return $implNs
+    # Add the application specific call backs
+    foreach cmd $implCmdList {
+	importAndCheck $namespace $implNs $cmd
     }
 
-    # Setup common parts:
-
-    proc setup {namespace} {
-	safelog {} "setting up namespace $namespace"
-
-	variable importList
-	variable implCmdList
-	variable implNs
-
-	# Where we will install the alias in the slave
-	# (for the aliases which implements new functionality and 
-	#  hence are added  in a namespace in the target (url features set))
-
-	set slaveNs $::cfg::slaveNs
-
-	foreach {ns cmdList} $importList {
-	    if {[string equal $ns ""]} {
-		set ns [namespace current]
-	    }
-	    if {[string equal $ns $namespace]} {
-		safelog {} "setting up $namespace, skipping $cmdList self imports"
-		continue
-	    }
-	    foreach cmd $cmdList {
-		importAndCheck $namespace ::$ns $cmd
-	    }
-	}
-
-	# Transfer a copy of needed variables
-	foreach var {implNs slaveNs} {
-	    namespace eval $namespace [list variable $var [set $var]]
-	}
-
-	# Add the application specific call backs
-	foreach cmd $implCmdList {
-	    importAndCheck $namespace $implNs $cmd
-	}
-
-	# Most functions use "nsc" as a short cut for [namespace current]
-	namespace eval $namespace [list variable nsc $namespace]
-
-
-    }
-
+    # Most functions use "nsc" as a short cut for [namespace current]
+    namespace eval $namespace [list variable nsc $namespace]
 }

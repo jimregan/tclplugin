@@ -1,5 +1,12 @@
 2004-05-18  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* library/safetcl/feature.tcl: code cleanup
+	* library/safetcl/network.tcl: 
+	* library/safetcl/persist.tcl: 
+	* library/safetcl/stream.tcl: 
+	* library/safetcl/unsafe.tcl: 
+	* library/safetcl/url.tcl: 
+
 	* installer/install.sh, installer/install.tcl,
 	* mac/MW_NpHeader.pch, mac/README, mac/Tcl_Plugin.exp,
 	* mac/macProjects.sea.bin, mac/npMacResource.r, mac/npconfig.h,

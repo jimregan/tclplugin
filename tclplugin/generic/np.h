@@ -162,8 +162,10 @@ EXTERN void		NpLeave _ANSI_ARGS_((CONST char *msg,
 	                    int oldMode));
 EXTERN void		NpPanic _ANSI_ARGS_((char *msg));
 EXTERN int		NpPlatformInit _ANSI_ARGS_((Tcl_Interp *interp,
-	                    int externalFlag));
+			    int externalFlag));
 EXTERN void		NpPlatformDestroy _ANSI_ARGS_((NPP This));
+EXTERN char *		NpPlatformFindTcl _ANSI_ARGS_((char *minVer, int exact,
+			    int dbgOnly));
 EXTERN void		NpPlatformMsg _ANSI_ARGS_((char *msg, char *title));
 EXTERN void		NpPlatformNew _ANSI_ARGS_((NPP instance));
 EXTERN void		NpPlatformSetWindow _ANSI_ARGS_((NPP This,

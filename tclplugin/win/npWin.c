@@ -12,6 +12,7 @@
  */
 
 #include "np.h"
+#include "shlwapi.h"
 
 #ifndef TCL_LIB_FILE
 #   define TCL_LIB_FILE "tcl84.dll"
@@ -23,6 +24,11 @@
  */
 
 static char defaultLibraryDir[sizeof(LIB_RUNTIME_DIR)+200] = LIB_RUNTIME_DIR;
+
+/*
+ * Reference to ourselves
+ */
+static HINSTANCE nptclInst = NULL;
 
 
 /*
@@ -55,6 +61,17 @@ NpLoadLibrary(HMODULE *tclHandle, char *dllName, int dllNameSize)
 	handle = LoadLibrary(envdll);
 	if (handle) {
 	    memcpy(libname, envdll, MAX_PATH);
+	}
+    }
+
+    if (!handle) {
+	TCHAR ourPath[MAX_PATH];
+	if ((nptclInst != NULL)
+		&& GetModuleFileName(nptclInst, ourPath, MAX_PATH)
+		&& PathRemoveFileSpec(ourPath)) {
+	    snprintf(libname, MAX_PATH, "%s/%s", ourPath, TCL_LIB_FILE);
+	    NpLog("Attempt to load Tcl dll (ourpath) '%s'\n", libname);
+	    handle = LoadLibrary(libname);
 	}
     }
 
@@ -166,5 +183,14 @@ NpLoadLibrary(HMODULE *tclHandle, char *dllName, int dllNameSize)
 BOOL WINAPI
 DllMain(HINSTANCE hDLL, DWORD dwReason, LPVOID lpReserved)
 {
-    return 1;
+    switch (dwReason) {
+	case DLL_PROCESS_ATTACH:
+	    nptclInst = hDLL;
+	    break;
+
+	case DLL_PROCESS_DETACH:
+	    nptclInst = NULL;
+	    break;
+    }
+    return TRUE;
 }

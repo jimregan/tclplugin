@@ -10491,7 +10491,7 @@ echo "$as_me: error: could not find source file '$i'" >&2;}
 
 
 
-    vars="advapi32.lib gdi32.lib user32.lib"
+    vars="advapi32.lib gdi32.lib user32.lib shlwapi.lib"
     for i in $vars; do
 	PKG_LIBS="$PKG_LIBS $i"
     done

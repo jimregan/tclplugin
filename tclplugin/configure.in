@@ -82,7 +82,7 @@ if test "${TEA_PLATFORM}" = "windows" ; then
     AC_DEFINE_UNQUOTED(BUILD_nptcl)
     CLEANFILES="pkgIndex.tcl *.lib *.dll *.exp *.ilk *.pdb *.pch"
     TEA_ADD_SOURCES([\$(WIN_OBJECTS)])
-    TEA_ADD_LIBS([advapi32.lib gdi32.lib user32.lib])
+    TEA_ADD_LIBS([advapi32.lib gdi32.lib user32.lib shlwapi.lib])
     AC_DEFINE(XP_WIN)
     AC_DEFINE(_WINDOWS)
     AC_DEFINE(_WIN32)

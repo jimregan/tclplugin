@@ -1,3 +1,10 @@
+2005-01-09  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/npWin.c (NpLoadLibrary): add attempt to load plugin from the
+	directory of nptcl following TCL_PLUGIN_DLL attempt.
+
+	* configure, configure.in: add shlwapi.lib for Windows build
+
 2005-01-04  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* library/remoted.tcl (remotedInit): slightly modified args

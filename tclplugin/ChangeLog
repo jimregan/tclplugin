@@ -1,5 +1,14 @@
 2005-01-04  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* library/remoted.tcl (remotedInit): slightly modified args
+	* library/plugmain.tcl (::plugin::init_extern): fix out-of-process
+	calling and add more comments
+
+	* win/npWin.c (NpLoadLibrary): correct GetModuleFileNameA calling
+	and add error info
+
+	* library/common.tcl: remove old tkInit override code
+
 	* win/npWin.c, generic/np.h: 
 	* generic/npTcl.c, generic/npToken.c: change all sprintf to snprintf
 

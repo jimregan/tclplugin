@@ -101,15 +101,15 @@ proc ::plugin::init {} {
 # This procedure starts a new server and connects to it. It performs a
 # handshake with the server to ensure that the server is properly started.
 proc ::plugin::init_extern {} {
-    global env plugin
+    global plugin
 
     # Run out-of-process by default on Unix only.
     set wish [string equal $::tcl_platform(platform) "unix"]
 
     # If the env var TCL_PLUGIN_WISH is set, use it to select a default
     # executable.
-    if {[info exists env(TCL_PLUGIN_WISH)]} {
-	set wish $env(TCL_PLUGIN_WISH)
+    if {[info exists ::env(TCL_PLUGIN_WISH)]} {
+	set wish $::env(TCL_PLUGIN_WISH)
     }
     if {[string is false -strict $wish]} {
 	return 0
@@ -135,26 +135,53 @@ proc ::plugin::init_extern {} {
 	file copy $plugin(library) $::cfg::Tmp
     }
 
-    ::pluglog::log init_extern "Opening pipe to '$wish'"
-    if {[catch {set fid [open "|[list $wish]" r+]} msg]} {
-        ::pluglog::log init_extern "External wish \"$wish\" startup error:\
+    if {0} {
+	# This method would open a server and pump the data down the pipe.
+	# This should work in a fully enclosed environment, but currently
+	# doesn't work.  :(  - JH
+	::pluglog::log init_extern "Opening pipe to '$wish'"
+	set sfid [open $script]
+	set data    "set ::argv \[list -port $port\]\n"
+	append data "set ::argc \[llength \$::argv\]\n"
+	append data [read $sfid]
+	close $sfid
+	if {[catch {set fid [open "|[list $wish] << {$data}" r]} msg]} {
+	    ::pluglog::log init_extern "External wish \"$wish\" startup error:\
 		\n$msg\nFalling back to inprocess" ERROR
-	return 0
+	    # Shutdown the server
+	    ::rpi::delete $srv
+	    return 0
+	}
+	fconfigure $fid -blocking 0
+	set plugin(fid) $fid
+	::pluglog::log init_extern "Opened pipe (fid $fid)"
+    } elseif {1} {
+	# This method would opens a pipe with args that we can still talk to.
+	# Slightly more control than exec.
+	::pluglog::log init_extern "Opening pipe to '$wish'"
+	if {[catch {set fid [open "|[list $wish] $script -port $port" r+]} msg]} {
+	    ::pluglog::log init_extern "External wish \"$wish\" startup error:\
+		\n$msg\nFalling back to inprocess" ERROR
+	    # Shutdown the server
+	    ::rpi::delete $srv
+	    return 0
+	}
+	fconfigure $fid -blocking 0
+	set plugin(fid) $fid
+	::pluglog::log init_extern "Opened pipe (fid $fid)"
+    } else {
+	# This method execs the process - full autonomy.
+	::pluglog::log npInit "exec'ing '$wish $script -port $port'"
+	if {[catch {exec $wish $script -port $port &} msg]} {
+	    ::pluglog::log npInit "External wish \"$wish\" startup error:\
+		$msg - falling back to inprocess" ERROR
+	    # Shutdown the server
+	    ::rpi::delete $srv
+	    return 0
+	}
+	set plugin(pid) $msg
+	::pluglog::log npInit "Exec ok (pid $plugin(pid))"
     }
-    ::pluglog::log init_extern "Opened pipe (fid $fid)"
-
-#    ::pluglog::log npInit "exec'ing '$wish $script $port'"
-#    if {[catch {exec $wish $script $port &} msg]} {
-#        ::pluglog::log npInit "External wish \"$wish\" startup error:\
-#		$msg - falling back to inprocess" ERROR
-#
-#	# Shutdown the server
-#	::rpi::delete $srv
-#
-#	return 0
-#    }
-#    set ::WishPid $msg
-#    ::pluglog::log npInit "Exec ok (pid $::WishPid)"
 
     # We need to return now and we will complete the initilization
     # at NewInstance time (including the fall back to inproc)
@@ -192,10 +219,10 @@ proc ::plugin::SetupExecute {inproc} {
 	::pluglog::log {} "configuring npExecute and friends for OUTPROC"
 	# N->P   (P->N is on the remoted.tcl side)
 	proc ::npExecute {cmd name aList} {
-	    ::rpi::invoke $::Cli "\${cfg::implNs}::$cmd $name $aList"
+	    ::rpi::invoke $::plugin::CLIENT "\${cfg::implNs}::$cmd $name $aList"
 	}
 	proc ::npSpawn {cmd name aList} {
-	    ::rpi::spawn $::Cli "\${cfg::implNs}::$cmd $name $aList"
+	    ::rpi::spawn $::plugin::CLIENT "\${cfg::implNs}::$cmd $name $aList"
 	}
 
 	# We do not define pnExecute because it is defined in remoted.tcl
@@ -219,7 +246,7 @@ proc ::plugin::init_server {} {
     } {
 	lappend todo [list set $var [set $var]]
     }
-    ::rpi::invoke $::Cli [join $todo \n]
+    ::rpi::invoke $::plugin::CLIENT [join $todo \n]
 }
 
 # One-time init for the in-process (local) case
@@ -252,8 +279,7 @@ proc ::plugin::init_complete_pipeversion {name} {
 	set fid $plugin(server)
 	if {[catch {eof $fid} eof] || $eof} {
 	    # We've lost connection ...
-	    # (NB: We should kill the exec'ed process (using $::WishPid))
-	    ::pluglog::log {} "No connection to external process.\
+	    ::pluglog::log {} "No connection to external process (EOF $eof).\
 			Falling back to inprocess" ERROR
 	    # Unset server - it is no longer valid, and init inproc stuff
 	    unset plugin(server)
@@ -282,12 +308,11 @@ proc ::plugin::init_complete {name} {
     if {[info exists plugin(server)]} {
 	set srv $plugin(server)
 
-	# Wait for the remote process to connect to us
-	# set timeout to 10s {for slow machines} (default is 5s)
-	::rpi::iset $srv timeout 10000
-	if {[catch {::rpi::serverWaitConnect $srv ::Cli} msg]} {
+	# Wait for the remote process to connect to us - 5s default timeout
+	#::rpi::iset $srv timeout 5000 ; # timeout in msec
+	if {[catch {::rpi::serverWaitConnect $srv ::plugin::CLIENT} msg]} {
 	    # We timed out, fall back
-	    # (NB: We should kill the exec'ed process (using $::WishPid))
+	    # (NB: We should kill the exec'ed process (using $plugin(pid)))
 	    ::pluglog::log {} "No connection to external process: $msg\
 			\nFalling back to inprocess" ERROR
 	    # Unset server - it is no longer valid, and init inproc stuff
@@ -317,11 +342,11 @@ proc npShutDown {} {
     # Work around Tcl bug where the sockets aren't being (always) closed
     # when we destroy the interp
 
-    if {[info exists ::Cli]} {
-	if {[catch {::rpi::delete $::Cli} msg]} {
-	    set msg "error deleting client socket ${::Cli}: $msg"
+    if {[info exists ::plugin::CLIENT]} {
+	if {[catch {::rpi::delete $::plugin::CLIENT} msg]} {
+	    set msg "error deleting client socket ${::plugin::CLIENT}: $msg"
 	} else {
-	    set msg "sucessfully deleted client socket $::Cli"
+	    set msg "sucessfully deleted client socket $::plugin::CLIENT"
 	}
     } else {
 	set msg "No peer socket to delete"

@@ -1,7 +1,7 @@
 /*
  * npVersion.h --
  *
- *	Defines the global version identifiers
+ *	Defines the global version identifiers for use throughout the sources.
  *
  * Copyright (c) 1996-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
@@ -20,10 +20,17 @@
 #include <tcl.h>
 #endif
 
+
+#define NPTCL_HOMEPAGE	"http://dev.scriptics.com/software/plugin/"
+
 #define NPTCL_MAJOR_VERSION 2
 #define NPTCL_MINOR_VERSION 2
 #define NPTCL_RELEASE_LEVEL TCL_ALPHA_RELEASE
 #define NPTCL_RELEASE_SERIAL 1
+
+
+
+/* no need to edit below here */
 
 #define NPTCL_VERSION \
 	STRINGIFY(JOIN(NPTCL_MAJOR_VERSION, JOIN(., NPTCL_MINOR_VERSION)))
@@ -52,8 +59,6 @@
 #else
 #	error "bad release level"
 #endif
-
-/* #define NPTCL_INTERNAL_VERSION "2.1.200" */
 
 
 #endif  /* #ifndef _NPVERSION */

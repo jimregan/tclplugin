@@ -1,14 +1,23 @@
-// RCS: @(#) $Id$
-//
-// Version resource script
-//
-
-#define VS_VERSION_INFO 1
+/*
+ * npdll32.rc --
+ *
+ *	Version resource script for MicroSoft's resource compiler.  Pertinent
+ *	values are read from generic/npversion.h
+ *
+ * Copyright (c) 1996-1997 Sun Microsystems, Inc.
+ * Copyright (c) 2000 by Scriptics Corporation.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+ *
+ * RCS:  @(#) $Id$
+ */
 
 #include <npversion.h>
+#define VS_VERSION_INFO 1
+
 
 LANGUAGE 0x9, 0x1	/* LANG_ENGLISH, SUBLANG_DEFAULT */
-
 
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION NPTCL_MAJOR_VERSION,NPTCL_MINOR_VERSION,NPTCL_RELEASE_LEVEL,NPTCL_RELEASE_SERIAL
@@ -27,9 +36,8 @@ BEGIN
     BEGIN
 	BLOCK "040904e4"
 	BEGIN
-
 	    VALUE "CompanyName",	"Scriptics Corporation\0"
-	    VALUE "FileDescription",	"Tcl Plugin " NPTCL_PATCH_LEVEL " Executes tclets found in Web pages.  See the http://dev.scriptics.com/software/plugin/ for more details.\0"
+	    VALUE "FileDescription",	"Tcl Plugin " NPTCL_PATCH_LEVEL " Executes tclets found in Web pages.  See " NPTCL_HOMEPAGE " for more details.\0"
 	    VALUE "FileVersion",	NPTCL_PATCH_LEVEL "\0"
 	    VALUE "InternalName",	"Tcl Plugin " NPTCL_PATCH_LEVEL "\0"
 	    VALUE "LegalCopyright",	"Copyright (c) 2000 by Scriptics Corporation\0"

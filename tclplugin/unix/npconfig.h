@@ -1,0 +1,47 @@
+/*
+ * npconfig.h --
+ *
+ *	Configuration header file for Unix versions of Tcl plugin.
+ *
+ * CONTACT:     sunscript-plugin@sunscript.sun.com
+ *
+ * AUTHORS:     Jacob Levy              Laurent Demailly
+ *              jyl@eng.sun.com         demailly@eng.sun.com
+ *              jyl@tcl-tk.com          L@demailly.com
+ *
+ * Please contact us directly for questions, comments and enhancements.
+ *
+ * Copyright (c) 1995-1997 Sun Microsystems, Inc.
+ * Copyright (c) 2000 by Scriptics Corporation.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+ *
+ * SCCS: @(#) npconfig.h.in 1.4 97/10/09 15:55:07
+ * RCS:  @(#) $Id$
+ */
+
+#ifndef NP_CONFIG
+#define NP_CONFIG
+
+/*
+ * Define to empty if the keyword does not work. 
+ */
+
+#undef const
+
+/*
+ * Define PLUGIN_TRACE to have the wrapper functions print
+ * messages to stderr whenever they are called.
+ */
+
+#undef PLUGIN_TRACE
+
+/*
+ * Define if you have the <unistd.h> header file.
+ */
+
+#undef HAVE_UNISTD_H
+
+
+#endif /* #ifndef NP_CONFIG */

@@ -7,7 +7,7 @@
  *
  * Copyright (c) 1995-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
- * Copyright (c) 2002 ActiveState Corporation.
+ * Copyright (c) 2002-2004 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -31,16 +31,16 @@ static HMODULE tkHandle       = NULL;
 #endif
 
 #include <windows.h>
-#define dlsym(handle, symbol) GetProcAddress((HINSTANCE) handle, symbol)
-#define dlclose(path)         ((void *) FreeLibrary((HMODULE) path))
+#define dlsym(handle, symbol)	GetProcAddress((HINSTANCE) handle, symbol)
+#define dlclose(path)		((void *) FreeLibrary((HMODULE) path))
 
 #else
 
 #include <dlfcn.h>
 
 #ifdef USE_TCL_STUBS
-static void *tclHandle      = (void *) NULL;
-static void *tkHandle       = (void *) NULL;
+static void *tclHandle      = NULL;
+static void *tkHandle       = NULL;
 #endif
 
 #endif
@@ -91,17 +91,33 @@ NpCreateMainInterp()
      * Determine the libname and version number dynamically
      */
     if (tclHandle == NULL) {
-	if (NpLoadLibrary((void *)&tclHandle, (void *)&tkHandle) != TCL_OK) {
+#ifndef WIN32
+	char *error;
+#endif
+
+	if (NpLoadLibrary(&tclHandle, &tkHandle) != TCL_OK) {
 	    NpPlatformMsg("Failed to load Tcl/Tk dlls!", "NpCreateMainInterp");
 	    return NULL;
 	}
 
 	createInterp = (Tcl_Interp * (*)()) dlsym(tclHandle,
 		"Tcl_CreateInterp");
+#ifndef WIN32
+	if ((createInterp == NULL) && ((error = dlerror()) != NULL)) {
+	    NpPlatformMsg(error, "NpCreateMainInterp");
+	    return NULL;
+	}
+#endif
 	findExecutable = (void (*)(char *)) dlsym(tclHandle,
 		"Tcl_FindExecutable");
 
 	tkInit     = (int (*)(Tcl_Interp *)) dlsym(tkHandle, "Tk_Init");
+#ifndef WIN32
+	if ((tkInit == NULL) && ((error = dlerror()) != NULL)) {
+	    NpPlatformMsg(error, "NpCreateMainInterp");
+	    return NULL;
+	}
+#endif
 	tkSafeInit = (int (*)(Tcl_Interp *)) dlsym(tkHandle, "Tk_SafeInit");
     }
 #else
@@ -125,6 +141,7 @@ NpCreateMainInterp()
     findExecutable(NULL);
 #endif
 
+    NpLog("Tcl_CreateInterp()\n");
     npInterp = createInterp();
     if (npInterp == (Tcl_Interp *) NULL) {
 	NpPlatformMsg("Failed to create main interpreter!",

@@ -5,7 +5,7 @@
  *
  * CONTACT:		tclplugin-core@lists.sourceforge.net
  *
- * Copyright (c) 2002 ActiveState Corporation.
+ * Copyright (c) 2002-2005 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -52,7 +52,11 @@ static NPError fillPluginFunctionTable(NPPluginFuncs* aNPPFuncs)
     aNPPFuncs->urlnotify     = NPP_URLNotify;
     aNPPFuncs->getvalue      = NPP_GetValue;
     aNPPFuncs->setvalue      = NPP_SetValue;
-    aNPPFuncs->javaClass     = NULL; /* Private_GetJavaClass(); */
+#ifdef OJI
+    aNPPFuncs->javaClass     = Private_GetJavaClass();
+#else
+    aNPPFuncs->javaClass     = NULL;
+#endif
 
     return NPERR_NO_ERROR;
 }
@@ -87,8 +91,13 @@ static NPError fillNetscapeFunctionTable(NPNetscapeFuncs* aNPNFuncs)
     NPNFuncs.memfree          = aNPNFuncs->memfree;
     NPNFuncs.memflush         = aNPNFuncs->memflush;
     NPNFuncs.reloadplugins    = aNPNFuncs->reloadplugins;
+#ifdef OJI
     NPNFuncs.getJavaEnv       = aNPNFuncs->getJavaEnv;
     NPNFuncs.getJavaPeer      = aNPNFuncs->getJavaPeer;
+#else
+    NPNFuncs.getJavaEnv       = NULL;
+    NPNFuncs.getJavaPeer      = NULL;
+#endif
     NPNFuncs.getvalue         = aNPNFuncs->getvalue;
     NPNFuncs.setvalue         = aNPNFuncs->setvalue;
     NPNFuncs.invalidaterect   = aNPNFuncs->invalidaterect;
@@ -385,7 +394,7 @@ void NPN_ForceRedraw(NPP instance)
     CallNPN_ForceRedrawProc(NPNFuncs.forceredraw, instance);
 }
 
-#if USE_JAVA
+#ifdef OJI
 JRIGlobalRef Private_GetJavaClass(void);
 
 /* Private_GetJavaClass (global function)

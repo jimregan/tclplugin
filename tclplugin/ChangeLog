@@ -1,3 +1,15 @@
+2005-03-29  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/npTcl.c, generic/npInit.c: add use of #ifdef OJI
+	* generic/jni.h, generic/jni_md.h (removed): no longer necessary
+	* generic/jri.h, generic/jri_md.h (removed):
+	* generic/jritypes.h (removed):
+	* generic/npapi.h, generic/npupp.h: update from Mozilla source
+	base mozilla/modules/plugin/base/public/ dir, with mods to npupp.h
+	to not require any java source headers.
+
+	* generic/np.h: include stdlib.h for getenv when available.
+
 2005-03-22  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* generic/np.h: avoid type redef'n issue on AIX.

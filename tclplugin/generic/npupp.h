@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: NPL 1.1
+ * Version: NPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Netscape Public License
  * Version 1.1 (the "License"); you may not use this file except in
@@ -19,11 +19,31 @@
  * Portions created by the Initial Developer are Copyright (C) 1998
  * the Initial Developer. All Rights Reserved.
  *
+ * Contributor(s):
+ *
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the NPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the NPL, the GPL or the LGPL.
+ *
  * ***** END LICENSE BLOCK ***** */
 
 
 /*
- *  npupp.h $Revision$
+ *  Based on npapi.h [Revision: 3.15] from Mozilla source
+ *  mozilla/modules/plugin/base/public/npupp.h
+ *  Modified by Hobbs to add #ifdef OJI to not require any java-related
+ *  headers to build (Tcl plugin doesn't use them).
+ *  $Id$
+ *
  *  function call mecahnics needed by platform specific glue code.
  */
 
@@ -43,7 +63,13 @@
 #include "npapi.h"
 #endif
 
+#ifdef OJI /* added by Hobbs */
 #include "jri.h"
+#else
+typedef void* jref;
+typedef void* JRIEnv;
+typedef void* JRIGlobalRef;
+#endif /* OJI */
 
 /******************************************************************************************
    plug-in function table macros
@@ -915,7 +941,6 @@ typedef void (* NP_LOADDS NPN_ReloadPluginsUPP)(NPBool reloadPages);
 
 #endif
 
-
 /* NPN_GetJavaEnv */
 
 #if _NPUPP_USE_UPP_
@@ -966,7 +991,6 @@ typedef jref (* NP_LOADDS NPN_GetJavaPeerUPP)(NPP instance);
 		(*(FUNC))((ARG1))	
 
 #endif
-
 
 /* NPN_InvalidateRect */
 
@@ -1105,30 +1129,6 @@ typedef struct _NPNetscapeFuncs {
     NPN_ForceRedrawUPP forceredraw;
 } NPNetscapeFuncs;
 
-typedef struct _NPNetscapeFuncsOld {
-    uint16 size;
-    uint16 version;
-    NPN_GetURLUPP geturl;
-    NPN_PostURLUPP posturl;
-    NPN_RequestReadUPP requestread;
-    NPN_NewStreamUPP newstream;
-    NPN_WriteUPP write;
-    NPN_DestroyStreamUPP destroystream;
-    NPN_StatusUPP status;
-    NPN_UserAgentUPP uagent;
-    NPN_MemAllocUPP memalloc;
-    NPN_MemFreeUPP memfree;
-    NPN_MemFlushUPP memflush;
-    NPN_ReloadPluginsUPP reloadplugins;
-    NPN_GetJavaEnvUPP getJavaEnv;
-    NPN_GetJavaPeerUPP getJavaPeer;
-    NPN_GetURLNotifyUPP geturlnotify;
-    NPN_PostURLNotifyUPP posturlnotify;
-#ifdef XP_UNIX
-    NPN_GetValueUPP getvalue;
-#endif /* XP_UNIX */
-} NPNetscapeFuncsOld;
-
 #ifdef XP_MAC
 #if PRAGMA_STRUCT_ALIGN
 #pragma options align=reset
@@ -1190,9 +1190,9 @@ enum
 
 typedef struct _BPSupportedMIMETypes
 {
-  SInt32    structVersion;  /* struct version */
-  Handle    typeStrings;    /* STR# formated handle, allocated by plug-in */
-  Handle    infoStrings;    /* STR# formated handle, allocated by plug-in */
+ SInt32    structVersion;      /* struct version */
+ Handle    typeStrings;        /* STR# formated handle, allocated by plug-in */
+ Handle    infoStrings;        /* STR# formated handle, allocated by plug-in */
 } BPSupportedMIMETypes;
 OSErr BP_GetSupportedMIMETypes(BPSupportedMIMETypes *mimeInfo, UInt32 flags);
 
@@ -1212,7 +1212,7 @@ enum {
 
 #else  /* !_NPUPP_USE_UPP_ */
 
-/* NP_GetMIMEDescription */
+ /* NP_GetMIMEDescription */
 #define NP_GETMIMEDESCRIPTION_NAME "NP_GetMIMEDescription"
 typedef const char* (* NP_LOADDS NP_GetMIMEDescriptionUPP)();
 #define NewNP_GetMIMEDescEntryProc(FUNC)		\
@@ -1291,6 +1291,7 @@ extern "C" {
 char*	NP_GetMIMEDescription(void);
 NPError	NP_Initialize(NPNetscapeFuncs*, NPPluginFuncs*);
 NPError	NP_Shutdown(void);
+NPError NP_GetValue(void *future, NPPVariable aVariable, void *aValue);
 
 #ifdef __cplusplus
 }

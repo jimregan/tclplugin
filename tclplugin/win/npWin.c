@@ -140,7 +140,21 @@ NpLoadLibrary(HMODULE *tclHandle, char *dllName, int dllNameSize)
 	 * Use GetModuleFileName to ensure that we have a fully-qualified
 	 * path, no matter which route above succeeded.
 	 */
-	GetModuleFileNameA((HINSTANCE) tclHandle, dllName, dllNameSize);
+	if (!GetModuleFileNameA(handle, dllName, dllNameSize)) {
+	    int length;
+	    char *msgPtr;
+	    DWORD code = GetLastError();
+
+	    length = FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM
+		    | FORMAT_MESSAGE_ALLOCATE_BUFFER, NULL, code,
+		    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		    (char *) &msgPtr, 0, NULL);
+	    NpLog("GetModuleFileNameA ERROR: %d (%s)\n", code,
+		    (length == 0) ? "unknown error" : msgPtr);
+	    if (length > 0) {
+		LocalFree(msgPtr);
+	    }
+	}
     }
     return TCL_OK;
 }

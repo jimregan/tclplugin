@@ -1,3 +1,19 @@
+2002-07-05  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/stdafx.cpp, win/stdafx.h, win/resource.h (removed): 
+	* win/res/npdll32.rc2 (removed): 
+	* win/npdll32.rc: simplified the resource file
+
+2001-04-16  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* README: updated URLs and mailto.
+
+	* library/url.tcl: 
+
+	* library/utils.tcl: updated for 8.2+ code
+
+	* library/policy.tcl: removed outdated email and notes
+
 2000-05-19  Jeff Hobbs  <hobbs@scriptics.com>
 
 	* library/url.tcl: added patch that corrects the IE local file

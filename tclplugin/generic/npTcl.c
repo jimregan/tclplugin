@@ -625,7 +625,7 @@ NPP_GetValue(NPP instance, NPPVariable variable, void *value)
 	    (int) instance, (int) variable, (int) value);
     if (instance == NULL) {
 	NpLog(">>> NPP_GetValue NULL instance\n", 0, 0, 0);
-	//return NPERR_INVALID_INSTANCE_ERROR;
+	/* return NPERR_INVALID_INSTANCE_ERROR; */
     }
 
     switch (variable) {
@@ -636,8 +636,7 @@ NPP_GetValue(NPP instance, NPPVariable variable, void *value)
         case NPPVpluginDescriptionString:
             sprintf(msgBuf,
 		    "TCL Plugin %s (%s). Executes tclets found in Web pages.\
-POW and FitsTcl extensions are included.\
-See the <a href=\"http://www.tcl.tk/software/plugin/\">Tcl Plugin</a>\
+See the <a href=\"http://www.tcl.tk/software/plugin/\">Tcl Plugin</a> \
 home page for more details.",
                     NPTCL_PATCH_LEVEL, NPTCL_INTERNAL_VERSION);
             *((char **)value) = msgBuf;

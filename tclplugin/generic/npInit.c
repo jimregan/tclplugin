@@ -1,4 +1,4 @@
-/* 
+/*
  * npinit.c --
  *
  *	Implements Windows plugin initialization.
@@ -32,9 +32,11 @@ static NPError fillPluginFunctionTable(NPPluginFuncs* aNPPFuncs)
 	return NPERR_INVALID_FUNCTABLE_ERROR;
     }
 
-    // Set up the plugin function table that Netscape will use to
-    // call us. Netscape needs to know about our version and size   
-    // and have a UniversalProcPointer for every function we implement.
+    /*
+     * Set up the plugin function table that Netscape will use to
+     * call us. Netscape needs to know about our version and size   
+     * and have a UniversalProcPointer for every function we implement.
+     */
 
     aNPPFuncs->version       = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
     aNPPFuncs->newp          = NPP_New;
@@ -50,7 +52,7 @@ static NPError fillPluginFunctionTable(NPPluginFuncs* aNPPFuncs)
     aNPPFuncs->urlnotify     = NPP_URLNotify;
     aNPPFuncs->getvalue      = NPP_GetValue;
     aNPPFuncs->setvalue      = NPP_SetValue;
-    aNPPFuncs->javaClass     = NULL; //Private_GetJavaClass();
+    aNPPFuncs->javaClass     = NULL; /* Private_GetJavaClass(); */
 
     return NPERR_NO_ERROR;
 }
@@ -148,7 +150,7 @@ NP_Initialize(NPNetscapeFuncs* aNPNFuncs)
 	return rv;
     }
 
-    // NPP_Initialize is a standard (cross-platform) initialize function.
+    /* NPP_Initialize is a standard (cross-platform) initialize function. */
     return NPP_Initialize();
 }
 #elif defined(XP_UNIX)
@@ -395,11 +397,11 @@ void NPN_ForceRedraw(NPP instance)
 #if USE_JAVA
 JRIGlobalRef Private_GetJavaClass(void);
 
-// Private_GetJavaClass (global function)
-//
-//	Given a Java class reference (thru NPP_GetJavaClass) inform JRT
-//	of this class existence
-//
+/* Private_GetJavaClass (global function)
+ *
+ *	Given a Java class reference (thru NPP_GetJavaClass) inform JRT
+ *	of this class existence
+ */
 JRIGlobalRef
 Private_GetJavaClass(void)
 {

@@ -254,7 +254,9 @@ extern int		NpGetAndCheckToken _ANSI_ARGS_((Tcl_Interp *interp,
 extern int		PnInit _ANSI_ARGS_((Tcl_Interp *interp));
 extern int		PnSafeInit _ANSI_ARGS_((Tcl_Interp *interp));
 
-//# undef TCL_STORAGE_CLASS
-//# define TCL_STORAGE_CLASS DLLIMPORT
+#if 0
+# undef TCL_STORAGE_CLASS
+# define TCL_STORAGE_CLASS DLLIMPORT
+#endif
 
 #endif /* _NP */

@@ -1,3 +1,10 @@
+2003-01-16  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/np.h:     remove C++-style comments
+	* generic/npInit.c:
+	* generic/npTcl.c:
+	* generic/npupp.h:
+
 2003-01-13  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* library/utils/pkgIndex.tcl:

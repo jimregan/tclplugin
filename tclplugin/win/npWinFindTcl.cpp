@@ -14,7 +14,7 @@
  * RCS: @(#) $Id$
  */
 
-#include "npWinFindTcl.h"
+#include "np.h"
 #include <string>
 #include <deque>
 #include <algorithm>

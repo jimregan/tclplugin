@@ -161,18 +161,18 @@ if test "${TEA_PLATFORM}" = "windows" ; then
     AC_DEFINE(WIN32)
     AC_DEFINE(_X86_)
     AC_DEFINE(WIN32_LEAN_AND_MEAN)
-    PLAT_DIR=\"`${CYGPATH} ${srcdir}/win`\"
     LIBS="${LIBS} advapi32.lib gdi32.lib user32.lib"
     SHLIB_LDFLAGS="${SHLIB_LDFLAGS} -def:\$(PLAT_DIR)/npdll32.def"
     TCL_LIB_FILE=${TCL_DLL_FILE}
 else
     AC_DEFINE(XP_UNIX)
-    PLAT_DIR=\"`${CYGPATH} ${srcdir}/unix`\"
     LIBS="${LIBS} -lXt"
     TCL_LIB_FILE=${TCL_LIB_FILE}
+    LIB_RUNTIME_DIR=${TCL_EXEC_PREFIX}/lib
+    eval TCL_LD_SEARCH_FLAGS=${TCL_LD_SEARCH_FLAGS}
+    SHLIB_LDFLAGS="${SHLIB_LDFLAGS} ${TCL_LD_SEARCH_FLAGS}"
 fi
 AC_SUBST(TCL_LIB_FILE)
-AC_SUBST(PLAT_DIR)
 
 TEA_PROG_TCLSH
 TEA_PROG_WISH

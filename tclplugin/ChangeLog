@@ -1,3 +1,112 @@
+2000-05-13  David Gravereaux <davygrvy@pobox.com>
+	* config/home.cfg:
+	* config/inside.cfg:
+	* config/javascript.cfg:
+	* config/outside.cfg:
+	* config/plugin.cfg:
+	* config/trusted.cfg:
+	* doc/config.n:
+	* doc/feature.n:
+	* doc/home.n:
+	* doc/inside.n:
+	* doc/javascript.n:
+	* doc/man.macros:
+	* doc/network.n:
+	* doc/outside.n:
+	* doc/persist.n:
+	* doc/plugin.n:
+	* doc/policy.n:
+	* doc/stream.n:
+	* doc/trusted.n:
+	* doc/unsafe.n:
+	* doc/url.n:
+	* generic/np.h:
+	* generic/npapi.h:
+	* generic/npcmd.c:
+	* generic/npinterp.c:
+	* generic/nplog.c:
+	* generic/npstream.c:
+	* generic/nptcl.c:
+	* generic/nptoken.c:
+	* generic/npupp.h:
+	* generic/tclMiscUtils.c:
+	* generic/tclMiscUtils.h:
+	* installer/install.sh:
+	* installer/install.tcl:
+	* library/cfg.tcl:
+	* library/log.tcl:
+	* library/logo.tcl:
+	* library/plugtcl.tcl:
+	* library/plugtk.tcl:
+	* library/policy.tcl:
+	* library/rpi.tcl:
+	* library/trustexpr.tcl:
+	* library/url.tcl:
+	* library/utils.tcl:
+	* library/wait.tcl:
+	* license.terms:
+	* mac/MW_NpHeader.pch:
+	* mac/Tcl_Plugin.exp:
+	* mac/npMacResource.r:
+	* mac/npconfig.h:
+	* mac/npmac.c:
+	* mac/npmac.h:
+	* mac/npmaccmds.c:
+	* mac/npmacplatf.c:
+	* mac/tclMacAlloc.c:
+	* plugin/browser.tcl:
+	* plugin/common.tcl:
+	* plugin/console.tcl:
+	* plugin/installed.cfg:
+	* plugin/plugmain.tcl:
+	* plugin/remoted.tcl:
+	* safetcl/feature.tcl:
+	* safetcl/network.tcl:
+	* safetcl/persist.tcl:
+	* safetcl/stream.tcl:
+	* safetcl/unsafe.tcl:
+	* safetcl/url.tcl:
+	* tests/all:
+	* tests/cfg.test:
+	* tests/defs:
+	* tests/rpi.test:
+	* tests/sectst.tcl:
+	* tests/trust.test:
+	* tests/url.test:
+	* tests/utils.test:
+	* tests/wait.test:
+	* tools/pkg_mkIndexDirect.tcl:
+	* tools/plugin-man2html.tcl:
+	* unix/Makefile.in:
+	* unix/acconfig.h:
+	* unix/configure:
+	* unix/configure.in:
+	* unix/npconfig.h.in:
+	* unix/npconfig.post.in:
+	* unix/npunix.c:
+	* unix/npunix.h:
+	* unix/npunixplatf.c:
+	* unix/npunixspec.c:
+	* unix/npxt.h:
+	* unix/npxtnotify.c:
+	* unix/tclAppInit.c:
+	* unix/tclTest.c:
+	* win/.cvsignore:
+	* win/makefile.vc:
+	* win/npconfig.h:
+	* win/npwin.h:
+	* win/npwindll.c:
+	* win/npwinplatform.c:
+	* win/plugWinMain.c: changed copywrite notices to say Scriptics
+	and added RCS style keyword substitutes along-side the previous
+	SCCS ones to better reflect what's going on with THIS repository.
+	I decided to leave the old ones for reference.
+	
+	This is the first commit on the main trunk.  I'll branch it
+	shortly and take the plugin off in my own direction for the thread
+	safety fixes and merge back into the main trunk when I feel happy
+	with my	changes.
+
 2000-05-11   David Gravereaux <davygrvy@pobox.com>
 	* README:
 	* changes:
@@ -126,8 +235,8 @@
 	* win/res/npdll32.rc2:
 	* win/resource.h:
 	* win/stdafx.cpp:
-	* win/stdafx.h:
-		Sun release dated 12/9/97 (imported to symbolic name: plugin-2-0-b5)
+	* win/stdafx.h:	Sun release dated 12/9/97 (imported to symbolic
+	name: plugin-2-0-b5)
 
 	* README:
 	* changes:
@@ -181,8 +290,8 @@
 	* win/logo.bmp:
 	* win/npconfig.h:
 	* win/plugin.wse:
-	* win/res/npdll32.rc2:
-		Sun release dated 3/11/98 (imported to symbolic name: plugin-2-0-0)
+	* win/res/npdll32.rc2: Sun release dated 3/11/98 (imported to
+	symbolic name: plugin-2-0-0)
 
 	* config/plugin.cfg:
 	* doc/Announce.txt:
@@ -206,6 +315,5 @@
 	* win/npwinplatform.c:
 	* win/plugWinMain.c:
 	* win/plugin.wse:
-	* win/res/npdll32.rc2:
-		Jan Nijtman's 8.2 Stubs patch dated 10/12/99
-		(imported to symbolic name: plugin-2-1-b1)
+	* win/res/npdll32.rc2: Jan Nijtman's 8.2 Stubs patch dated
+	10/12/99 (imported to symbolic name: plugin-2-1-b1)

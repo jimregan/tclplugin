@@ -7,7 +7,7 @@
  *
  * Copyright (c) 1995-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
- * Copyright (c) 2002-2004 ActiveState Corporation.
+ * Copyright (c) 2002-2005 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -36,6 +36,10 @@ static Tcl_Interp *npInterp = (Tcl_Interp *) NULL;
 #else
 
 #include <dlfcn.h>
+
+/*
+ * FIX: For HP-UX or other non-dl systems, we need alternatives here
+ */
 
 #endif
 
@@ -85,9 +89,6 @@ NpCreateMainInterp()
      * Determine the libname and version number dynamically
      */
     if (tclHandle == NULL) {
-#ifndef WIN32
-	char *error;
-#endif
 	/*
 	 * First see if some other part didn't already load Tcl.
 	 */
@@ -106,7 +107,8 @@ NpCreateMainInterp()
 		"Tcl_CreateInterp");
 	if (createInterp == NULL) {
 #ifndef WIN32
-	    if ((error = dlerror()) != NULL) {
+	    char *error = dlerror();
+	    if (error != NULL) {
 		NpPlatformMsg(error, "NpCreateMainInterp");
 	    }
 #endif
@@ -177,12 +179,19 @@ NpCreateMainInterp()
     NpLog("tcl_Init(%p)\n", npInterp);
     if (tclKit_AppInit(npInterp) != TCL_OK) {
 	CONST84 char *msg = Tcl_GetVar(npInterp, "errorInfo", TCL_GLOBAL_ONLY);
-	NpLog(">>> NpCreateMainInterp tcl_Init error:\n%s\n", msg);
+	NpLog(">>> NpCreateMainInterp %s error:\n%s\n",
+		(tclKit_AppInit == Tcl_Init) ? "Tcl_Init" : "TclKit_AppInit",
+		msg);
 	NpPlatformMsg("Failed to create initialize Tcl!",
 		"NpCreateMainInterp");
 	return NULL;
     }
 
+    /*
+     * The plugin doesn't directly call Tk C APIs - it's all managed at
+     * the Tcl level, so we can just pkg req Tk here instead of calling
+     * Tk_InitStubs.
+     */
     NpLog("package require Tk\n", npInterp);
     if (Tcl_PkgRequire(npInterp, "Tk", "8.4", 0) == NULL) {
 	NpPlatformMsg(Tcl_GetStringResult(npInterp),
@@ -246,7 +255,6 @@ NpGetMainInterp()
 void
 NpDestroyMainInterp()
 {
-    
     /*
      * We are not going to use the main interpreter after this point
      * because this may be the last call from Netscape.

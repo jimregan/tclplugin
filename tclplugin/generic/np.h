@@ -17,7 +17,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * SCCS: @(#) np.h 1.48 97/12/03 14:53:14
+ * SCCS: @(#) np.h 1.49 97/12/16 18:18:54
  */
 
 #ifndef _NP
@@ -26,7 +26,7 @@
 #include	"npconfig.h"
 
 /*
- * Include the Tcl headers fisrt, as we use the Tcl macros, functions and
+ * Include the Tcl headers first, as we use the Tcl macros, functions and
  * types
  */
 
@@ -95,15 +95,48 @@ EXTERN void		NpStopLog _ANSI_ARGS_((void));
 /*
  * For the Mac, we need to make sure the Tcl_Evals are all
  * done in the plugin thread, so we wrap Tcl_Eval in Np_Eval.
+ *
+ * However, we cannot call the NPN_ functions from the Tcl
+ * thread, so we have to wrap the calls in the pn Tcl commands,
+ * to run them in the main thread...
+ *
  * For Unix & Windows this is irrelevant...
  */
 
 #ifdef MAC_TCL
-    EXTERN int Np_Eval _ANSI_ARGS_((Tcl_Interp *interp, char *string));
-    EXTERN int Np_EvalObj _ANSI_ARGS_((Tcl_Interp *interp, Tcl_Obj *objPtr));
+    EXTERN int 		Np_Eval _ANSI_ARGS_((Tcl_Interp *interp, char *string));
+    EXTERN int 		Np_EvalObj _ANSI_ARGS_((Tcl_Interp *interp, Tcl_Obj *objPtr));
+    
+
+    EXTERN void        	Np_NPN_Status(NPP instance, const char* message);
+    EXTERN NPError     	Np_NPN_NewStream(NPP instance, NPMIMEType type,
+				const char* target, NPStream** stream);
+    EXTERN int32        Np_NPN_Write(NPP instance, NPStream* stream, int32 len,
+				void* buffer);
+    EXTERN NPError    	Np_NPN_DestroyStream(NPP instance, NPStream* stream,
+				NPReason reason);
+    EXTERN NPError     	Np_NPN_GetURL(NPP instance, const char* url,
+				const char* target);
+
+    EXTERN NPError     	Np_NPN_PostURL(NPP instance, const char* url,
+				const char* target, uint32 len,
+				const char* buf, NPBool file);
+
+    EXTERN void        	Np_NPN_Version(int* plugin_major, int* plugin_minor,
+			        int* netscape_major, int* netscape_minor);
+    EXTERN const char* 	Np_NPN_UserAgent(NPP instance);
+
 #else 
-    #define Np_Eval 	Tcl_Eval
-    #define Np_EvalObj 	Tcl_EvalObj
+    #define Np_Eval 		Tcl_Eval
+    #define Np_EvalObj 		Tcl_EvalObj
+    #define Np_NPN_Status 	NPN_Status
+    #define Np_NPN_NewStream 	NPN_NewStream
+    #define Np_NPN_Write 	NPN_Write
+    #define Np_NPN_DestroyStream NPN_DestroyStream
+    #define Np_NPN_GetURL 	NPN_GetURL
+    #define Np_NPN_PostURL 	NPN_PostURL
+    #define Np_NPN_UserAgent 	NPN_UserAgent
+    #define Np_NPN_Version 	NPN_Version
 #endif
 
 

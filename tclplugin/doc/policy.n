@@ -4,7 +4,7 @@
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
-'\" SCCS: @(#) policy.n 1.8 97/10/10 12:54:57
+'\" SCCS: @(#) policy.n 1.10 98/01/22 15:14:32
 '\" 
 .so man.macros
 .TH "policy" n 2.0 Tcl "Safe-Tcl"
@@ -14,7 +14,7 @@
 policy \-  Tcl command to request use of a security policy.
 .SH SYNOPSIS
 .sp
-\fBpolicy \fR?\fIpolicyName\fR? \fR?\fIargs ...\fR?
+\fBpolicy\fR ?\fIpolicyName\fR? ?\fIargs ...\fR?
 .BE
 
 .SH DESCRIPTION
@@ -23,7 +23,7 @@ The \fBpolicy\fR command allows a Tclet executing in a safe, untrusted
 interpreter to request that a security policy be installed into it, or to
 recall the name of the security policy in use if one has been installed.
 The \fBpolicy\fR command is available in interpreters created with
-\fB::safe::interpCreate\fR or initialized with \fB::safe::interpInit\fR.
+\fBsafe::interpCreate\fR or initialized with \fBsafe::interpInit\fR.
 .PP
 Security policies make unsafe features available in a safe mediated manner
 in an untrusted interpreter.
@@ -42,7 +42,7 @@ If you want to implement a new security policy, you should read the section
 on the \fBIMPLEMENTATION OF SECURITY POLICIES\fR.
 If you are a system administrator and want to learn how to install policies
 and how to enable or disable use of specific policies, read the sections on
-\fBPOLICY CONTROL\fR, \fBPOLICY ADMINISTRATION\fR and \fBFILES\fR.
+\fBTRUST MAPPING\fR, \fBPOLICY ADMINISTRATION\fR and \fBFILES\fR.
 The \fBSECURITY\fR section discusses the general security
 considerations that affect your decision to enable or disable a policy.
 You should read the \fBconfig\fR manual page to understand configuration
@@ -87,37 +87,16 @@ the invoking interpreter can then try to load a different policy.
 .PP
 The \fBpolicy\fR command can be invoked multiple times with exactly the
 same arguments; in that case, after the first invocation, it just returns
-the name of the policy and doesn't do anything else.
+the name of the installed policy and doesn't do anything else.
 This allows a Tclet to defer obtaining the policy until it is needed and
 then request it without having to check whether it was already obtained.
-
-.SH "IMPLEMENTATION OF POLICY COMMAND"
-.PP
-This section explains what the master interpreter does in order to load a
-requested policy into an invoking Tclet.
-.PP
-First, if another policy was already installed in the invoking Tclet,
-the command returns an error immediately.
-Next, it verifies that the policy is allowed for this Tclet,
-as explained in the section on \fBTRUST MAPPING\fR below.
-If this check produces an error, it is propagated to the invoking
-interpreter. 
-.PP
-If the security checks succeed, the master interpreter obtains the list of
-features available in the application and attempts to install each feature
-into the Tclet by invoking the feature installation procedure.
-Features are described in the \fBfeature\fR manual page.
-If an error occurs at this stage, the interpreter containing the Tclet is
-killed to prevent it from executed in an undefined state that may result
-from partially installed features.
-If no error occurs, the policy is now loaded into the invoking interpreter.
 
 .SH "IMPLEMENTATION OF SECURITY POLICIES"
 .PP
 Security policies are specifications of features and resources that are
 accessible or inaccessible in a Tclet.
 As such, they are implemented as configuration files stored in the
-directory \fB::cfg::configDir\fR.
+directory \fBcfg::configDir\fR.
 By convention, the configuration file for a policy is named
 \fIpolicy\fB.cfg\fR.
 The \fBconfig\fR manual page describes how configuration management works
@@ -131,14 +110,14 @@ interpreter.
 
 .SH "POLICY ADMINISTRATION"
 .PP
-To administer the resources made accessible to a Tclet when it obtains a
-policy, edit the configuration file for that policy.
+Edit the configuration file for a policy to administer the resources made
+accessible to a Tclet when it obtains that policy.
 Several sections are present by convention in each configuration file:
 .TP
 \fBfeatures\fR
 This section enables or disables use of specific named features in a Tclet.
 In order to be installed, a feature must be present in the value of
-\fB::cfg::featureList\fR; otherwise it will not be installed into a Tclet
+\fBcfg::featuresList\fR; otherwise it will not be installed into a Tclet
 even if an \fBallow\fR statement for this feature appears in this section.
 See the \fBfeature\fR manual page and manual pages for each feature to
 learn what capabilities they provide.
@@ -162,16 +141,37 @@ Complicated combinations of \fBallow\fR and \fBdisallow\fR statements
 should be avoided; they can easily lead to making resources available to a
 Tclet in an unintended manner, potentially opening up security holes.
 
-.SH "POLICY CONTROL"
+.SH "IMPLEMENTATION OF THE POLICY COMMAND"
+.PP
+This section explains what the master interpreter does in order to load a
+requested policy into a Tclet.
+.PP
+First, if another policy was already installed in the invoking Tclet,
+the command returns an error immediately.
+Next, it verifies that the policy is allowed for this Tclet,
+as explained in the section on \fBTRUST MAPPING\fR below.
+If this check produces an error, it is propagated to the invoking
+Tclet. 
+.PP
+If the security checks succeed, the master interpreter attempts to install
+each of the features that is allowed by the requested policy into the Tclet
+by invoking the feature installation procedure.
+Features are described in the \fBfeature\fR manual page.
+If an error occurs at this stage, the interpreter containing the Tclet is
+killed to prevent it from executed in an undefined state that may result
+from partially installed features.
+If no error occurs, the policy is now loaded into the invoking interpreter.
+
+.SH "TRUST MAPPING"
 .PP
 Policies can be globally enabled or disabled for use across an entire site
 by the \fBpolicies\fR section in the application's main configuration file.
 The Tcl plugin main configuration file is \fBplugin.cfg\fR in the directory
-\fB::cfg::configDir\fR.
+\fBcfg::configDir\fR.
 .PP
 During installation of a policy the master interpreter checks whether the
 invoking interpreter can use the requested policy.
-The master interpreter examines the \fBallow\fB and \fBdisallow\fR
+The master interpreter examines the \fBallow\fR and \fBdisallow\fR
 statements in the \fBpolicies\fR section of \fBplugin.cfg\fR.
 If the policy is disallowed the requesting Tclet can not use that policy
 and the \fBpolicy\fR command will return an error.
@@ -275,14 +275,14 @@ computers on the same network to the risks discussed above.
 .SH FILES
 .PP
 Policy configuration files are stored, along with other configuration
-files, in the \fB::cfg::configDir\fR directory.
+files, in the \fBcfg::configDir\fR directory.
 Policy configuration files are named \fIpolicy\fB.cfg\fR.
 .PP
 The use of policies in an application is controlled by settings in the
 \fBpolicies\fR section in the master configuration for that
 application.
 For the Tcl plugin, the master configuration is contained in the
-\fBplugin.cfg\fR file in the \fB::cfg::configDir\fR directory.
+\fBplugin.cfg\fR file in the \fBcfg::configDir\fR directory.
 
 .SH "SEE ALSO"
 safe(n), config(n), feature(n)

@@ -16,7 +16,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * SCCS: @(#) npunixplatf.c 1.37 97/12/04 09:48:06
+ * SCCS: @(#) npunixplatf.c 1.39 98/01/06 13:23:11
  */
 
 #include	"np.h"
@@ -33,10 +33,10 @@
  */
 
 static void	DestroyEventHandler _ANSI_ARGS_((Widget widget,
-	            caddr_t clientData, XEvent *event,
+	            XtPointer clientData, XEvent *event,
 	            Boolean *continueDispatchPtr));
 static void	EnterEventHandler _ANSI_ARGS_((Widget widget,
-	            caddr_t clientData, XEvent *event,
+	            XtPointer clientData, XEvent *event,
 	            Boolean *continueDispatchPtr));
 static Window	GetChild _ANSI_ARGS_((XEnterWindowEvent *enterEventPtr));
 
@@ -117,7 +117,9 @@ if {[info exists env(TCL_PLUGIN_DIR)]} {\n\
     }\n\
 }\n\
 if {[info exists env(NPX_PLUGIN_PATH)]} {\n\
-  eval lappend dirlist [split $env(NPX_PLUGIN_PATH) :]\n\
+  foreach dir [split $env(NPX_PLUGIN_PATH) :] {\n\
+    lappend dirlist [file dirname $dir]\n\
+  }\n\
 }\n\
 lappend dirlist ~/.netscape\n\
 if {[info exists env(MOZILLA_HOME)]} {\n\
@@ -174,7 +176,7 @@ return -code error \"Could not find tclplug/$plugin(version)/plugin\\\n\
  */
 
 static void
-DestroyEventHandler(Widget widget, caddr_t clientData, XEvent *e,
+DestroyEventHandler(Widget widget, XtPointer clientData, XEvent *e,
         Boolean *continueDispatchPtr)
 {
     XDestroyWindowEvent *devPtr;
@@ -261,7 +263,7 @@ GetChild(enterEventPtr)
 
 	/* ARGSUSED */
 static void
-EnterEventHandler(Widget widget, caddr_t clientData, XEvent *e,
+EnterEventHandler(Widget widget, XtPointer clientData, XEvent *e,
                   Boolean *continueDispatchPtr)
 {
     XEnterWindowEvent *enterEventPtr;
@@ -409,9 +411,9 @@ NpPlatformSetWindow(NPP This, NPWindow *npwindow)
 
     if (widget != (Widget) NULL) {
         XtAddEventHandler(widget, EnterWindowMask | LeaveWindowMask, FALSE,
-                (XtPointer) EnterEventHandler, (XtPointer) window);
+                (XtEventHandler) EnterEventHandler, (XtPointer) window);
         XtAddEventHandler(widget, SubstructureNotifyMask, FALSE,
-                (XtPointer) DestroyEventHandler, (XtPointer) NULL);
+                (XtEventHandler) DestroyEventHandler, (XtPointer) NULL);
     }
 }
 

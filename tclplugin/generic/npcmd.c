@@ -18,7 +18,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * SCCS: @(#) npcmd.c 1.31 97/10/06 20:12:37
+ * SCCS: @(#) npcmd.c 1.32 97/12/16 18:21:41
  */
 
 #include	"np.h"
@@ -92,7 +92,7 @@ PnDisplayStatusCmd(
         return TCL_ERROR;
     }
 
-    NPN_Status(instance, (const char *) argv[2]);
+    Np_NPN_Status(instance, (const char *) argv[2]);
 
     NpLog("Leaving Status: %s\n", (int) argv[2], 0, 0);
     
@@ -148,7 +148,7 @@ PnOpenStreamCmd(
      * if this is the case.
      */
 
-    status = NPN_NewStream(instance, argv[2], argv[3], &streamPtr);
+    status = Np_NPN_NewStream(instance, argv[2], argv[3], &streamPtr);
     if (status != NPERR_NO_ERROR) {
         Tcl_AppendResult(interp, "could not open stream of type \"",
                 argv[2], "\" to \"", argv[3], "\"", (char *) NULL);
@@ -241,7 +241,7 @@ PnWriteToStreamObjCmd(dummy, interp, objc, objv)
     
     dataPtr = Tcl_GetStringFromObj(objv[3], &len);
 
-    (void) NPN_Write(instance, streamPtr, len, dataPtr);
+    (void) Np_NPN_Write(instance, streamPtr, len, dataPtr);
 
     NpLog("Leaving PnWriteToStream (%d) with success\n", len, 0, 0);
     
@@ -300,7 +300,7 @@ PnCloseStreamCmd(
         return TCL_ERROR;
     }
 
-    status = NPN_DestroyStream(instance, streamPtr, NPRES_DONE);
+    status = Np_NPN_DestroyStream(instance, streamPtr, NPRES_DONE);
     if (status != NPERR_NO_ERROR) {
 	Tcl_AppendResult(interp, "could not destroy stream \"",
 		argv[2], "\"", (char *) NULL);
@@ -386,7 +386,7 @@ PnGetURLCmd(
         }
     }
     
-    if (NPN_GetURL(instance, (const char *) argv[2], (const char *) targetName)
+    if (Np_NPN_GetURL(instance, (const char *) argv[2], (const char *) targetName)
             != NPERR_NO_ERROR) {
         Tcl_AppendResult(interp, "could not get URL \"", argv[2],
                 "\"", (char *) NULL);
@@ -461,7 +461,7 @@ PnPostURLObjCmd(dummy, interp, objc, objv)
         targetName = NULL;
     }
     url= Tcl_GetStringFromObj(objv[2], NULL);
-    status= NPN_PostURL(instance, url, targetName, dataLen, dataPtr, fromFile);
+    status= Np_NPN_PostURL(instance, url, targetName, dataLen, dataPtr, fromFile);
     if (status != NPERR_NO_ERROR) {
         Tcl_AppendResult(interp, "could not post to URL \"", url,
                 "\"", (char *) NULL);
@@ -518,7 +518,7 @@ PnUserAgentCmd(
         return TCL_ERROR;
     }
     
-    userAgentPtr = (char *) NPN_UserAgent(instance);
+    userAgentPtr = (char *) Np_NPN_UserAgent(instance);
     if (userAgentPtr == NULL) {
         if (interp != NULL) {
             Tcl_AppendResult(interp, "\"", argv[0], "\" failed",
@@ -568,7 +568,7 @@ PnVersionCmd(
 
     NpLog("Entering PnVersion\n", 0, 0, 0);
     
-    NPN_Version(&pMaj, &pMin, &bMaj, &bMin);
+    Np_NPN_Version(&pMaj, &pMin, &bMaj, &bMin);
     sprintf(buf, "%d", pMaj);
     Tcl_AppendElement(interp, buf);
     sprintf(buf, "%d", pMin);

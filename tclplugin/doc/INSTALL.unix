@@ -1,0 +1,134 @@
+Instructions for installing the plugin on all versions of Unix are below.
+Also, in the online FAQ file are answers to some commonly asked
+questions. Here are the installation instructions:
+
+
+   If you have access the WWW, you should try to look at the plugin pages on
+
+   http://sunscript.sun.com/plugin/
+
+   which might contain newer and updated information concerning this release.
+
+
+INSTALLING
+==========
+
+0. Ensure that you are using a supported version of Unix.
+
+   The supported versions are: Solaris 2.x, SunOS 4.1, Solaris 2.x on X86,
+   Linux, Irix 5.3 and later, Digital Unix on Alphas, HP-UX 9.x and later.
+
+   NOTE: Initial 2.0 binary releases will initially be available on
+   a subset of the above operating systems. Over time we intend to offer
+   more supported versions, but right now not all are available yet.
+   You can try to build the plugin from sources if there is no binary
+   release for your platform (http://sunscript.sun.com/plugin/download.html)
+
+   ***If you are not using one of the above platforms, the plugin will
+   install but will not be used by Navigator when it executes***
+
+   We intend to support more versions of Unix over time. As Netscape
+   makes support for plugins available on each platform, we will attempt
+   to support the plugin on that platform. If you know of a platform on
+   which Netscape Navigator supports plugins and for which we have not
+   yet released the Tcl plugin, send email to 
+   sunscript-plugin@sunscript.sun.com if you want us to support that
+   platform. Also please mention in your email if you are willing to be 
+   an early tester of releases of the plugin on that platform.
+
+   We also have a source release for the plugin, with a configure-based
+   build and installation procedure. Please see if that helps you build
+   the Tcl plugin for platforms for which we do not provide binary
+   distributions.
+
+1. Exit from any running instances of Netscape Navigator.
+
+   Ensure that you do not have any copies of Netscape Navigator running
+   presently. Navigator is sensitive to cache conflicts arising from the
+   concurrent execution of multiple copies of itself. Check also that you
+   are not using Navigator on another computer under the same login, if
+   your home directory is shared with that other computer; in this case
+   the cache is also shared, and Navigator may have problems.
+   
+2. Run the install.sh program in the directory where you unpacked the
+   plugin distribution.
+
+   For each platform, unpacking the tar file creates a directory (called
+   a "staging area") containing all the materials for installing the
+   plugin. Change directory to the staging area and run the command
+   'install.sh' to start the installation procedure. This program installs
+   the plugin, lets you read help and the license agreement, and lets you
+   send email for trouble reports.
+
+   NOTE: You *must* be running X11 (preferably X11R5 or later) to run
+   install.sh.
+
+   Two forms of installation are supported on Unix: individual and custom.
+   The individual install option installs the plugin for your own use,
+   while the custome install option installs it for other configurations.
+   The most common use of the custom install is to perform a site-wide
+   install. This is the default for the custom install.
+
+   If you installed the plugin shared library in a location different from
+   the recommended defaults in the individual install option, you may have
+   to set the environment variable NPX_PLUGIN_PATH to point at the
+   directory where the ".so" file was installed. This ensures that
+   Navigator will be able to find the plugin when it starts.
+
+   If you installed the Tcl libraries in a location different from the
+   recommended defaults, you may have to set the environment variable
+   TCL_PLUGIN_DIR to point at where the libraries are installed. This
+   will enable the plugin to find these libraries at runtime.
+   
+   The installation procedure produces a log file containing a trace of
+   all the actions taken during installation. The name of that log file
+   is prominently displayed during installation and printed out at the end
+   of install. Please include this file in any trouble reports.
+
+   The installation procedure offers to restart Netscape Navigator and
+   test the plugin. This option is available by pressing the "Test It!"
+   button after the installation completes. You can submit a trouble report
+   if the plugin does not appear to work properly, by pressing the buttom
+   marked "Submit Trouble Report". The report will be initialized to a copy
+   of the install log file. You may edit the report to add any additional
+   relevant information.
+
+   The information below instructs you how to test the plugin. The install
+   procedure will visit <URL:http://sunscript.sun.com/plugin/applets.html>
+   during testing, to let you exercise the plugin. If you decide to not
+   test the plugin during the installation, you may use Step 3 and on at a
+   later time to test the plugin.
+
+3. Restart Navigator.
+
+   The preferred browsers for using this plugin on Unix are Navigator 3.0
+   and Navigator 4.0.
+
+   ***THE PLUGIN WON'T WORK WITH NAVIGATOR 2.x***
+
+   NOTE: The plugin does not work with Netscape Navigator 4.0 Preview 2. We
+   have notified Netscape of this problem, and they are investigating. You
+   should not be using that anyways, as Navigator 4.0 final has been
+   released for most flavors of Unix.
+
+4. Pull down the Help->About plug-ins menu item to display the page
+   describing the installed plugins. The page should list the Tcl plugin.
+   Send email to <URL:mailto:sunscript-plugin@sunscript.sun.com> if the page
+   is not showing the Tcl plugin as being installed.
+
+   The online FAQ <URL:http://sunscript.sun.com/plugin/faq.html>
+   provides hints about what can go wrong during installation; please read
+   it carefully and attempt to apply the proposed solutions.
+
+5. Visit the demos at <URL:http://sunscript.sun.com/plugin/applets.html>.
+   If you experience a problem viewing any of these demos, please send
+   email to <URL:mailto:sunscript-plugin@sunscript.sun.com> describing the
+   problem. Please include the log file produced during installation in any
+   trouble reports you submit. It'll save time, because if you do not 
+   include it we will just ask you to mail it to us.
+
+Thank you for using the plugin! We intend to continue enhancing the plugin
+with more features in upcoming releases. Visit our page describing the
+planned features, <URL:http://sunscript.sun.com/plugin/> to see
+what is already planned!
+

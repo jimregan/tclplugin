@@ -1,0 +1,138 @@
+Mac Tcl Plugin 2.0
+
+by Jim Ingham
+Sun Microsystems Laboratories
+jim.ingham@eng.sun.com
+
+1. Introduction
+---------------
+
+This is the README file for the Macintosh version of the
+Tcl plugin 2.0.  This file contains information specific to
+the Macintosh version of the plugin.  For a discussion of the
+plugin in general, see the documentation on our website at
+
+http://sunscript.sun.com/plugin/
+
+and take a look at the man pages, which are included in this distribution
+in HTML form.
+
+2. What's New?
+--------------
+
+Existence...  This is the first Macintosh version of the 2.0 Tcl
+plugin.  The advantages over the 1.0 version are many, including 
+the whole Safe-Tcl security model, as well as the ability to view
+multiple Tclets on a page, and several pages with tclets at a time.
+
+3. Usage
+--------
+
+The Macintosh version of the plugin is not as mature as the UNIX & Windows
+versions, so not everything works at present.  The generic part of the plugin is
+pretty stable, but there are some bugs in the Macintosh
+implementation: see Known Bugs below.
+
+Also, the Plugin requires Netscape Navigator.  It works on 3.0, but
+it seems to work much better on 4.03.  It does not yet work under
+MSIE, and I have not tried CyberDog.  It will take some work to
+add support for MSIE.  
+
+This version also only supports PPC Macs.  I will fix this soon...
+
+The other limiting factor for the Plugin is RAM.  Remember that when
+you are loading the Tcl plugin, you are adding all of Wish to
+Netscape, which is about 6 Meg or so, especially if you have much
+graphics content in your Tclets.  Moreover, Netscape does not handle
+low-memory situations terribly gracefully, so you will need to leave a
+cushion above this.  Finally, if you watch Netscape in "About This
+Mac", you will notice that it eats up some portion of the memory that
+you have given it for caching.  
+
+I have found that giving Netscape 18 Meg of Ram (with Virtual Memory ON) 
+yields pretty stable results.  Your mileage may vary.  Tell me if you are able 
+to get by consistently with less!
+
+You cannot currently load shared libraries into Tcl using the "load" 
+command.  To use other extensions with the Tcl Plugin, you will have
+to recompile the plugin with the extensions bound in statically.
+
+If you want to use any of the more complicated policies, you need to
+edit the configuration files for the plugin.  These are stored in
+
+{Extensions Folder}:Tool Command Language:tclplug:2.0:config
+
+See the policies man page for more details on what you will have to change.
+
+4. Installation
+---------------
+
+The plugin installer will copy all the .tcl and .cfg files it needs
+into the "Tool Command Language" folder of your extensions folder.  It
+will not overwrite any of the library files from the Wish
+installation, so you can safely install both.  The folder that
+contains this README also contains the "Tcl Plugin" file.  You have to
+move this to the Navigator's Plug-ins folder, which is in the same
+folder as the Navigator application.  Finally, the docs are in the 
+"Plugin Docs" folder.  That's all...
+
+5. Building
+-----------
+
+1) If you got the .sea.hqx version of the plugin source, the project
+   files are all in the right place.  If you got the UNIX source, then
+   a) uncompress the file plugin2.0:mac:projects.sit.bin, and put all the 
+      projects into the places indicated by the folder names in the "Plugin
+      Projects" folder.
+   b) Get MoreFiles 1.4.3 from ftp.sunlabs.com/pub/tcl/mac, and put it
+      in the plugin distribution at the same level as the plugin2.0 folder.
+2) Go to the folder plugin2.0:mac
+3) Open (in CodeWarrior Pro 2.0) the project "Tcl Plugin.¼"
+4) Select the "Tcl Plugin PPC" target and build.
+5) Copy "plugin2.0:mac:Tcl Plugin" to your Netscape folder
+
+You are done.
+
+The 68K target does not build yet.
+
+6. Known Bugs
+-------------
+
+ *	The browser::displayURL and displayForm commands do not work, 
+     except for the _self target.
+ *	The browser::openStream, writeToStream & closeStream commands will
+     only write data to a extant target window, but then the window will not 
+     refresh.
+ *  The browser::sendMail command does not work, so the nice "feedback" tclet
+     is currently broken :-(
+ *	You can't call exit in any Tclet (including the Tcl
+     Evaluator-in-a-page!).  This will cause Netscape to crash.
+ *	Enter and Leave events when crossing plugin boundaries are not
+     reliably generated.
+ * The wm geometry command for the plugin will not have the right
+    absolute coordinates if you have moved or scrolled the window (but
+    then you should not need to know these in a plugin, so...)
+ * The attachable console & log window that are available on the X and
+    Windows platforms do not work on the Macintosh.
+ * The out-of-process mode for the Plugin does not, and most likely
+    will never, work on the Macintosh.
+ 
+
+There are probably many more little and big nits that I have not
+stumbled across yet.  So get in there, make some cool things, and tell
+me about all the stones that I have put in your path...
+
+Send Mac specific bug reports to
+
+    jim.ingham@eng.sun.com
+
+and all others, or if you are not sure, to
+
+    sunscript-plugin@sunscript.sun.com
+
+
+    
+
+
+
+

@@ -17,7 +17,7 @@ item: Global
   Patch Flags=0000000000001001
   Patch Threshold=85
   Patch Memory=4000
-  EXE Filename=tclplug20b5.exe
+  EXE Filename=tclplug20.exe
 end
 item: Display Graphic
   Pathname=logo.bmp
@@ -32,11 +32,11 @@ item: Check Configuration
 end
 item: Set Variable
   Variable=APPTITLE
-  Value=Tcl Plugin 2.0b5 for Windows
+  Value=Tcl Plugin 2.0 for Windows
 end
 item: Display Message
   Title=Welcome!
-  Text=This program will install the Tcl Plugin 2.0b5 for Netscape Navigator and Microsoft Internet Explorer onto your computer. The plugin works with Netscape Navigator 2.0, 3.0, 4.0 and with Microsoft Internet Explorer 3.0 and 4.0. Press the OK button to start the installation. You can press the Cancel button if you do not want to install this software.
+  Text=This program will install the Tcl Plugin 2.0 (2.0.200) for Netscape Navigator and Microsoft Internet Explorer onto your computer. The plugin works with Netscape Navigator 2.0, 3.0, 4.0 and with Microsoft Internet Explorer 3.0 and 4.0. Press the OK button to start the installation. You can press the Cancel button if you do not want to install this software.
 end
 item: Set Variable
   Variable=GROUP
@@ -337,10 +337,22 @@ item: Get Registry Key Value
   Value Name=Install Directory
   Flags=00000100
 end
+item: If/While Statement
+  Variable=NAV4INST
+  Value=%NAV3%
+end
+item: Set Variable
+  Variable=INSTALLFOR
+  Value=B
+end
+item: Else Statement
+end
 item: Set Variable
   Variable=INSTALLFOR
   Value=B
   Flags=00000001
+end
+item: End Block
 end
 item: End Block
 end

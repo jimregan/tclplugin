@@ -17,7 +17,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * SCCS: @(#) nptcl.c 1.73 97/12/04 10:30:24
+ * SCCS: @(#) nptcl.c 1.75 98/01/15 13:28:42
  */
 
 #include	"np.h"
@@ -159,28 +159,32 @@ Plug_Init(interp, externalFlag)
      * and workaround the fact that env(TK_LIBRARY) overrides anything the
      * C side could try to set. It also sets env(TCL_LIBRARY) for the same
      * reason and for use of foreign 'external' wish.
+     * UPDATE: We stop doing that in order to support user's external
+     *         wish which might need other things. The downside is that
+     *         we have more workarounds to putback in plugmain.tcl and
+     *         remoted.tcl
      */
     static char initScript[] ="global plugin tcl_library tk_library\n\
-# Get the parent of all the dirs:\n\
+#  Get the parent of all the dirs:\n\
 set plugin(topdir) [file dirname $plugin(library)]\n\
 set tcl_library [file join $plugin(topdir) \"tcl\"]\n\
-# Prevent init.tcl from adding random (build time) paths to the auto_path\n\
+#  Prevent init.tcl from adding random (build time) paths to the auto_path\n\
 catch {unset tcl_pkgPath}\n\
 # source the 'right' init.tcl\n\
 source [file join $tcl_library init.tcl]\n\
-# Export this tcl_library through our env() so the\n\
-# remote process will eventually get it.\n\
-set env(TCL_LIBRARY) $tcl_library\n\
-# Update the auto_path so that we can find other scripts in\n\
-# $plugin(library) by auto-loading:\n\
-lappend auto_path $plugin(library) $plugin(topdir)\n\
-# Tk:\n\
+#  Export this tcl_library through our env() so the\n\
+#  remote process will eventually get it.\n\
+#set env(TCL_LIBRARY) $tcl_library\n\
+#  Update the auto_path so that we can find other scripts in\n\
+#  sub directories of $plugin(topdir) by auto-loading:\n\
+lappend auto_path $plugin(topdir)\n\
+#  Tk:\n\
 set tk_library [file join $plugin(topdir) \"tk\"]\n\
-# Export this tk_library through our env() so the\n\
-# remote process will eventually get it and work around Tk_Init\n\
-# 'feature' of preferring then env var over anything.\n\
-set env(TK_LIBRARY) $tk_library\n\
-# Make package require Tk work:\n\
+#  Export this tk_library through our env() so the\n\
+#  remote process will eventually get it and work around Tk_Init\n\
+#  'feature' of preferring then env var over anything.\n\
+#set env(TK_LIBRARY) $tk_library\n\
+#  Make package require Tk work:\n\
 package ifneeded Tk $tk_version {load {} Tk}";
 
     /*

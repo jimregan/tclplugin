@@ -25,7 +25,7 @@
 #    + Supports multi-clients per server and any combinations of any
 #      number of servers and clients per process/interp
 # Missing features:
-#    + Strong security : has to be provided by the caller or use in safe
+#    + Strong security : has to be provided by the caller or used in safe
 #      interps.
 #    + Write queue management
 #
@@ -37,11 +37,11 @@
 #
 # Please contact us directly for questions, comments and enhancements.
 #
-# SCCS: @(#) rpi.tcl 1.17 97/11/11 22:20:23
+# SCCS: @(#) rpi.tcl 1.18 98/02/26 15:02:33
 
 # We provide the remote procedure invocation:
 
-package provide rpi 1.0
+package provide rpi 1.1
 
 # Package the we need:
 
@@ -234,10 +234,12 @@ namespace eval ::rpi {
     # as well as shutting down the link.
 
     proc delete {this} {
-	# If we have a running server, shut it down
+	ILog "Deleting..."
+	# If we have an open socket, shut it down
 	if {[IExists Sock]} {
 	    shutdown $this;
 	}
+	# If we have peers remove us from their list
 	if {[IExists PeerList]} {
 	    foreach peer [IGet PeerList] {
 		RemovePeer $peer $this
@@ -248,6 +250,7 @@ namespace eval ::rpi {
 
     # Private helper to keep PeerList in sync
     proc RemovePeer {this peer} {
+	ILog "Removing $peer from this' peers list"
 	if {[IExists PeerList]} {
 	    set where [lsearch -exact [IGet PeerList] $peer]
 	    if {$where >= 0} {
@@ -550,6 +553,7 @@ namespace eval ::rpi {
 
     proc linkDown {this} {
 	ILog "called default linkDown" WARNING;
+	delete $this;
     }
 
     proc linkError {this errorType args} {

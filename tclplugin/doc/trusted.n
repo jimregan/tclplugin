@@ -4,7 +4,7 @@
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
-'\" SCCS: @(#) trusted.n 1.13 97/10/10 12:55:41
+'\" SCCS: @(#) trusted.n 1.14 98/01/22 18:04:50
 '\" 
 .so man.macros
 .TH "trusted" n 2.0 Tcl "Safe-Tcl"
@@ -37,7 +37,7 @@ Security issues are discussed in the manual page for each installed feature.
 .PP
 The \fBtrusted\fR policy installs all the features that are mentioned in
 \fB::cfg::featureList\fR in the order in which they appear in the list.
-For the Tcl plugin, the policy installs the \fBurl\fB, \fBstream\fR,
+For the Tcl plugin, the policy installs the \fBurl\fR, \fBstream\fR,
 \fBnetwork\fR, \fBpersist\fR and \fBunsafe\fR features, in that order.
 If you installed more features into your installation of the Tcl plugin,
 the new features will also be installed into a Tclet using this policy.
@@ -89,11 +89,9 @@ This disables hard\-wired checks for safety in Tcl 8.0 and Tk 8.0, which
 would otherwise prevent the Tclet from using some features.
 
 .SH "SEE ALSO"
-.PP
 safe(n), policy(n), config(n), plugin(n), url(n), persist(n), network(n),
 stream(n), unsafe(n)
 
 .SH KEYWORDS
-.PP
 Safe\-Tcl, alias, network, socket, URL, persistent local storage,
 JavaScript, unsafe features, electronic mail

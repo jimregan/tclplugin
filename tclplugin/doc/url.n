@@ -4,7 +4,7 @@
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
-'\" SCCS: @(#) url.n 1.7 97/11/13 23:56:03
+'\" SCCS: @(#) url.n 1.8 98/01/22 15:18:40
 '\" 
 .so man.macros
 .TH "url" n 2.0 Tcl "Safe-Tcl"
@@ -16,7 +16,7 @@ url \-  URL fetching and display feature for Safe Tcl.
 .sp
 \fB::browser::status \fImessage\fR
 .sp
-\fB::browser::getURL \fIURL \fI?timeOut\fR? ?\fInewCallback\fR?
+\fB::browser::getURL \fIURL\fR ?\fItimeOut\fR? ?\fInewCallback\fR?
 ?\fIwriteCallback\fR? ?\fIendCallback\fR?
 .sp
 \fB::browser::displayURL \fIURL frameName\fR

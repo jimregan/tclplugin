@@ -4,7 +4,7 @@
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
-'\" SCCS: @(#) unsafe.n 1.6 97/10/10 12:56:41
+'\" SCCS: @(#) unsafe.n 1.7 98/01/22 18:04:51
 '\" 
 .so man.macros
 .TH "unsafe" n 2.0 Tcl "Safe-Tcl"
@@ -58,7 +58,7 @@ are copied.
 The global arrays whose name appears in the value of
 \fB::cfg::RestoreArrayVariables\fR are copied from the master interpreter
 into the Safe\-Tcl interpreter, if allowed by the controlling policy.
-By default, the arrays \fBenv\fR, \fRauto_index\fR and \fBtcl_platform\fR
+By default, the arrays \fBenv\fR, \fBauto_index\fR and \fBtcl_platform\fR
 are copied.
 .IP
 The Tcl command \fBauto_reset\fR is evaluated in the Safe\-Tcl interpreter,

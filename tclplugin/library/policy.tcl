@@ -15,11 +15,11 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) policy.tcl 1.41 97/11/12 18:16:33
+# SCCS: @(#) policy.tcl 1.42 98/01/15 15:05:32
 
 # This file provides the policy package:
 
-package provide policy 1.2
+package provide policy 1.3
 
 # We need the Safe Base in Tcl core 8.0:
 
@@ -61,40 +61,18 @@ namespace eval ::safe {
     variable errorMessage
 
     # Where do we find the security features sets ? 
-    # The default value is computed by
-    # taking $tcl_library, going up one directory and down into "safetcl".
+    # By auto loading. We expect the user of that package
+    # to have setup the auto_path in order to find the safetcl
+    # features. Usually there is nothing to do as the safetcl/
+    # are installed as a sibling of the tcl_library directory
+    # whose parent dir is already in the auto_path.
 
-    variable featureDir [file join [file dir $tcl_library] safetcl]
-
-    # This procedure adds the featureDir to the auto_path if
-    # needed (so the feature::install will be found), 
-    # and also makes sure they get noticed if we added them,
-    # by unsetting auto_oldpath.
-
+    # This procedure initializes the policy mechanism
+    # mainly by installing the dependent safetcl/features.
     # It must be called before using policies
 
     proc initPolicies {} {
-	variable featureDir
-
-	global auto_path
-
 	log {} "policies initialization" NOTICE
-
-	# add the directories we need to the auto_path (if not already in)
-
-	set adding 0
-	foreach dir [list $featureDir] {
-	    if {[lsearch -exact $auto_path $dir] < 0} {
-		set adding 1
-		lappend auto_path $dir
-	    }
-	}
-
-	if {$adding} {
-	    # Invalidate the cache
-	    global auto_oldpath
-	    catch {unset auto_oldpath}
-	}
 
 	# We need to have the common safetcl/features
 	# loaded and init'ed (they will for instance define

@@ -12,7 +12,7 @@
 #
 # Copyright (c) 1995-1997 Sun Microsystems, Inc.
 #
-# SCCS: @(#) install.tcl 1.40 97/12/04 14:23:19
+# SCCS: @(#) install.tcl 1.41 98/01/16 10:12:38
 
 set supportEmail "sunscript-plugin@sunscript.sun.com"
 set supportUrl   "http://sunscript.sun.com/plugin/"
@@ -462,13 +462,13 @@ if {$GUI} {
 	catch {destroy .readme}
 	toplevel .readme
 	frame .readme.top
-	wm title .readme "README for Tcl Plugin"
+	wm title .readme "Unix Installation information for the Tcl Plugin"
 	text .readme.t -yscrollcommand {.readme.s set}
 	scrollbar .readme.s -command {.readme.t yview} -orient vertical
 	pack .readme.s -side right -fill y -in .readme.top
 	pack .readme.t -side left -fill both -expand true -in .readme.top
 	pack .readme.top
-	if [catch {open [file join $plugin(topdir) doc README]} in] {
+	if [catch {open [file join $plugin(topdir) doc INSTALL.unix]} in] {
 	    .readme.t insert insert $in
 	} else {
 	    .readme.t insert insert [read $in]

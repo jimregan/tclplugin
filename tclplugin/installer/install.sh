@@ -15,9 +15,9 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) install.sh 1.24 97/12/01 18:58:10
+# SCCS: @(#) install.sh 1.25 98/01/21 10:18:50
 
-TOPDIR=$PWD
+TOPDIR=`pwd`
 
 # Get versions and file paths
 VERSION=`cat $TOPDIR/tclplug/plug-version`

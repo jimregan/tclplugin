@@ -126,27 +126,41 @@ proc SetupConsole {} {
 
     # Create a console if the user asks for it:
 
-    ::pluglog::log {} "Console setup"
+    ::pluglog::log SetupConsole "Console setup"
     if {[info exists env(TCL_PLUGIN_CONSOLE)] \
 	    && ($env(TCL_PLUGIN_CONSOLE) != 0)} {
+	# Load Tk if not done already:
+	tkLazyInit
+
 	if {($env(TCL_PLUGIN_CONSOLE) == 1) || \
 		($env(TCL_PLUGIN_CONSOLE) == "")} {
-	    set consoleFile [file join $plugin(library) console.tcl]
+	    set consoleFile [file join $plugin(library) tkcon.tcl]
+	    set cmd {
+		namespace eval ::tkcon {}
+		set ::tkcon::PRIV(protocol) {tkcon hide}
+		set ::tkcon::OPT(exec) ""
+		tkcon show
+	    }
 	} else {
 	    set consoleFile $env(TCL_PLUGIN_CONSOLE)
 	}
-	# Load Tk if not done already:
 
-	tkLazyInit
+	# these may not exist
+	if {![info exists ::argv]} { set ::argv {}; set ::argc 0 }
 
-	if {[catch {uplevel #0 [list source $consoleFile]} msg]} {
-	    NotifyError Console\
-		    "loading \"$consoleFile\": $msg\n$::errorInfo"
+	if {[catch {uplevel \#0 [list source $consoleFile]} msg]} {
+	    NotifyError SetupConsole\
+		"SetupConsole loading \"$consoleFile\": $msg\n$::errorInfo"
 	    return
 	}
-	::pluglog::log {} "Console file \"$consoleFile\" sourced ok"
+	if {[info exists $cmd] && [catch {uplevel \#0 $cmd} msg]} {
+	    NotifyError SetupConsole\
+		"SetupConsole \"$cmd\": $msg\n$::errorInfo"
+	    return
+	}
+	::pluglog::log SetupConsole "Console file \"$consoleFile\" sourced ok"
     } else {
-	::pluglog::log {} "No console created"
+	::pluglog::log SetupConsole "No console created"
     }
 }
 

@@ -1,3 +1,11 @@
+2004-02-12  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/browser.tcl: minor log comment cleanup
+
+	* library/common.tcl:            replace older console with
+	* library/console.tcl (removed): tkcon.tcl as the builtin
+	* library/tkcon.tcl (new):       InProc console
+
 2004-02-11  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* library/plugmain.tcl: improve unix fallback for temp dir.

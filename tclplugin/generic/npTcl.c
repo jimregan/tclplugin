@@ -36,8 +36,8 @@ static int		Plugin_Init _ANSI_ARGS_((Tcl_Interp *interp,
  *
  * Plug_Init --
  *
- *	Sets the plugin version strings and library and sets Tcl/Tk
- *      library path accordingly. Also adds utility commands to the interp.
+ *	Sets the plugin version strings and library. Also adds utility
+ *	commands to the interp.
  *
  * Results:
  *	A standard Tcl result.
@@ -66,7 +66,7 @@ Plugin_Init(Tcl_Interp *interp, int externalFlag)
     }
 
     /*
-     * Perform platform specific initialization/
+     * Perform platform specific initialization.
      */
 
     if (NpPlatformInit(interp, externalFlag) != TCL_OK) {

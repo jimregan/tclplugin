@@ -49,6 +49,28 @@ NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle)
     HMODULE hinst;
 #define TCL_REG_DIR_KEY "Software\\ActiveState\\ActiveTcl"
 
+    /*
+     * Try based on full path.
+     */
+    sprintf(libname, "%s/%s", LIB_RUNTIME_DIR, TCL_LIB_FILE);
+    NpLog("Attempt to load Tcl dll '%s'\n", (int) libname, 0, 0);
+    hinst = LoadLibrary(libname);
+    if (hinst) {
+	*tclHandle = hinst;
+
+	sprintf(libname, "%s/tk%s", LIB_RUNTIME_DIR,
+		TCL_LIB_FILE+3 /* skip 'tcl' */);
+	NpLog("Attempt to load Tk dll '%s'\n", (int) libname, 0, 0);
+	hinst = LoadLibrary(libname);
+	if (hinst) {
+	    *tkHandle = hinst;
+	    return TCL_OK;
+	} else {
+	    FreeLibrary(*tclHandle);
+	    *tclHandle = NULL;
+	}
+    }
+
     result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, TCL_REG_DIR_KEY, 0,
 	    KEY_READ, &regKey);
     if (result != ERROR_SUCCESS) {

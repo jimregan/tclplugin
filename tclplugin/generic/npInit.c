@@ -59,8 +59,6 @@ static NPError fillPluginFunctionTable(NPPluginFuncs* aNPPFuncs)
 
 static NPError fillNetscapeFunctionTable(NPNetscapeFuncs* aNPNFuncs)
 {
-    int v9plugin = 0;
-
     if (aNPNFuncs == NULL) {
 	return NPERR_INVALID_FUNCTABLE_ERROR;
     }
@@ -70,10 +68,7 @@ static NPError fillNetscapeFunctionTable(NPNetscapeFuncs* aNPNFuncs)
     }
 
     if (aNPNFuncs->size < sizeof(NPNetscapeFuncs)) {
-	if (aNPNFuncs->size < sizeof(NPNetscapeFuncsOld)) {
-	    return NPERR_INVALID_FUNCTABLE_ERROR;
-	}
-	v9plugin = 1;
+	return NPERR_INVALID_FUNCTABLE_ERROR;
     }
 
     NPNFuncs.size             = aNPNFuncs->size;
@@ -94,19 +89,11 @@ static NPError fillNetscapeFunctionTable(NPNetscapeFuncs* aNPNFuncs)
     NPNFuncs.reloadplugins    = aNPNFuncs->reloadplugins;
     NPNFuncs.getJavaEnv       = aNPNFuncs->getJavaEnv;
     NPNFuncs.getJavaPeer      = aNPNFuncs->getJavaPeer;
-    if (v9plugin) {
-	NPNFuncs.getvalue         = NULL;
-	NPNFuncs.setvalue         = NULL;
-	NPNFuncs.invalidaterect   = NULL;
-	NPNFuncs.invalidateregion = NULL;
-	NPNFuncs.forceredraw      = NULL;
-    } else {
-	NPNFuncs.getvalue         = aNPNFuncs->getvalue;
-	NPNFuncs.setvalue         = aNPNFuncs->setvalue;
-	NPNFuncs.invalidaterect   = aNPNFuncs->invalidaterect;
-	NPNFuncs.invalidateregion = aNPNFuncs->invalidateregion;
-	NPNFuncs.forceredraw      = aNPNFuncs->forceredraw;
-    }
+    NPNFuncs.getvalue         = aNPNFuncs->getvalue;
+    NPNFuncs.setvalue         = aNPNFuncs->setvalue;
+    NPNFuncs.invalidaterect   = aNPNFuncs->invalidaterect;
+    NPNFuncs.invalidateregion = aNPNFuncs->invalidateregion;
+    NPNFuncs.forceredraw      = aNPNFuncs->forceredraw;
 
     return NPERR_NO_ERROR;
 }
@@ -154,15 +141,19 @@ NP_Initialize(NPNetscapeFuncs* aNPNFuncs)
     return NPP_Initialize();
 }
 #elif defined(XP_UNIX)
-NPError NP_Initialize(NPNetscapeFuncs* aNPNFuncs, NPPluginFuncs* aNPPFuncs)
+NPError
+NP_Initialize(NPNetscapeFuncs* aNPNFuncs, NPPluginFuncs* aNPPFuncs)
 {
   NPError rv = fillNetscapeFunctionTable(aNPNFuncs);
-  if (rv != NPERR_NO_ERROR)
-    return rv;
+
+  if (rv != NPERR_NO_ERROR) {
+      return rv;
+  }
 
   rv = fillPluginFunctionTable(aNPPFuncs);
-  if (rv != NPERR_NO_ERROR)
-    return rv;
+  if (rv != NPERR_NO_ERROR) {
+      return rv;
+  }
 
   return NPP_Initialize();
 }

@@ -3,13 +3,7 @@
 #	Installs the "stream" feature security checks when requested by
 #	a policy.
 #
-# CONTACT:      sunscript-plugin@sunscript.sun.com
-#
 # AUTHORS:      Jacob Levy                      Laurent Demailly
-#               jyl@eng.sun.com                 demailly@eng.sun.com
-#               jyl@tcl-tk.com                  L@demailly.com
-#
-# Please contact us directly for questions, comments and enhancements.
 #
 # Copyright (c) 1995-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.

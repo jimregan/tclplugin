@@ -2,13 +2,7 @@
 #
 #	Installs the "Unsafe" features set when requested by policies.
 #
-# CONTACT:      sunscript-plugin@sunscript.sun.com
-#
 # AUTHORS:      Jacob Levy                      Laurent Demailly
-#               jyl@eng.sun.com                 demailly@eng.sun.com
-#               jyl@tcl-tk.com                  L@demailly.com
-#
-# Please contact us directly for questions, comments and enhancements.
 #
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.

@@ -3,13 +3,7 @@
 #	Tool kit utilities for tclets.
 #       This is intended to be sourced in each Safe Tk interp of the Plugin
 #
-# CONTACT:	sunscript-plugin@sunscript.sun.com
-#
-# AUTHORS:      Jacob Levy              Laurent Demailly
-#               jyl@eng.sun.com         demailly@eng.sun.com
-#               jyl@tcl-tk.com          L@demailly.com
-#
-# Please contact us directly for questions, comments and enhancements.
+# ORIGINAL AUTHORS:      Jacob Levy              Laurent Demailly
 #
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
@@ -35,8 +29,8 @@ proc bgerrorConsole {top {borderColor blue}} {
 	bind $top <1> [list raise $top]
 	bind $top <Double-1> [list lower $top]
 	frame $w
-	text $w.msg -yscrollcommand "$w.scroll set" -bg white
-	scrollbar $w.scroll -command "$w.msg yview" -width 10
+	text $w.msg -yscrollcommand [list $w.scroll set] -bg white
+	scrollbar $w.scroll -command [list $w.msg yview] -width 10
 	pack $w.scroll -side right -fill y
 	pack $w.msg -side left -fill both -expand yes
 	$w.msg tag configure error -foreground red -background white
@@ -51,11 +45,11 @@ proc bgerrorConsole {top {borderColor blue}} {
 	if {![info exists $wb.e]} {
 	    set $wb.e {}
 	}
-	bind $wb.e <Return> [list bgerrorEval $wb.e $w.msg];
-	bind $wb.e <Up> [list bgerrorUp $wb.e];
-	bind $wb.e <Down> [list bgerrorUp $wb.e];
-	bind $wb.e <Control-p> [list bgerrorUp $wb.e];
-	bind $wb.e <Control-n> [list bgerrorUp $wb.e];
+	bind $wb.e <Return> [list bgerrorEval $wb.e $w.msg]
+	bind $wb.e <Up> [list bgerrorUp $wb.e]
+	bind $wb.e <Down> [list bgerrorUp $wb.e]
+	bind $wb.e <Control-p> [list bgerrorUp $wb.e]
+	bind $wb.e <Control-n> [list bgerrorUp $wb.e]
 	button $wb.b -text "Dismiss" \
 		-bd 2 -padx 10 -pady 0 -highlightthickness 0 \
 		-command [list place forget $top]
@@ -140,5 +134,8 @@ proc bgerror {errmsg} {
 
 # Set up a hot key
 
-bind all "<Control-Shift-C>" "bgerrorConsole .bgerror;break"
+bind all <Control-Shift-C> {
+    bgerrorConsole .bgerror
+    break
+}
 

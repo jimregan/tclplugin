@@ -2,16 +2,10 @@
 #
 #      Routines for URL parsing, joining and canonalizing.
 #
-# CONTACT:      sunscript-plugin@sunscript.sun.com
-#
-# AUTHORS:      Jacob Levy              Laurent Demailly
-#               jyl@eng.sun.com         demailly@eng.sun.com
-#               jyl@tcl-tk.com          L@demailly.com
+# ORIGINAL AUTHORS:      Jacob Levy              Laurent Demailly
 #
 #       Initially based on earlier work by Brent Welch bwelch@eng.sun.com
 #       Current implementation based on earlier work by Laurent Demailly.
-#
-# Please contact us directly for questions, comments and enhancements.
 #
 # Copyright (c) 1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.

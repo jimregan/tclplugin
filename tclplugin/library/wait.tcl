@@ -5,13 +5,7 @@
 #	Based on Laurent Demailly's Ph.D. thesis work on multi-agent
 #	systems.
 #
-# CONTACT:      sunscript-plugin@sunscript.sun.com
-#
-# AUTHORS:      Jacob Levy              Laurent Demailly
-#               jyl@eng.sun.com         demailly@eng.sun.com
-#               jyl@tcl-tk.com          L@demailly.com
-#
-# Please contact us directly for questions, comments and enhancements.
+# ORIGINAL AUTHORS:      Jacob Levy              Laurent Demailly
 #
 # Copyright (c) 1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
@@ -38,26 +32,26 @@ namespace eval ::wait {
 
     namespace export token register hold release wait
 
-    namespace import ::log::log;
+    namespace import ::log::log
 
     # number of stacked waits
-    variable InWait 0;
+    variable InWait 0
 
     # number of stacked release
-    variable Rcount 0;
+    variable Rcount 0
 
     # default class wide timeout
-    variable timeout 5000;
+    variable timeout 5000
 
-    variable WaitCount 0;
+    variable WaitCount 0
 
     variable WaitStack {}
 
     # Public Api for a logging and counting vwait, by defaults also registers it
 
     proc token {{register 1}} {
-	variable WaitCount;
-	incr WaitCount;
+	variable WaitCount
+	incr WaitCount
 	set token $WaitCount
 	if {$register} {
 	    register $token
@@ -93,17 +87,17 @@ namespace eval ::wait {
     proc Vname {token} {
 	# Allow token to contain any char and still be usuable as
 	# local variable in this namespace
-	regsub -all {::} $token {__} token;
+	regsub -all {::} $token {__} token
 	return [namespace current]::WT$token
     }
 
     proc EnQueue {vname} {
 	variable WaitStack
-	lappend WaitStack $vname;
+	lappend WaitStack $vname
     }
     proc DeQueue {} {
 	variable WaitStack
-	set l [llength $WaitStack];
+	set l [llength $WaitStack]
 	if {$l == 0} {
 	    error "dequeue on empty wait queue"
 	}
@@ -120,9 +114,9 @@ namespace eval ::wait {
 
     proc wait {logname msg {script {}}} {
 	#
-	variable InWait; 
-	variable Rcount;
-	variable WaitStack;
+	variable InWait
+	variable Rcount
+	variable WaitStack
 
 	set scriptGiven [string compare $script {}]
 
@@ -130,20 +124,20 @@ namespace eval ::wait {
 
 	if {$l == 0} {
 	    if {$scriptGiven} {
-		log $logname "WALL stack empty for $msg, executing script now";
+		log $logname "WALL stack empty for $msg, executing script now"
 		if {[catch {uplevel #0 $script} err]} {
 		    log $logname "$msg: $err" ERROR
 		}
 		return 
 	    } else {
-		log $logname "WALL stack empty for $msg";
+		log $logname "WALL stack empty for $msg"
 		return 0
 	    }
 	}
 
 	set i 0
 
-	log $logname "WALL for $msg : $l / $InWait / $Rcount";
+	log $logname "WALL for $msg : $l / $InWait / $Rcount"
 
 	# Find the deepest un released var
 	while {$i<$l} {
@@ -151,21 +145,21 @@ namespace eval ::wait {
 	    set vstat [lindex [set $vname] 0]
 	    if {[string compare $vstat "waiting"]==0} {
 		# Found !
-		log $logname "WALL $i -> $vname for $msg : $InWait";
+		log $logname "WALL $i -> $vname for $msg : $InWait"
 		vwait $vname
-		log $logname "WALL $i <- $vname for $msg : $InWait";
-		break;
+		log $logname "WALL $i <- $vname for $msg : $InWait"
+		break
 	    }
 	    incr i
 	}
 
 
 	if {$scriptGiven} {
-	    log $logname "WALL DONE for $msg: $InWait / $Rcount - re-queing";
+	    log $logname "WALL DONE for $msg: $InWait / $Rcount - re-queing"
 	    # Next time we get called we (should) have unwind all the above
 	    after idle [list [namespace current]::wait $logname "${msg}+" $script]
 	} else {
-	    log $logname "WALL DONE for $msg: $InWait / $Rcount";
+	    log $logname "WALL DONE for $msg: $InWait / $Rcount"
 	    return $InWait
 	}
     }
@@ -228,26 +222,26 @@ namespace eval ::wait {
 	    incr Rcount -1
 	}
 
-	set resList [set $vname];
+	set resList [set $vname]
 	log $logname "Exiting   $common - res($resList),\
-		$InWait wait to go - $Rcount releases pending";
+		$InWait wait to go - $Rcount releases pending"
 	unset $vname
 
-	set retCode [lindex $resList 0];
-	set res     [lindex $resList 1];
-	set errCode [lindex $resList 2];
+	set retCode [lindex $resList 0]
+	set res     [lindex $resList 1]
+	set errCode [lindex $resList 2]
 
 	return -code $retCode -errorcode $errCode $res
     }
 
     proc release {token logname msg code result {errCode NONE}} {
-	variable Rcount;
+	variable Rcount
 
-	set vname [Vname $token];
+	set vname [Vname $token]
 	if {![info exists $vname]} {
 	    set msg "invalid (expired? not registered?)\
-		    release token \"$token\" ($msg) ($vname)";
-	    log $logname $msg ERROR;
+		    release token \"$token\" ($msg) ($vname)"
+	    log $logname $msg ERROR
 	    return -code error $msg
 	}
 	set vstat [lindex [set $vname] 0]
@@ -257,7 +251,7 @@ namespace eval ::wait {
 	set commonMsg "Releasing hold $token ($msg) ($common)"
 	switch -exact -- $vstat {
 	    "waiting" {
-		incr Rcount;
+		incr Rcount
 		if {[IsLast $vname]} {
 		    log $logname $commonMsg
 		} else {
@@ -273,8 +267,8 @@ namespace eval ::wait {
 	    default {
 		# all other cases are result already here and thus errors:
 		set msg "multiple release attempt for token \"$token\"\
-			($msg) ($vname,{$vstat $id} ignoring {$common})";
-		log $logname $msg ERROR;
+			($msg) ($vname,{$vstat $id} ignoring {$common})"
+		log $logname $msg ERROR
 		return -code error $msg
 	    }
 	}

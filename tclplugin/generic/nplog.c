@@ -3,13 +3,7 @@
  *
  *	File based logging for the Tcl plugin.
  *
- * CONTACT:		sunscript-plugin@sunscript.sun.com
- *
- * AUTHORS:		Jacob Levy			Laurent Demailly
- *			jyl@eng.sun.com			demailly@eng.sun.com
- *			jyl@tcl-tk.com			L@demailly.com
- *
- * Please contact us directly for questions, comments and enhancements.
+ * ORIGINAL AUTHORS:	Jacob Levy			Laurent Demailly
  *
  * Copyright (c) 1995-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
@@ -24,6 +18,11 @@
 #include "np.h"
 
 #ifdef	NP_LOG
+
+#ifndef MAC_TCL
+#include <time.h>
+#endif
+
 /*
  * Static variables in this file:
  */
@@ -59,8 +58,12 @@ NpLog(format, a1, a2, a3)
      */
     
     if (logFile != NULL) {
+#ifdef MAC_TCL
 	unsigned long TclpGetClicks _ANSI_ARGS_((void));
 	fprintf(logFile, "[%lu] ",  TclpGetClicks());
+#else
+	fprintf(logFile, "[%lu] ", (unsigned long) time((time_t *) NULL));
+#endif
         fprintf(logFile, format, a1, a2, a3);
         fflush(logFile);
     }

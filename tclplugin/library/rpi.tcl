@@ -30,13 +30,7 @@
 #      interps.
 #    + Write queue management
 #
-# CONTACT:      sunscript-plugin@sunscript.sun.com
-#
-# AUTHORS:      Jacob Levy              Laurent Demailly
-#               jyl@eng.sun.com         demailly@eng.sun.com
-#               jyl@tcl-tk.com          L@demailly.com
-#
-# Please contact us directly for questions, comments and enhancements.
+# ORIGINAL AUTHORS:      Jacob Levy              Laurent Demailly
 #
 # SCCS: @(#) rpi.tcl 1.18 98/02/26 15:02:33
 # RCS:  @(#) $Id$

@@ -161,6 +161,10 @@ NPP_Initialize()
 	    nptcl_stack, nptcl_instances, NpTclStreams(0));
 
     interp = NpCreateMainInterp();
+    if (interp == NULL) {
+	NpLog("NPP_Initialize: interp == NULL\n", 0, 0, 0);
+	return NPERR_GENERIC_ERROR;
+    }
 
     /*
      * We need to service all events for initilization and
@@ -176,7 +180,10 @@ NPP_Initialize()
      * We rely on NpInit to inform the user if initialization failed.
      */
 
-    NpInit(interp);
+    if (NpInit(interp) != TCL_OK) {
+	NpLog("NPP_Initialize: NpInterp != TCL_OK\n", 0, 0, 0);
+	return NPERR_GENERIC_ERROR;
+    }
 
     NpLog("NPP_Initialize FINISHED OK\n", 0, 0, 0);
     return NPERR_NO_ERROR;

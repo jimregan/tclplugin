@@ -1,5 +1,15 @@
 2003-01-16  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* generic/np.h:
+	* win/npWinPlat.c (NpWinLoadDll): add this hack that checks the
+	registry for a Tcl dll on Windows in case the user doesn't have
+	Tcl on their path (common for Win9*).
+
+	* generic/npTcl.c (NPP_Initialize):
+	* generic/npInterp.c (NpCreateMainInterp): use NpPlatformMsg
+	instead of NpPanic to more gracefully handle initialization
+	failure (don't kill user's browser).
+
 	* generic/np.h:     remove C++-style comments
 	* generic/npInit.c:
 	* generic/npTcl.c:

@@ -114,22 +114,31 @@ NpCreateMainInterp()
     if (tclHandle == NULL) {
 	char *pos, libname[256] = TCL_LIB_FILE;
 	if (strlen(TCL_LIB_FILE) < 3) {
-	    NpPanic("Invalid base Tcl library filename provided!");
+	    NpPlatformMsg("Invalid base Tcl library filename provided!",
+		    "NpCreateMainInterp");
+	    return NULL;
 	}
-	NpLog("Searching for tcl lib based on %s\n", (int) TCL_LIB_FILE, 0, 0);
-	pos = strstr(libname, "tcl")+4;
-	if (*pos == '.') {
-	    pos++;
-	}
-	*pos = '9'; /* count down from '8' to '4'*/
-	while (!tclHandle && (--*pos > '3')) {
-	    tclHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
-	    if (!tclHandle) {
-		NpLog("Could not find Tcl dll '%s'\n", (int) libname, 0, 0);
+#ifdef WIN32
+	tclHandle = NpWinLoadDll(libname);
+#endif
+	if (!tclHandle) {
+	    NpLog("Searching for tcl lib based on %s\n",
+		    (int) TCL_LIB_FILE, 0, 0);
+	    pos = strstr(libname, "tcl")+4;
+	    if (*pos == '.') {
+		pos++;
+	    }
+	    *pos = '9'; /* count down from '8' to '4'*/
+	    while (!tclHandle && (--*pos > '3')) {
+		tclHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
+		if (!tclHandle) {
+		    NpLog("Could not find Tcl dll '%s'\n", (int) libname, 0, 0);
+		}
 	    }
 	}
 	if (!tclHandle) {
-	    NpPanic("Failed to load Tcl dll!");
+	    NpPlatformMsg("Failed to load Tcl dll!", "NpCreateMainInterp");
+	    return NULL;
 	}
 	NpLog("Loaded tcl lib %s\n", (int) libname, 0, 0);
 
@@ -142,9 +151,15 @@ NpCreateMainInterp()
 	while (pos > libname) {
 	    *pos-- = pos[-1];
 	}
+#ifdef WIN32
+	tkHandle = NpWinLoadDll(libname+1);
+#else
 	tkHandle = dlopen(libname+1, RTLD_NOW | RTLD_GLOBAL);
+#endif
 	if (!tkHandle) {
-	    NpPanic("Failed to load Tk dll!");
+	    tclHandle = NULL;
+	    NpPlatformMsg("Failed to load Tk dll!", "NpCreateMainInterp");
+	    return NULL;
 	}
 	NpLog("Loaded tk lib %s\n", (int) libname+1, 0, 0);
 
@@ -179,7 +194,9 @@ NpCreateMainInterp()
 
     npInterp = createInterp();
     if (npInterp == (Tcl_Interp *) NULL) {
-        NpPanic("Failed to create main interpreter!");
+	NpPlatformMsg("Failed to create main interpreter!",
+		"NpCreateMainInterp");
+	return NULL;
     }
 
     /*
@@ -189,14 +206,18 @@ NpCreateMainInterp()
      */
     NpLog("Tcl_InitStubs(%p)\n", (int) npInterp, 0, 0);
     if (initstubs(npInterp, "8.4", 0) == NULL) {
-        NpPanic("Failed to initialize Tcl stubs!");
+	NpPlatformMsg("Failed to create initialize Tcl stubs!",
+		"NpCreateMainInterp");
+	return NULL;
     }
 
     NpLog("Tcl_Init(%p)\n", (int) npInterp, 0, 0);
     if (Tcl_Init(npInterp) != TCL_OK) {
 	CONST84 char *msg = Tcl_GetVar(npInterp, "errorInfo", TCL_GLOBAL_ONLY);
 	NpLog(">>> NpCreateMainInterp Tcl_Init error: %s\n", (int) msg, 0, 0);
-        NpPanic("Failed to initialize Tcl!");
+	NpPlatformMsg("Failed to create initialize Tcl!",
+		"NpCreateMainInterp");
+	return NULL;
     }
 
     NpLog("Tk_Init(%p)\n", (int) npInterp, 0, 0);

@@ -7,6 +7,14 @@
 	* win/npdll32.rc:
 		Simplified version identifiers and the Win32 resource script.
 
+	* generic/npversion.h:
+		I decided to reserve version "2.2a1" for my changes
+
+	* generic/npversion.h:
+	* win/npdll32.rc:
+		centralized some more version info.  minor trims.
+
+
 2000-05-13  David Gravereaux <davygrvy@pobox.com>
 	* config/home.cfg:
 	* config/inside.cfg:

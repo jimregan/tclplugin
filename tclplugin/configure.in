@@ -4,56 +4,21 @@
 #
 #	configure script for nptcl
 
-AC_INIT(generic/np.h)
+# Reflect version changes in:
+#	generic/np.h   (any version)
+#	win/npdll32.rc (major.minor only)
+AC_INIT([nptcl], [3.0])
 
 AC_CONFIG_AUX_DIR(tclconfig)
-CONFIGDIR=${srcdir}/tclconfig
-AC_SUBST(CONFIGDIR)
-
-PACKAGE=nptcl
-
-##### Section that needs to be updated for each new release ######
-
-
-# Reflect version changes in:
-#	generic/np.h
-#	win/res/npdll32.rc2
-#	win/plugin.wse
-#	mac/npMacResource.r
-
-NPTCL_MAJOR_VERSION=3
-NPTCL_MINOR_VERSION=0
-# release level (quality): 0 for alpha, 1 for beta, and 2 for final/patch.
-NPTCL_RELEASE_LEVEL=0
-NPTCL_RELEASE_SERIAL=3
-NPTCL_VERSION=$NPTCL_MAJOR_VERSION.$NPTCL_MINOR_VERSION
-NPTCL_PATCH_LEVEL=${NPTCL_VERSION}a$NPTCL_RELEASE_SERIAL
-
-##### End of Section that needs to be updated for each new release ######
-
-# 3 digits version (package version):
-
-NPTCL_INTERNAL_VERSION=$NPTCL_VERSION.`expr $NPTCL_RELEASE_LEVEL \* 100 + $NPTCL_RELEASE_SERIAL`
-
-VERSION=${NPTCL_VERSION}
-AC_SUBST(NPTCL_VERSION)
-AC_SUBST(NPTCL_MAJOR_VERSION)
-AC_SUBST(NPTCL_MINOR_VERSION)
-AC_SUBST(NPTCL_PATCH_LEVEL)
-AC_SUBST(NPTCL_RELEASE_LEVEL)
-AC_SUBST(NPTCL_RELEASE_SERIAL)
-AC_SUBST(NPTCL_INTERNAL_VERSION)
-
-AC_SUBST(PACKAGE)
-AC_SUBST(VERSION)
-AC_SUBST(nptcl_LIB_FILE)
 
 #--------------------------------------------------------------------
 # Call TEA_INIT as the first TEA_ macro to set up initial vars.
 # This will define a ${TEA_PLATFORM} variable == "unix" or "windows".
 #--------------------------------------------------------------------
 
-TEA_INIT
+TEA_INIT([3.1])
+
+AC_CONFIG_AUX_DIR(tclconfig)
 
 TEA_PATH_TCLCONFIG
 TEA_LOAD_TCLCONFIG
@@ -66,30 +31,17 @@ TCLPLUGIN_LOG
 
 TEA_SETUP_COMPILER
 
-TEA_PUBLIC_TCL_HEADERS
+TEA_ADD_SOURCES([])
+TEA_ADD_HEADERS([])
+TEA_ADD_INCLUDES([-I. -I\"$(${CYGPATH} ${srcdir}/generic)\"])
+TEA_ADD_LIBS([])
+TEA_ADD_CFLAGS([])
+TEA_ADD_STUB_SOURCES([])
+TEA_ADD_TCL_SOURCES([])
 
 AC_CHECK_SIZEOF(short)
 AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(long)
-
-# Checks for header files.
-AC_CHECK_HEADERS(unistd.h)
-
-# We need ln -s
-AC_PROG_LN_S
-
-if test "${TEA_PLATFORM}" = "windows" ; then
-    AC_DEFINE_UNQUOTED(BUILD_nptcl)
-    CLEANFILES="pkgIndex.tcl *.lib *.dll *.exp *.ilk *.pdb *.pch"
-    EXTRA_OBJECTS='$(WIN_OBJECTS)'
-    #EXTRA_OBJECTS='npdll32.res'
-else
-    CLEANFILES="pkgIndex.tcl"
-    EXTRA_OBJECTS='$(UNIX_OBJECTS)'
-fi
-
-AC_SUBST(EXTRA_OBJECTS)
-AC_SUBST(CLEANFILES)
 
 TEA_ENABLE_THREADS
 
@@ -98,6 +50,8 @@ TEA_ENABLE_SHARED
 TEA_CONFIG_CFLAGS
 
 TEA_ENABLE_SYMBOLS
+
+TEA_PUBLIC_TCL_HEADERS
 
 AC_DEFUN([NP_CHECK_DLADDR], [
     # Check for the dladdr function
@@ -120,40 +74,41 @@ if test "${TEA_PLATFORM}" != "windows" ; then
     NP_CHECK_DLADDR
 fi
 
-if test "${SHARED_BUILD}" = "1" ; then
-    CFLAGS='${CFLAGS_DEFAULT} ${CFLAGS_WARNING} ${SHLIB_CFLAGS}'
-else
-    CFLAGS='${CFLAGS_DEFAULT} ${CFLAGS_WARNING}'
-fi
-
 AC_DEFINE(USE_TCL_STUBS)
 
 TEA_MAKE_LIB
 
 if test "${TEA_PLATFORM}" = "windows" ; then
-    AC_DEFINE(XP_WINDOWS)
-    AC_DEFINE(XP_WIN32)
+    AC_DEFINE_UNQUOTED(BUILD_nptcl)
+    CLEANFILES="pkgIndex.tcl *.lib *.dll *.exp *.ilk *.pdb *.pch"
+    TEA_ADD_SOURCES([\$(WIN_OBJECTS)])
+    TEA_ADD_LIBS([advapi32.lib gdi32.lib user32.lib])
     AC_DEFINE(XP_WIN)
-    AC_DEFINE(XP_PC)
     AC_DEFINE(_WINDOWS)
     AC_DEFINE(_WIN32)
-    AC_DEFINE(WIN32)
-    AC_DEFINE(_X86_)
     AC_DEFINE(WIN32_LEAN_AND_MEAN)
-    LIBS="${LIBS} advapi32.lib gdi32.lib user32.lib"
-    PLAT_DIR=
-    SHLIB_LDFLAGS="${SHLIB_LDFLAGS} -def:\"`${CYGPATH} ${srcdir}/win`/npdll32.def\""
+    # We could do this with a .def file, but this is a bit easier
+    # These functions need exporting, but they are part of the NPAPI that
+    # has some strict declarations that you don't want to play with.
+    SHLIB_LD_FLAGS="${SHLIB_LD_FLAGS} -export:NP_GetEntryPoints,@1"
+    SHLIB_LD_FLAGS="${SHLIB_LD_FLAGS} -export:NP_Initialize,@2"
+    SHLIB_LD_FLAGS="${SHLIB_LD_FLAGS} -export:NP_Shutdown,@3"
     LIB_RUNTIME_DIR=${TCL_EXEC_PREFIX}/bin
     TCL_LIB_FILE=${TCL_DLL_FILE}
 else
     AC_DEFINE(XP_UNIX)
-    LIB_RUNTIME_DIR=${TCL_EXEC_PREFIX}/lib
+    CLEANFILES="pkgIndex.tcl"
+    TEA_ADD_SOURCES([\$(UNIX_OBJECTS)])
     TCL_LIB_FILE=${TCL_LIB_FILE}
+    # This should enable us to have the TCL_LIB_FILE located at runtime
+    # with the -R path ... might not be necessary.
+    LIB_RUNTIME_DIR=${TCL_EXEC_PREFIX}/lib
     eval TCL_LD_SEARCH_FLAGS=${TCL_LD_SEARCH_FLAGS}
-    SHLIB_LDFLAGS="${SHLIB_LDFLAGS} ${TCL_LD_SEARCH_FLAGS}"
+    SHLIB_LD_FLAGS="${SHLIB_LDFLAGS} ${TCL_LD_SEARCH_FLAGS}"
 fi
 AC_SUBST(LIB_RUNTIME_DIR)
 AC_SUBST(TCL_LIB_FILE)
+AC_SUBST(CLEANFILES)
 
 TEA_PROG_TCLSH
 TEA_PROG_WISH

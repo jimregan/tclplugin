@@ -22,7 +22,8 @@
  * RCS:  @(#) $Id$
  */
 
-#include	"np.h"
+#include "np.h"
+#include "npversion.h"
 #include "tclMiscUtils.h"
 /*
  * Stack counter

@@ -38,7 +38,7 @@ BUILD INSTRUCTIONS:
 
      If you want a personal install, use:
 	    --with-mozilla=$HOME/.netscape (for Netscape4)
-	or  --with-mozilla=$HOME/.mozille (for Netscape7 or Mozilla)
+	or  --with-mozilla=$HOME/.mozilla (for Netscape7 or Mozilla)
 
   3. make
   4. make install

@@ -1,7 +1,28 @@
-/* -*- Mode: C; tab-width: 4; -*- */
+/* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: NPL 1.1
+ *
+ * The contents of this file are subject to the Netscape Public License
+ * Version 1.1 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/NPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is mozilla.org code.
+ *
+ * The Initial Developer of the Original Code is 
+ * Netscape Communications Corporation.
+ * Portions created by the Initial Developer are Copyright (C) 1998
+ * the Initial Developer. All Rights Reserved.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
 /*******************************************************************************
  * Java Runtime Interface
- * Copyright (c) 1996 Netscape Communications Corporation. All rights reserved.
  ******************************************************************************/
 
 #ifndef JRI_H
@@ -351,6 +372,13 @@ typedef const JRIEnvInterface*	JRIEnv;
 #define JRI_UnregisterNatives(env, clazz)	\
 	(((*(env))->UnregisterNatives)(env, JRI_UnregisterNatives_op, clazz))
 
+#define JRI_NewStringPlatform(env, string, len, encoding, encodingLength)	\
+	(((*(env))->NewStringPlatform)(env, JRI_NewStringPlatform_op, string, len, encoding, encodingLength))
+
+#define JRI_GetStringPlatformChars(env, string, encoding, encodingLength)	\
+	(((*(env))->GetStringPlatformChars)(env, JRI_GetStringPlatformChars_op, string, encoding, encodingLength))
+
+
 /*******************************************************************************
  * JRIEnv Interface
  ******************************************************************************/
@@ -493,11 +521,15 @@ struct JRIEnvInterface {
 	void	(*RegisterNatives)(JRIEnv* env, jint op, struct java_lang_Class* a, char** b, void** c);
 	void	(*UnregisterNatives)(JRIEnv* env, jint op, struct java_lang_Class* a);
 	struct java_lang_Class*	(*DefineClass)(JRIEnv* env, jint op, struct java_lang_ClassLoader* a, jbyte* b, jsize bLen);
+	struct java_lang_String*	(*NewStringPlatform)(JRIEnv* env, jint op, const jbyte* a, jint b, const jbyte* c, jint d);
+	const jbyte*	(*GetStringPlatformChars)(JRIEnv* env, jint op, struct java_lang_String* a, const jbyte* b, jint c);
 };
 
-/*******************************************************************************
- * JRIEnv Operation IDs
- ******************************************************************************/
+/*
+** ****************************************************************************
+** JRIEnv Operation IDs
+** ***************************************************************************
+*/
 
 typedef enum JRIEnvOperations {
 	JRI_Reserved0_op,
@@ -630,7 +662,9 @@ typedef enum JRIEnvOperations {
 	JRI_SetObjectArrayElement_op,
 	JRI_RegisterNatives_op,
 	JRI_UnregisterNatives_op,
-	JRI_DefineClass_op
+	JRI_DefineClass_op,
+	JRI_NewStringPlatform_op,
+	JRI_GetStringPlatformChars_op
 } JRIEnvOperations;
 
 #ifdef __cplusplus

@@ -82,16 +82,6 @@ WinMain(hInstance, hPrevInstance, lpszCmdLine, nCmdShow)
 
     setlocale(LC_ALL, "C");
 
-
-    /*
-     * Increase the application queue size from default value of 8.
-     * At the default value, cross application SendMessage of WM_KILLFOCUS
-     * will fail because the handler will not be able to do a PostMessage!
-     * This is only needed for Windows 3.x, since NT dynamically expands
-     * the queue.
-     */
-    SetMessageQueue(64);
-
     /*
      * Create the console channels and install them as the standard
      * channels.  All I/O will be discarded until TkConsoleInit is

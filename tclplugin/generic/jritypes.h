@@ -1,13 +1,35 @@
-/* -*- Mode: C; tab-width: 4; -*- */
+/* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: NPL 1.1
+ *
+ * The contents of this file are subject to the Netscape Public License
+ * Version 1.1 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/NPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is mozilla.org code.
+ *
+ * The Initial Developer of the Original Code is 
+ * Netscape Communications Corporation.
+ * Portions created by the Initial Developer are Copyright (C) 1998
+ * the Initial Developer. All Rights Reserved.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
 /*******************************************************************************
  * Java Runtime Interface
- * Copyright (c) 1996 Netscape Communications Corporation. All rights reserved.
  ******************************************************************************/
 
 #ifndef JRITYPES_H
 #define JRITYPES_H
 
 #include "jri_md.h"
+#include "jni.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -25,13 +47,11 @@ struct JRIEnvInterface;
 typedef void*		JRIRef;
 typedef void*		JRIGlobalRef;
 
-typedef jint		JRIInterfaceID[4];
 typedef jint		JRIFieldID;
 typedef jint		JRIMethodID;
 
 /* synonyms: */
 typedef JRIGlobalRef	jglobal;
-typedef JRIRef			jref;
 
 typedef union JRIValue {
 	jbool			z;
@@ -45,8 +65,6 @@ typedef union JRIValue {
 	jref			r;
 } JRIValue;
 
-typedef JRIValue		jvalue;
-
 typedef enum JRIBoolean {
     JRIFalse		= 0,
     JRITrue			= 1
@@ -56,18 +74,20 @@ typedef enum JRIConstant {
 	JRIUninitialized	= -1
 } JRIConstant;
 
-/* convenience types: */
-typedef JRIRef		jbooleanArray;
-typedef JRIRef		jbyteArray;
-typedef JRIRef		jcharArray;
-typedef JRIRef		jshortArray;
-typedef JRIRef		jintArray;
-typedef JRIRef		jlongArray;
-typedef JRIRef		jfloatArray;
-typedef JRIRef		jdoubleArray;
-typedef JRIRef		jobjectArray;
-typedef JRIRef		jstringArray;
-typedef JRIRef		jarrayArray;
+/* convenience types (these must be distinct struct types for c++ overloading): */
+#if 0	/* now in jni.h */
+typedef struct jbooleanArrayStruct*		jbooleanArray;
+typedef struct jbyteArrayStruct*		jbyteArray;
+typedef struct jcharArrayStruct*		jcharArray;
+typedef struct jshortArrayStruct*		jshortArray;
+typedef struct jintArrayStruct*			jintArray;
+typedef struct jlongArrayStruct*		jlongArray;
+typedef struct jfloatArrayStruct*		jfloatArray;
+typedef struct jdoubleArrayStruct*		jdoubleArray;
+typedef struct jobjectArrayStruct*		jobjectArray;
+#endif
+typedef struct jstringArrayStruct*		jstringArray;
+typedef struct jarrayArrayStruct*		jarrayArray;
 
 #define JRIConstructorMethodName	"<init>"
 
@@ -171,6 +191,35 @@ JRI_GetCurrentEnv(void);
 	JRI_GetScalarArrayLength(env, array)
 #define JRI_GetDoubleArrayElements(env, array)		   \
 	((jdouble*)JRI_GetScalarArrayElements(env, array))
+
+/******************************************************************************/
+/*
+** JDK Stuff -- This stuff is still needed while we're using the JDK
+** dynamic linking strategy to call native methods.
+*/
+
+typedef union JRI_JDK_stack_item {
+    /* Non pointer items */
+    jint           i;
+    jfloat         f;
+    jint           o;
+    /* Pointer items */
+    void          *h;
+    void          *p;
+    unsigned char *addr;
+#ifdef IS_64
+    double         d;
+    long           l;		/* == 64bits! */
+#endif
+} JRI_JDK_stack_item;
+
+typedef union JRI_JDK_Java8Str {
+    jint x[2];
+    jdouble d;
+    jlong l;
+    void *p;
+    float f;
+} JRI_JDK_Java8;
 
 /******************************************************************************/
 #ifdef __cplusplus

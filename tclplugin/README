@@ -1,20 +1,19 @@
 	Welcome to the Tcl Plugin SOURCE release
         ========================================
 
-Contacts for questions, updates, etc... :
+    http://www.tcl.tk/software/plugin/ 
+    http://tcl.ActiveState.com/software/plugin/
 
-         Web  : http://tcl.ActiveState.com/software/plugin/
-
-         Email: tclplugin-core@lists.sourceforge.net
+    tclplugin-core at lists.sourceforge.net
 
  { If you are not familiar with the compilation of programs
    on your platform, see the URL above for a binary (executable)
    distribution for your platform }
 
- You need to use the provided version of Tcl and Tk to
- build the plugin from source. It is based on version 8.3.1,
- but it should build equally well with any higher Tcl/Tk
- version.
+Version 3 of the Tcl plugin was redeveloped by ActiveState.  It is based on
+Tcl 8.4, but it should build equally well with any higher Tcl/Tk version.
+
+THE FOLLOWING INSTRUCTIONS ARE OUT OF DATE ...
 
  Unix Build Instructions:
  ------------------------
@@ -119,9 +118,7 @@ Contacts for questions, updates, etc... :
  Any question or problem :
  -------------------------
 
+    http://www.tcl.tk/software/plugin/ 
     http://tcl.ActiveState.com/software/plugin/ 
 
     tclplugin-core@lists.sourceforge.net
-
- See also http://www.demailly.com/tcl/plugin/
-

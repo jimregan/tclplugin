@@ -17,7 +17,7 @@ item: Global
   Patch Flags=0000000000001001
   Patch Threshold=85
   Patch Memory=4000
-  EXE Filename=tclplug21b1-unoff.exe
+  EXE Filename=tclplug30a1.exe
 end
 item: Display Graphic
   Pathname=logo.bmp
@@ -26,17 +26,17 @@ item: Display Graphic
   Flags=0000000000000010
 end
 item: Check Configuration
-  Message=The Tcl Plug-in only supports Window 95, 98, NT 3.51, NT 4.0 and Windows 2000.
+  Message=The Tcl Plug-in only supports Window 98, NT 4, 2000 and XP.
   Title=Unable To Install
   Flags=01011010
 end
 item: Set Variable
   Variable=APPTITLE
-  Value=Tcl Plugin 2.1 for Windows
+  Value=Tcl Plugin 3.0a1 for Windows
 end
 item: Display Message
   Title=Welcome!
-  Text=This program will install the Tcl Plugin 2.1b1-unoff for Netscape Navigator and Microsoft Internet Explorer onto your computer. The plugin works with Netscape Navigator 2.0, 3.0, 4.x and with Microsoft Internet Explorer 3.0, 4.0 and 5.0. Press the OK button to start the installation. You can press the Cancel button if you do not want to install this software.
+  Text=This program will install the Tcl Plugin 3.0a1 for Netscape Navigator and Microsoft Internet Explorer onto your computer. The plugin works with Netscape Navigator 4.x and with Microsoft Internet Explorer 4.0, 5.0 and 5.5sp1. Press the OK button to start the installation. You can press the Cancel button if you do not want to install this software.
 end
 item: Set Variable
   Variable=GROUP
@@ -66,7 +66,7 @@ item: Set Variable
 end
 item: Set Variable
   Variable=VERDIR
-  Value=%MAINDIR%\2.1
+  Value=%MAINDIR%\3.0
 end
 item: Set Variable
   Variable=BINDIR
@@ -118,7 +118,7 @@ item: Custom Dialog Set
     item: Static
       Rectangle=5 5 110 46
       Create Flags=01010000000000000000000000000000
-      Text=I found an old installation of the 2.1 plugin. Should I save this installation? You might want me to if you modified configuration parameters in it.
+      Text=I found an old installation of the 3.0 plugin. Should I save this installation? You might want me to if you modified configuration parameters in it.
     end
     item: Push Button
       Rectangle=6 55 41 70
@@ -172,89 +172,89 @@ item: Install File
   Flags=0000000000000010
 end
 remarked item: Install File
-  Source=.\wish82.exe
-  Destination=%BINDIR%\wish82.exe
+  Source=.\wish83.exe
+  Destination=%BINDIR%\wish83.exe
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tk8.2.1\win\Release\tk82.dll
-  Destination=%BINDIR%\tk82.dll
+  Source=..\..\tk8.3\win\Release\tk83.dll
+  Destination=%BINDIR%\tk83.dll
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\win\Release\tclpip82.dll
-  Destination=%BINDIR%\tclpip82.dll
+  Source=..\..\tcl8.3\win\Release\tclpip83.dll
+  Destination=%BINDIR%\tclpip83.dll
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\win\Release\tclreg82.dll
-  Destination=%TCLDIR%\reg1.1\tclreg82.dll
+  Source=..\..\tcl8.3\win\Release\tclreg83.dll
+  Destination=%TCLDIR%\reg1.1\tclreg83.dll
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\win\Release\tcldde82.dll
-  Destination=%TCLDIR%\reg1.1\tcldde82.dll
+  Source=..\..\tcl8.3\win\Release\tcldde83.dll
+  Destination=%TCLDIR%\reg1.1\tcldde83.dll
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\win\Release\tcl82.dll
-  Destination=%BINDIR%\tcl82.dll
+  Source=..\..\tcl8.3\win\Release\tcl83.dll
+  Destination=%BINDIR%\tcl83.dll
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tk8.2.1\library\*.tcl
+  Source=..\..\tk8.3\library\*.tcl
   Destination=%TKDIR%
   Description=Plug-in Script Libraries
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tk8.2.1\library\tclindex
+  Source=..\..\tk8.3\library\tclindex
   Destination=%TKDIR%\tclindex
   Description=Plug-in Script Libraries
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\library\encoding\*
+  Source=..\..\tcl8.3\library\encoding\*
   Destination=%TCLDIR%\encoding
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\library\msgcat1.0\*.tcl
+  Source=..\..\tcl8.3\library\msgcat1.0\*.tcl
   Destination=%TCLDIR%\msgcat1.0
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\library\dde1.1\*.tcl
+  Source=..\..\tcl8.3\library\dde1.1\*.tcl
   Destination=%TCLDIR%\dde1.1
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\library\reg1.0\*.tcl
+  Source=..\..\tcl8.3\library\reg1.0\*.tcl
   Destination=%TCLDIR%\reg1.0
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\library\opt0.4\*.tcl
+  Source=..\..\tcl8.3\library\opt0.4\*.tcl
   Destination=%TCLDIR%\opt0.4
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\library\http2.1\*.tcl
+  Source=..\..\tcl8.3\library\http2.1\*.tcl
   Destination=%TCLDIR%\http2.1
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\library\http1.0\*.tcl
+  Source=..\..\tcl8.3\library\http1.0\*.tcl
   Destination=%TCLDIR%\http1.0
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\library\*.tcl
+  Source=..\..\tcl8.3\library\*.tcl
   Destination=%TCLDIR%
   Flags=0000000000000010
 end
 item: Install File
-  Source=..\..\tcl8.2.1\library\tclindex
+  Source=..\..\tcl8.3\library\tclindex
   Destination=%TCLDIR%\tclindex
   Description=Plug-in Script Libraries
   Flags=0000000000000010
@@ -271,7 +271,7 @@ item: Install File
 end
 item: Insert Line into Text File
   Pathname=%PLUGINDIR%\installed.cfg
-  New Text=set ::plugin(executable) {%BINDIR%\wish82.exe}
+  New Text=set ::plugin(executable) {%BINDIR%\wish83.exe}
   Line Number=0
   Flags=00010000
 end
@@ -313,7 +313,7 @@ item: Edit Registry
 end
 item: Edit Registry
   Total Keys=1
-  Key=SOFTWARE\Scriptics\Tcl Plugin\2.1
+  Key=SOFTWARE\Tcl\TclPlugin\3.0
   New Value=%MAINDIR%
   Value Name=Directory
   Root=2
@@ -485,18 +485,18 @@ item: Set Variable
   Flags=00010100
 end
 item: Copy Local File
-  Source=%BINDIR%\tk82.dll
-  Destination=%NAV3%\program\plugins\tk82.dll
+  Source=%BINDIR%\tk83.dll
+  Destination=%NAV3%\program\plugins\tk83.dll
   Flags=0000000001000010
 end
 item: Copy Local File
-  Source=%BINDIR%\tclpip82.dll
-  Destination=%NAV3%\program\plugins\tclpip82.dll
+  Source=%BINDIR%\tclpip83.dll
+  Destination=%NAV3%\program\plugins\tclpip83.dll
   Flags=0000000001000010
 end
 item: Copy Local File
-  Source=%BINDIR%\tcl82.dll
-  Destination=%NAV3%\program\plugins\tcl82.dll
+  Source=%BINDIR%\tcl83.dll
+  Destination=%NAV3%\program\plugins\tcl83.dll
   Flags=0000000001000010
 end
 item: Copy Local File
@@ -587,18 +587,18 @@ item: Set Variable
   Flags=00010100
 end
 item: Copy Local File
-  Source=%BINDIR%\tk82.dll
-  Destination=%NAV4%\tk82.dll
+  Source=%BINDIR%\tk83.dll
+  Destination=%NAV4%\tk83.dll
   Flags=0000000001000010
 end
 item: Copy Local File
-  Source=%BINDIR%\tclpip82.dll
-  Destination=%NAV4%\tclpip82.dll
+  Source=%BINDIR%\tclpip83.dll
+  Destination=%NAV4%\tclpip83.dll
   Flags=0000000001000010
 end
 item: Copy Local File
-  Source=%BINDIR%\tcl82.dll
-  Destination=%NAV4%\tcl82.dll
+  Source=%BINDIR%\tcl83.dll
+  Destination=%NAV4%\tcl83.dll
   Flags=0000000001000010
 end
 item: Copy Local File
@@ -645,7 +645,7 @@ item: Check if File/Dir Exists
 end
 item: Execute Program
   Pathname=%NAV4INST%\program\netscape.exe
-  Command Line=http://www.scriptics.com/plugin/applets.html#V2
+  Command Line=http://www.tcl.tk/software/plugin/applets.html#V2
   Flags=00000010
 end
 item: Else Statement
@@ -689,18 +689,18 @@ item: Set Variable
   Flags=00010100
 end
 item: Copy Local File
-  Source=%BINDIR%\tk82.dll
-  Destination=%IEXP3%\plugins\tk82.dll
+  Source=%BINDIR%\tk83.dll
+  Destination=%IEXP3%\plugins\tk83.dll
   Flags=0000000001000010
 end
 item: Copy Local File
-  Source=%BINDIR%\tclpip82.dll
-  Destination=%IEXP3%\plugins\tclpip82.dll
+  Source=%BINDIR%\tclpip83.dll
+  Destination=%IEXP3%\plugins\tclpip83.dll
   Flags=0000000001000010
 end
 item: Copy Local File
-  Source=%BINDIR%\tcl82.dll
-  Destination=%IEXP3%\plugins\tcl82.dll
+  Source=%BINDIR%\tcl83.dll
+  Destination=%IEXP3%\plugins\tcl83.dll
   Flags=0000000001000010
 end
 item: Copy Local File
@@ -747,7 +747,7 @@ item: Check if File/Dir Exists
 end
 item: Execute Program
   Pathname=%IEXP3%\iexplore.exe
-  Command Line=http://www.scriptics.com/plugin/applets.html#V2
+  Command Line=http://www.tcl.tk/software/plugin/applets.html#V2
   Flags=00000010
 end
 item: Else Statement
@@ -773,7 +773,7 @@ item: Display Message
   Title=Installation Complete
   Text=The Tcl Plugin for Netscape Navigator and Microsoft Internet Explorer is now installed.  Please restart your browser to see the changes.
   Text=
-  Text=Be sure to visit our home page at http://www.scriptics.com/plugin/ to see Tclet examples.
+  Text=Be sure to visit our home page at http://www.tcl.tk/software/plugin/ to see Tclet examples.
   Flags=00100000
 end
 item: Else Statement

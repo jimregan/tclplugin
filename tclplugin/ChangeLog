@@ -1,3 +1,24 @@
+2002-12-19  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	Complete revamp of the plugin directory structure for v3.
+	The library/ now represents what would be a self-contained
+	plugin/ subdirectory for a Tcl installation.
+
+	This has been tested on Linux/Moz1.2, Win/IE 5.5sp1, Win/Moz1.2
+	for NPAPI and Win/IE 6 using the ActiveX control for hosting
+	NPAPI plugins.  See http://plugindoc.mozdev.org/windows.html,
+	the ActiveX plugin.  This appears to have one bug where the
+	src= URL must be absolute.
+
+	Linux requires that we run out-of-process (using an external
+	wish executable that displays in the Web browser plugin window)
+	as the changes in Moz appear to have nixed XtAppContext support.
+	The Xt interleaving has been dropped for the moment, but it
+	would be nice to rescucitate that soon.
+
+	*** This indicates the beginning of v3.           ***
+	*** For v2 plugin sources, use -r plugin-2-branch ***
+
 2002-07-05  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* win/stdafx.cpp, win/stdafx.h, win/resource.h (removed): 

@@ -3,9 +3,7 @@
  *
  *	Configuration header file for the Macintosh version of Tcl plugin.
  *
- * CONTACT:     sunscript-plugin@sunscript.sun.com
- *
- * Please contact us for questions, comments and enhancements.
+ * CONTACT:     tclplugin-core@lists.sourceforge.net
  *
  * Copyright (c) 1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
@@ -13,7 +11,6 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * SCCS: @(#) npconfig.h 1.8 98/01/15 18:58:40
  * RCS:  @(#) $Id$
  */
 
@@ -37,13 +34,13 @@
  * Tcl Plugin version identifiers
  * (the 3 strings are computed from the 4 internal numbers)
  */
-#define NPTCL_VERSION "2.0"
-#define NPTCL_PATCH_LEVEL "2.0.1"
-#define NPTCL_INTERNAL_VERSION "2.0.201"
+#define NPTCL_VERSION "3.0"
+#define NPTCL_PATCH_LEVEL "3.0.0.1"
+#define NPTCL_INTERNAL_VERSION "3.0.0.1"
  
-#define NPTCL_MAJOR_VERSION 2
+#define NPTCL_MAJOR_VERSION 3
 #define NPTCL_MINOR_VERSION 0
-#define NPTCL_RELEASE_LEVEL 2
+#define NPTCL_RELEASE_LEVEL 0
 #define NPTCL_RELEASE_SERIAL 1
 
 #endif /* _NPCONFIG */

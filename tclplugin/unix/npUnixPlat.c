@@ -43,6 +43,7 @@ NpPlatformMsg(CONST84 char *msg, char *title)
 {
     NpLog("MSG [%s]: %s\n", title, msg);
     fprintf(stderr, "MSG [%s]: %s\n", title, msg);
+    fflush(stderr);
 }
 
 /*

@@ -70,33 +70,6 @@ INSTALL_PROGRAM	= @INSTALL_PROGRAM@
 INSTALL_DATA	= @INSTALL_DATA@
 INSTALL_SCRIPT	= @INSTALL_SCRIPT@
 
-#========================================================================
-# TCLLIBPATH seeds the auto_path in Tcl's init.tcl so we can test our
-# package without installing.  The other environment variables allow us
-# to test against an uninstalled Tcl.  Add special env vars that you
-# require for testing here (like TCLX_LIBRARY).
-#========================================================================
-
-EXTRA_PATH	= $(top_builddir):$(TCL_BIN_DIR):$(TK_BIN_DIR)
-TCLSH_ENV	= TCL_LIBRARY=`@CYGPATH@ $(TCL_SRC_DIR)/library` \
-		  TK_LIBRARY=`@CYGPATH@ $(TK_SRC_DIR)/library` \
-		  LD_LIBRARY_PATH="$(EXTRA_PATH):$(LD_LIBRARY_PATH)" \
-		  LIBPATH="$(EXTRA_PATH):${LIBPATH}" \
-		  SHLIB_PATH="$(EXTRA_PATH):${SHLIB_PATH}" \
-		  PATH="$(EXTRA_PATH):$(PATH)" \
-		  TCLLIBPATH="$(top_builddir)"
-TCLSH_PROG	= @TCLSH_PROG@
-WISH_PROG	= @WISH_PROG@
-TCLSH		= $(TCLSH_ENV) $(TCLSH_PROG)
-WISH		= $(TCLSH_ENV) $(WISH_PROG)
-
-GENERIC_DIR	= "`@CYGPATH@ $(srcdir)/generic`"
-PLAT_DIR	= @PLAT_DIR@
-# The local includes must come first, because the TK_XINCLUDES can be
-# just a comment
-INCLUDES	= -I. -I$(GENERIC_DIR) \
-		  @TCL_INCLUDES@ @TK_INCLUDES@ @TK_XINCLUDES@
-
 PACKAGE		= @PACKAGE@
 VERSION		= @VERSION@
 CC		= @CC@
@@ -128,6 +101,31 @@ TK_BIN_DIR	= @TK_BIN_DIR@
 TCL_LIBS	= @TCL_LIBS@
 TK_LIBS		= @TK_LIBS@
 
+#========================================================================
+# TCLLIBPATH seeds the auto_path in Tcl's init.tcl so we can test our
+# package without installing.  The other environment variables allow us
+# to test against an uninstalled Tcl.  Add special env vars that you
+# require for testing here (like TCLX_LIBRARY).
+#========================================================================
+
+EXTRA_PATH	= $(top_builddir):$(TCL_BIN_DIR):$(TK_BIN_DIR)
+TCLSH_ENV	= TCL_LIBRARY=`@CYGPATH@ $(TCL_SRC_DIR)/library` \
+		  TK_LIBRARY=`@CYGPATH@ $(TK_SRC_DIR)/library` \
+		  LD_LIBRARY_PATH="$(EXTRA_PATH):$(LD_LIBRARY_PATH)" \
+		  LIBPATH="$(EXTRA_PATH):${LIBPATH}" \
+		  SHLIB_PATH="$(EXTRA_PATH):${SHLIB_PATH}" \
+		  PATH="$(EXTRA_PATH):$(PATH)" \
+		  TCLLIBPATH="$(top_builddir)"
+TCLSH_PROG	= @TCLSH_PROG@
+WISH_PROG	= @WISH_PROG@
+TCLSH		= $(TCLSH_ENV) $(TCLSH_PROG)
+WISH		= $(TCLSH_ENV) $(WISH_PROG)
+
+# The local includes must come first, because the TK_XINCLUDES can be
+# just a comment
+INCLUDES	= -I. -I"`@CYGPATH@ $(srcdir)/generic`" \
+		  @TCL_INCLUDES@ @TK_INCLUDES@ @TK_XINCLUDES@
+
 EXTRA_CFLAGS	= $(MEM_DEBUG_FLAGS) @EXTRA_CFLAGS@
 
 DEFS		= $(TCL_DEFS) @DEFS@ $(EXTRA_CFLAGS) \
@@ -139,10 +137,7 @@ CPPFLAGS	= @CPPFLAGS@
 LIBS		= @LIBS@
 AR		= ar
 CFLAGS		= @CFLAGS@
-COMPILE		= $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-
-# ln -s (needed)
-LN_S		= @LN_S@
+COMPILE		= $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 
 # The top, architecture dependent directory for installation
 # (in general this is your MOZILLA_HOME directory)
@@ -151,83 +146,32 @@ INST_TOP	= @MOZILLA_DIR@
 # Destination directory : for the plugin shared lib
 NSP_DESTDIR	= $(INST_TOP)/plugins
 
-# Destination directory : for the external tcl process (server)
-BIN_DIR		= $(INST_TOP)/tclplug
-# Alternate possibility:
-#BIN_DIR	= $(exec_prefix)/bin
-
-# Destination directory : for the plugin librarie files
-# Nb: If you change this to something different from $MOZILLA_HOME/tclplug,
-#     /usr/local/lib/netscape/tclplug or $HOME/tclplug you will need to
-#     set the TCL_PLUGIN_DIR environment var to this dir so the plugin
-#     can find it.
-PLUG_DESTROOT	= $(INST_TOP)/tclplug
-
-# Where to find installed libraries (for lean lib version)
-LIB_RUNTIME_DIR	=  $(exec_prefix)/lib
-
-# Plugin lib file name (with version and OS dependant shared lib extension)
-NSP_LIB_FILE	= @NSP_LIB_FILE@
-
 #========================================================================
 # Start of user-definable TARGETS section
 #========================================================================
 
-# Distributions name
-DISTRIB_ROOT_NAME	= nptcl@NPTCL_DISTRIB_NAME@
-DISTRIB_NAME	= $(DISTRIB_ROOT_NAME)-$(DISTRIB)
-DISTRIB_SRC	= $(DISTRIB_ROOT_NAME)-src
-
-# Staging directory, default subdirectory of build directory
-STAGEDIR	= $(DISTRIB_NAME)
-# Archive file
-STAGEFILE	= $(DISTRIB_NAME).tar.gz
-
-# Dist dir (likely to be SunScript specific target anyway)
-# (use make alldist DISTDIRTOP=wherever)
-DISTDIRTOP	= /proj/tcl/dist
-
-# should not be changed
-DISTDIRNAME	= nptcl@NPTCL_PATCH_LEVEL@
-DISTDIR1	= $(DISTDIRTOP)/$(DISTDIRNAME)
-DISTDIR2	= $(DISTDIRTOP)/$(DISTDIRNAME)/plugin$(VERSION)
-
-# ******************************** Stop ************************************
-# no changes should be needed below...
-STAGING		= 0
-DISTRIB		= unknown
-PLUG_TOP_DEST	= $(PLUG_DESTROOT)/$(VERSION)
-NPL_DESTDIR	= $(PLUG_TOP_DEST)/plugin
-NPL_ICONF	= installed.cfg
-NPUTIL_DESTDIR	= $(PLUG_TOP_DEST)/utils
-NPCFG_DESTDIR	= $PLUG_TOP_DEST)/config
-#NPPOLICY_DESTDIR	= $(PLUG_TOP_DEST)/policies
-#NPTRUST_DESTDIR	= $(PLUG_TOP_DEST)/trust
-NPFEATURES_DESTDIR	= $(PLUG_TOP_DEST)/safetcl
-NPDOC_DESTDIR	= $(PLUG_TOP_DEST)/doc
-NPTCL_DESTDIR	= $(PLUG_TOP_DEST)/tcl
-NPTK_DESTDIR	= $(PLUG_TOP_DEST)/tk
-
-TARGETS		= $(NSP_LIB_FILE) $(TCLSHP)
-
 all: binaries libraries doc
 
-binaries: $(BINARIES) pkgIndex.tcl
+binaries: $(BINARIES)
 
 libraries:
 
 doc:
 
-install: all install-binaries install-libraries install-doc
+install: all install-libraries install-binaries install-doc
 
 install-binaries: binaries
-	@echo "place $($(PACKAGE)_LIB_FILE) in browser plugins directory"
-	@echo "edit $(DESTDIR)$(pkglibdir)/installed.cfg"
+	@echo "Installing plugin binary to $(DESTDIR)$(NSP_DESTDIR)"
+	@mkdir -p $(DESTDIR)$(NSP_DESTDIR)
+	@$(INSTALL_PROGRAM) $($(PACKAGE)_LIB_FILE) $(DESTDIR)$(NSP_DESTDIR)
+	@echo "Verify data in $(DESTDIR)$(pkglibdir)/installed.cfg"
 	@echo "     set ::plugin(executable) to latest 8.4 wish binary"
 	@echo "     set ::plugin(sharedLibraryDir) as necessary"
+	@echo "set ::plugin(executable) \"$(WISH_PROG)\"" \
+		>> $(DESTDIR)$(pkglibdir)/installed.cfg
 
 install-libraries: libraries
-	@echo "Installing plugin libraries to $(DESTDIR)$(pkglibdir)"
+	@echo "Installing plugin runtime libraries to $(DESTDIR)$(pkglibdir)"
 	@list='. config safetcl utils'; for p in $$list; do \
 	  mkdir -p $(DESTDIR)$(pkglibdir)/$$p; \
 	  for i in `ls -dr $(srcdir)/library/$$p/*.* 2>/dev/null`; do \
@@ -276,12 +220,17 @@ VPATH = $(srcdir)/generic:$(srcdir)/unix:$(srcdir)/win
 .rc.res:
 	rc.exe -fo $@ -r -i $(INCLUDES) @DEFS@ `@CYGPATH@ $<`
 
-pkgIndex.tcl:
-	(\
-	echo 'if {[catch {package require Tcl 8.2}]} return';\
-	echo 'package ifneeded $(PACKAGE) $(VERSION) \
-	    [list load [file join $$dir $($(PACKAGE)_LIB_FILE)] $(PACKAGE)]'\
-	) > pkgIndex.tcl
+dist:
+	DESTDIR=/tmp/tclplugin$(VERSION)/
+	@$(INSTALL_SCRIPT) $(srcdir)/tools/install.tcl $(DESTDIR)
+	@$(INSTALL_PROGRAM) $($(PACKAGE)_LIB_FILE) $(DESTDIR)
+	@list='. config safetcl utils'; for p in $$list; do \
+	  mkdir -p $(DESTDIR)$(PKG_DIR)/$$p; \
+	  for i in `ls -dr $(srcdir)/library/$$p/*.* 2>/dev/null`; do \
+	    $(INSTALL_DATA) $$i $(DESTDIR)$(PKG_DIR)/$$p/; \
+	  done \
+	done
+	@$(INSTALL_DATA) $(srcdir)/license.terms $(DESTDIR)$(PKG_DIR)
 
 #========================================================================
 # Don't modify the file to clean here.  Instead, set the "CLEANFILES"
@@ -302,91 +251,14 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-################
-runtest: $(TSTROOT) $(TSTTOP) $(NPL_TST) $(NPUTIL_TST) $(NPTCL_TST) $(NPTK_TST)
-	LD_LIBRARY_PATH=`pwd`:$(LD_LIBRARY_PATH); export LD_LIBRARY_PATH; \
-	TCL_PLUGIN_DIR=`pwd`/$(TSTROOT); export TCL_PLUGIN_DIR; \
-	./$(TCLSHP)
-
-$(NSP_LIB_FILE): $(POWBINDIR) $(FITSTCLBINDIR) $(CFITSIOBINDIR) $(OBJS)
-	@echo "Linking the fat library (tcl+tk+plugin objects)..."
-	@echo "  { if you get an error (eventually at netscape runtime!),"
-	@echo "    check the values of :"
-	@echo "         SHLIB_LD       =$(SHLIB_LD)"
-	@echo "    and  LD_SEARCH_FLAGS=$(LD_SEARCH_FLAGS)"
-	@echo "    and  SHLIB_LD_LIBS  =$(SHLIB_LD_LIBS) }"
-	@$(SHLIB_LD) $(OBJS) -o $(NSP_LIB_FILE) \
-		$(LD_SEARCH_FLAGS) $(SHLIB_LD_LIBS)
-
-staging:
-	@if test "$(DISTRIB)" = "unknown" ; then \
-	  echo " *** Please give the DISTRIB argument, like :";\
-	  echo "     make staging DISTRIB=sparc-solaris25";\
-	  echo "          or =sparc-sunos4, x86-linux2, x86-solaris25..."; \
-	  false ;\
-	fi
-	-$(MKDIR) $(STAGEDIR)
-	$(MAKE) install INST_TOP=$(STAGEDIR) STAGING=1 DISTRIB=$(DISTRIB)
-	@echo "### Install scripts staging..."	
-	$(INSTALL_PROGRAM) $(TOP_DIR)/installer/install.sh $(STAGEDIR)
-	$(INSTALL_DATA) $(TOP_DIR)/doc/INSTALL.unix $(STAGEDIR)/README
-	-$(RM) -rf $(STAGEDIR)/installer
-	$(MKDIR) $(STAGEDIR)/installer
-	@for f in $(TOP_DIR)/installer/*.tcl; do \
-		echo "Installing $$f in $(STAGEDIR)/installer"; \
-		$(INSTALL_DATA) $$f $(STAGEDIR)/installer ; \
-	done ;
-	echo $(VERSION) > $(STAGEDIR)/tclplug/plug-version
-	echo @NPTCL_PATCH_LEVEL@ > $(STAGEDIR)/tclplug/plug-patchlevel
-	echo @TCL_VERSION@ > $(STAGEDIR)/tclplug/tcl-version
-	echo $(TCLSHP) > $(STAGEDIR)/tclplug/tclshp-name
-	echo $(DISTRIB) > $(STAGEDIR)/tclplug/plug-distrib
-	@echo "### Staging area $(STAGEDIR)/ built; making archive"
-	tar cf -  $(STAGEDIR) | gzip -9 > $(STAGEFILE)
-	@echo "### Created $(STAGEFILE)"
-
 AUTOCONF	= autoconf
 GTAR		= gtar
 
-# distclean is going to remove the Makefile and everything
-# we save config.status to re-create it
-# Nb: we would not need to do distclean before dist
-#     if everybody was using a sub directory to build...
-distsave:
-	-mkdir save
-	cp -f config.status save/
-
-dist: distsave distclean sdist
-	cp save/config.status .
-	sh ./config.status
-
-# the "sdist" target does the real job and can be used
-# when your build dir is outside the tree
-sdist:
-	@echo "### Reminder: you must have done make alldist"
-	@echo "### in Tcl and Tk before doing distributions on the plugin"
-	@echo "ignore 'cp: xxx: is a directory' errors"
-	rm -rf $(DISTDIR1)
-	( cd $(TOP_DIR)/unix ; $(AUTOCONF) )
-	-@for i in "" generic unix win win/res mac plugin library safetcl \
-		config doc tests installer tools ; \
-	do \
-	  echo "making $(DISTDIR2)/$$i"; \
-	  mkdir -p $(DISTDIR2)/$$i;\
-	  cp `ls -d1 $(TOP_DIR)/$$i/*|egrep -v "(SCCS|TAGS|~|,|#|%|core|\.l?o)"` $(DISTDIR2)/$$i;\
-	done;
-	cp $(DISTDIR2)/README $(DISTDIR1)
-	cp $(DISTDIR2)/changes $(DISTDIR2)/doc/
-	chmod -R ug+rw,o+r $(DISTDIR1)
-	chmod 775 $(DISTDIR2)/unix/configure
-	chmod 775 $(DISTDIR2)/unix/install-sh
-	(cd $(DISTDIR1) ; $(GTAR) xvfz ../tcl@TCLTK_MIN_VERSION@.tar.gz ; mv tcl@TCLTK_MIN_VERSION@ tcl@TCL_VERSION@)
-	(cd $(DISTDIR1) ; $(GTAR) xvfz ../tk@TCLTK_MIN_VERSION@.tar.gz ; mv tk@TCLTK_MIN_VERSION@ tk@TCL_VERSION@)
-
+#dist: distsave distclean sdist
+#	cp save/config.status .
+#	sh ./config.status
 
 alldist: dist dgz
-
-salldist: sdist dgz
 
 dgz:
 	(cd $(DISTDIRTOP); $(RM) $(DISTRIB_SRC).tar.gz ; $(GTAR) cvfz $(DISTRIB_SRC).tar.gz $(DISTDIRNAME))

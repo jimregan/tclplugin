@@ -54,20 +54,13 @@ namespace eval $::cfg::implNs {
 
     # exported APIs. We export the "private" APIs ISet and IUnset for
     # sub-packages of this package.
-
     namespace export iget iexists ISet IUnset
 
     # default url fetching timeout
-
     variable timeout 120000
 
     # private Idle tasks list
-
     variable IdleTasks {}
-
-    # flag to prevent IdleTasks processing
-
-    variable DontDoIdle 0
 
     # State variables for each slave are internally stored as arrays
     # called "S${slave}", only the following 5 functions should
@@ -301,7 +294,7 @@ namespace eval $::cfg::implNs {
 
 	    AddToScript $slave [iget $slave Script]
 
-	    AddIdleTask [list SetPageOrigin $slave]
+	    after idle [list [namespace current]::SetPageOrigin $slave]
 	}
 
 	# When time will permit, load some utilities in the slave
@@ -456,10 +449,6 @@ namespace eval $::cfg::implNs {
     #  destroyed and then a new one is given...)
 
     proc NewWindow {slave win geom x y w h ct cl cb cr} {
-
-	# Prevent idle tasks processing
-	variable DontDoIdle 1
-
 	::pluglog::log $slave [info level 0] NOTICE
 
 	# If we had a window before for this interp,
@@ -490,7 +479,6 @@ namespace eval $::cfg::implNs {
 		::pluglog::log $slave "failed to destroy instance after Tk load failure:\
 			$err" ERROR
 	    }
-	    set DontDoIdle 0
 	    return -code error $msg
 	}
 
@@ -532,7 +520,8 @@ namespace eval $::cfg::implNs {
 
 	if {(![iexists $slave Script]) && (![iexists $slave script])} {
 
-	    ::pluglog::log $slave "window script not ready : putting the banner on"
+	    ::pluglog::log $slave \
+		"window script not ready : putting the banner on"
 
 	    # Remember we did something (so we undo before launching tclet)
 	    ISet $slave hasLogo 1
@@ -560,10 +549,6 @@ namespace eval $::cfg::implNs {
 		update idletasks
 	    }
 	}
-
-	# Restore the ability to process idle tasks
-
-	set DontDoIdle 0
 
 	# We will load basic (tk) utilities like the (graphical)
 	# (bg)error handler:
@@ -596,7 +581,6 @@ namespace eval $::cfg::implNs {
 	# find the stream.
 
 	if {[iexists $slave stream,handler:$canonicalURL]} {
-
 	    # Yes: this stream is being sent because of a previous
 	    # request to fetch the content of the url.
 
@@ -624,12 +608,11 @@ namespace eval $::cfg::implNs {
 	    # We thus register a special callback for it.
 
 	    if {![iexists $slave gotFirstStream]} {
-		::pluglog::log $slave "Unknown Instance for this stream !" ERROR
+		::pluglog::log $slave "Unknown Instance for this stream!" ERROR
 		error "Unknown Instance $slave  for this stream $stream ($url)!"
 	    }
 
 	    if {![iget $slave gotFirstStream]} {
-
 		ISet $slave gotFirstStream 1
 
 		ISet $slave stream,$stream,writeHandler {}
@@ -638,13 +621,11 @@ namespace eval $::cfg::implNs {
 		# Store properties of the Tclet's url
 		# if this hasn't been done already
 		# (ie:. if no script= tags have been specified)
-
 		if {![iexists $slave originURL]} {
 		    InitState $slave $url
 		}
 
 	    } else {
-
 		# NOTE (TBD):
 		#
 		# If we are expecting only one url at that point
@@ -675,7 +656,8 @@ namespace eval $::cfg::implNs {
 
 	ISet $slave stream,$stream,data {}
 
-	::pluglog::log $slave "New stream $stream $url ($canonicalURL) $size bytes" NOTICE
+	::pluglog::log $slave \
+	    "New stream $stream $url ($canonicalURL) $size bytes" NOTICE
 
 	return "ok"
     }
@@ -700,7 +682,8 @@ namespace eval $::cfg::implNs {
 	}
 
 	IAppend $slave stream,$stream,data $chunk
-	::pluglog::log $slave "stored data for $stream in stream,$stream,data attr"
+	::pluglog::log $slave \
+	    "stored data for $stream in stream,$stream,data attr"
 
 	set handler [iget $slave stream,$stream,writeHandler]
 
@@ -738,14 +721,17 @@ namespace eval $::cfg::implNs {
 	    if {[iexists $slave openUrl:$url]} {
 		set s [iget $slave openUrl:$url]
 		if {$s == $stream} {
-		    ::pluglog::log $slave "removing stream $stream from openUrl list"
+		    ::pluglog::log $slave \
+			"removing stream $stream from openUrl list"
 		    IUnset $slave openUrl:$url
 		} else {
-		    ::pluglog::log $slave "streamm mismatch same url for $s and $stream"\
-			    WARNING
+		    ::pluglog::log $slave \
+			"streamm mismatch same url for $s and $stream"\
+			WARNING
 		}
 	    } else {
-		::pluglog::log $slave "but url $url is not in openUrls (ok for src='s url)"
+		::pluglog::log $slave \
+		    "but url $url is not in openUrls (ok for src='s url)"
 	    }
 	} else {
 	    ::pluglog::log $slave "stream $stream has no url !"
@@ -756,11 +742,12 @@ namespace eval $::cfg::implNs {
 	    # and we don't annoy the user
 	    if {[catch {eval [linsert $handler end \
 				  $slave $stream $reason $data]} msg]} {
-		::pluglog::log $slave "error in end handler $handler $stream $reason:\
-			$msg" ERROR
+		::pluglog::log $slave \
+		    "error in end handler $handler $stream $reason: $msg" ERROR
 	    }
 	} else {
-	    ::pluglog::log $slave "Unhandled End of stream $stream: $reason" WARNING
+	    ::pluglog::log $slave "Unhandled End of stream $stream: $reason" \
+		WARNING
 	}
 
 
@@ -1049,9 +1036,6 @@ namespace eval $::cfg::implNs {
     #           is 0 : we execute tclet code wrapped around bgerror checking
 
     proc BgEval {slave direct cmd} {
-	# Prevent idle tasks processing
-	variable DontDoIdle 1
-
 	::pluglog::log $slave "Actually Executing code in tclet"
 	if {$direct} {
 	    set expr $cmd
@@ -1060,8 +1044,9 @@ namespace eval $::cfg::implNs {
 	    if {[iget $slave hasLogo]} {
 		ISet $slave hasLogo 0
 		if {[catch {interp eval $slave {destroy .logo}} msg]} {
-		    ::pluglog::log $slave "removing splash screen failure (tk destroyed) :\
-			    $msg" ERROR
+		    ::pluglog::log $slave \
+			"removing splash screen failure (tk destroyed): $msg" \
+			ERROR
 		}
 	    }
 	    # Try to use our installed bgerror.
@@ -1076,71 +1061,19 @@ namespace eval $::cfg::implNs {
 	}
 	set ret [catch {interp eval $slave $expr} res]
 	if {$ret} {
-	    ::pluglog::log $slave "Slave eval ($direct) return code $ret ($cmd): $res"\
-		    ERROR
+	    ::pluglog::log $slave \
+		"Slave eval ($direct) return code $ret ($cmd): $res" ERROR
 	} else {
 	    ::pluglog::log $slave "Done Executing tclet code: $res"
 	}
- 	set DontDoIdle 0
     }
 
     # Will evaluate "cmd" in the slave when idle:
 
     proc BgSpawn {slave direct cmd} {
-	AddIdleTask [list BgEval $slave $direct $cmd]
+	::pluglog::log IDLE "Call in $slave on IDLE: \"$cmd\""
+	after idle [list [namespace current]::BgEval $slave $direct $cmd]
     }
-
-    # Work around after idle non binary cleanness wrappers
-    # And "task management"
-
-    proc AddIdleTask {cmd {first 0}} {
-	variable IdleTasks
-	set l [llength $IdleTasks]
-	if {$first} {
-	    ::pluglog::log IDLE "Inserting \"$cmd\" first in IdleTasks list ($l)"
-	    # (nb: works for empty list only with tcl8.0p1)
-	    set IdleTasks [lreplace $IdleTasks 0 -1 $cmd]
-	} else {
-	    ::pluglog::log IDLE "Appending \"$cmd\" to IdleTasks list ($l)"
-	    lappend IdleTasks $cmd
-	}
-	after idle [namespace current]::DoIdle
-    }
-
-    proc DoIdle {} {
-	variable IdleTasks
-	variable DontDoIdle
-	set l [llength $IdleTasks]
-	if {$l <= 0} {
-	    ::pluglog::log IDLE "Called DoIdle with empty IdleTasks list !" ERROR
-	    set DontDoIdle 0
-	} else {
-	    if {$DontDoIdle} {
-		::pluglog::log IDLE "*** Can't do Idle now, postponing ($DontDoIdle)"
-		if {[incr DontDoIdle]>200} {
-		    # this should never happen...
-		    set IdleTasks {}
-		    set msg "BUG tight event loop or missing\
-			    'set DontDoIdle 0': removing all idle tasks"
-		    ::pluglog::log IDLE $msg ERROR
-		    NotifyError DoIdle $msg
-		    return
-		}
-		# We can not just after idle because all idle tasks
-		# are processed now and we would go into a tight loop
-		after 0 [list after idle [namespace current]::DoIdle]
-		return
-	    }
-	    set cmd [lindex $IdleTasks 0]
-	    set IdleTasks [lrange $IdleTasks 1 end]
-	    # Eval it here
-	    # (could be namespace eval [namespace current] but we don't need
-	    #  really that context)
-	    ::pluglog::log IDLE "Idle task ($l): \"$cmd\""
-	    eval $cmd
-	}
-    }
-
 
     # If the waiting counter is 0 or less, actually launch the
     # code :
@@ -1164,13 +1097,15 @@ namespace eval $::cfg::implNs {
 		# Remove 'ToLaunch' content so we don't evaluate things twice
 		IUnset $slave ToLaunch
 		# Prepare for launch (when idle)
-		::pluglog::log $slave "actually scheduling the tclet launch now"
+		::pluglog::log $slave "schedule tclet $slave script"
 		BgSpawn $slave 0 $script
 	    } else {
-		::pluglog::log $slave "would launch the tclet, but nothing to launch now!"
+		::pluglog::log $slave \
+		    "would launch the tclet, but nothing to launch now!"
 	    }
 	} else {
-	    ::pluglog::log $slave "not yet ready to go ([iget $slave waiting] to go)"
+	    ::pluglog::log $slave \
+		"not yet ready to go ([iget $slave waiting] to go)"
 	}
     }
 
@@ -1178,7 +1113,8 @@ namespace eval $::cfg::implNs {
     # completion, if it reaches 0 then actually launch the tclet:
 
     proc DecrWaiting {slave} {
-	::pluglog::log $slave "decrementing the waiting counter ([iget $slave waiting])"
+	::pluglog::log $slave \
+	    "decrementing the waiting counter ([iget $slave waiting])"
 	IIncr $slave waiting -1
 	EventuallyLaunch $slave
     }
@@ -1203,8 +1139,8 @@ namespace eval $::cfg::implNs {
 	    AddToScript $slave $data
 	    EventuallyLaunch $slave
 	} else {
-	    ::pluglog::log $slave "Tclet code's stream $stream ended with reason $reason"\
-		    ERROR
+	    ::pluglog::log $slave \
+		"Tclet code's stream $stream ended with reason $reason" ERROR
 	}
     }
 
@@ -1216,7 +1152,7 @@ namespace eval $::cfg::implNs {
 		 newCallBack writeCallBack endCallBack} {
 	if {[iexists $slave stream,handler:$url]} {
 	    error "not supported: multiple pending requests for same URL\
-		    ($url)"
+			($url)"
 	}
 
 	ISet $slave stream,handler:$url \
@@ -1230,7 +1166,7 @@ namespace eval $::cfg::implNs {
 		  newCallBack writeCallBack endCallBack} {
 	if {[iexists $slave stream,handler:$url]} {
 	    error "not supported: multiple pending requests for same URL\
-		    ($url)"
+			($url)"
 	}
 
 	ISet $slave stream,handler:$url \
@@ -1320,7 +1256,8 @@ namespace eval $::cfg::implNs {
 		    "commonFetcher:$op" $aTimeout} res]
 	    if {$resCode && ([lindex $::errorCode 0] == "TIMEOUT")} {
 		# We need to cleanup the stream
-		::pluglog::log $slave "timeout, cleaning up for \"$url\"" WARNING
+		::pluglog::log $slave \
+		    "timeout, cleaning up for \"$url\"" WARNING
 		DestroyStreamFromUrl $slave $url TIMEOUT
 		error "timeout"
 	    }
@@ -1334,16 +1271,18 @@ namespace eval $::cfg::implNs {
 
     proc DestroyStreamFromUrl {slave url reason} {
 	if {[iexists $slave stream,handler:$url]} {
-	    ::pluglog::log $slave "DestroyStreamFromUrl ($reason): we did not even had\
-		    the new stream for $url" WARNING
+	    ::pluglog::log $slave \
+		"DestroyStreamFromUrl ($reason): we did not even have\
+		the new stream for $url" WARNING
 	    IUnset $slave stream,handler:$url
 	} elseif {[iexists $slave openUrl:$url]} {
 	    set stream [iget $slave openUrl:$url]
-	    ::pluglog::log $slave "DestroyStreamFromUrl ($reason): will close $stream"
+	    ::pluglog::log $slave \
+		"DestroyStreamFromUrl ($reason): will close $stream"
 	    DestroyStream $slave $stream $reason
 	} else {
-	    ::pluglog::log $slave "DestroyStreamFromUrl ($reason): can not find \"$url\""\
-		    ERROR
+	    ::pluglog::log $slave \
+		"DestroyStreamFromUrl ($reason): can not find \"$url\"" ERROR
 	}
     }
 
@@ -1351,15 +1290,14 @@ namespace eval $::cfg::implNs {
     # called when some stream events occurs:
 
     proc streamCallBackHandler {callback slave stream args} {
-	# we can't use after idle in slave, it's not binary safe
-	BgEval $slave 0 "$callback $args"
-	#SpawnCB $slave "$callback $args"
+	BgEval $slave 0 [concat $callback $args]
     }
 
     # This callback releases a blocking geturl or posturl call:
 
     proc genericEndHandler {token slave stream reason data} {
-	::pluglog::log $slave "calling endGenericHandler $slave $stream $reason"
+	::pluglog::log $slave \
+	    "calling endGenericHandler $slave $stream $reason"
 	if {[string equal $reason "EOF"]} {
 	    ::wait::release $token $slave "endGenericHandler" ok $data
 	} else {
@@ -1456,7 +1394,8 @@ namespace eval $::cfg::implNs {
     proc openStream {slave target {type "text/html"}} {
 	set stream [pnExecute OpenStream $slave [list $type $target]]
 	if {[OwnsStream $slave $stream]} {
-	    ::pluglog::log $slave "duplicate stream $stream for target $target" WARNING
+	    ::pluglog::log $slave \
+		"duplicate stream $stream for target $target" WARNING
 	} else {
 	    ::pluglog::log $slave "openStream \"$target\" --> \"$stream\""
 	    RecordStream $slave $stream

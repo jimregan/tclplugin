@@ -5,8 +5,6 @@
  *
  * CONTACT:		tclplugin-core@lists.sourceforge.net
  *
- * ORIGINAL AUTHORS:	Jacob Levy			Laurent Demailly
- *
  * Copyright (c) 1995-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
  * Copyright (c) 2002 ActiveState Corporation.
@@ -34,7 +32,7 @@ static void *tkHandle       = (void *) NULL;
 #ifdef WIN32
 #include <windows.h>
 #ifndef TCL_LIB_FILE
-#   define TCL_LIB_FILE "tcl81.dll"
+#   define TCL_LIB_FILE "tcl84.dll"
 #endif
 
 #ifdef USE_TCL_STUBS
@@ -47,7 +45,7 @@ static void *tkHandle       = (void *) NULL;
 
 #include <dlfcn.h>
 #ifndef TCL_LIB_FILE
-#  define TCL_LIB_FILE "libtcl8.3.so"
+#  define TCL_LIB_FILE "libtcl8.4.so"
 #endif
 
 #endif
@@ -123,9 +121,12 @@ NpCreateMainInterp()
 	if (*pos == '.') {
 	    pos++;
 	}
-	*pos = '5'; /* count down from '4' to '1'*/
-	while (!tclHandle && (--*pos > '0')) {
+	*pos = '9'; /* count down from '8' to '4'*/
+	while (!tclHandle && (--*pos > '3')) {
 	    tclHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
+	    if (!tclHandle) {
+		NpLog("Could not find Tcl dll '%s'\n", (int) libname, 0, 0);
+	    }
 	}
 	if (!tclHandle) {
 	    NpPanic("Failed to load Tcl dll!");
@@ -187,15 +188,15 @@ NpCreateMainInterp()
      * This will be Tcl_PkgRequire for non-stubs builds.
      */
     NpLog("Tcl_InitStubs(%p)\n", (int) npInterp, 0, 0);
-    if (initstubs(npInterp, "8.2", 0) == NULL) {
-        NpPanic("Failed to create initialize Tcl stubs!");
+    if (initstubs(npInterp, "8.4", 0) == NULL) {
+        NpPanic("Failed to initialize Tcl stubs!");
     }
 
     NpLog("Tcl_Init(%p)\n", (int) npInterp, 0, 0);
     if (Tcl_Init(npInterp) != TCL_OK) {
 	CONST84 char *msg = Tcl_GetVar(npInterp, "errorInfo", TCL_GLOBAL_ONLY);
 	NpLog(">>> NpCreateMainInterp Tcl_Init error: %s\n", (int) msg, 0, 0);
-        NpPanic("Failed to create initialize Tcl!");
+        NpPanic("Failed to initialize Tcl!");
     }
 
     NpLog("Tk_Init(%p)\n", (int) npInterp, 0, 0);

@@ -28,7 +28,7 @@ static NPNetscapeFuncs NPNFuncs;
 static NPError fillPluginFunctionTable(NPPluginFuncs* aNPPFuncs)
 {
     if(aNPPFuncs == NULL) {
-	NpLog("fillPluginFunctionTable aNPPFuncs NULL ERROR\n", 0, 0, 0);
+	NpLog("fillPluginFunctionTable aNPPFuncs NULL ERROR\n");
 	return NPERR_INVALID_FUNCTABLE_ERROR;
     }
 

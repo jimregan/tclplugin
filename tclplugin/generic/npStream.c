@@ -79,7 +79,7 @@ NPP_NewStream(NPP instance, NPMIMEType type, NPStream *stream, NPBool seekable,
     Tcl_Obj *objPtr;
 
     if (instance == NULL) {
-	NpLog(">>> NPP_NewStream NULL instance\n", 0, 0, 0);
+	NpLog(">>> NPP_NewStream NULL instance\n");
 	return NPERR_INVALID_INSTANCE_ERROR;
     }
 
@@ -88,8 +88,7 @@ NPP_NewStream(NPP instance, NPMIMEType type, NPStream *stream, NPBool seekable,
 
     interp = NpGetMainInterp();
 
-    NpLog("NPP_NewStream(0x%x, %s, %s)\n",
-	    (int) stream, (int) stream->url, (int) type);
+    NpLog("NPP_NewStream(0x%x, %s, %s)\n", stream, stream->url, type);
 
     /*
      * Register the stream token so that we can later check for invalid
@@ -178,7 +177,7 @@ NPP_Write(NPP instance, NPStream *stream, int32 offset, int32 len, void *buffer)
     Tcl_Obj *objPtr = NULL;
 
     if (instance == NULL) {
-	NpLog(">>> NPP_Write NULL instance\n", 0, 0, 0);
+	NpLog(">>> NPP_Write NULL instance\n");
 	return len;
     }
 
@@ -253,7 +252,7 @@ NPP_DestroyStream(NPP instance, NPStream *stream, NPError reason)
     Tcl_Obj *objPtr = NULL;
 
     if (instance == NULL) {
-	NpLog(">>> NPP_DestroyStream NULL instance\n", 0, 0, 0);
+	NpLog(">>> NPP_DestroyStream NULL instance\n");
 	return NPERR_INVALID_INSTANCE_ERROR;
     }
 
@@ -278,7 +277,7 @@ NPP_DestroyStream(NPP instance, NPStream *stream, NPError reason)
      * Remove the stream from the token table.
      */
 
-    NpLog("DESTROYING stream %p\n", (int) stream, 0, 0);
+    NpLog("DESTROYING stream %p\n", stream);
 
     NpUnregisterToken(interp, (void *) stream, NPTCL_STREAM);
 

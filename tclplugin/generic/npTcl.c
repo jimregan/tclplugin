@@ -162,7 +162,7 @@ NPP_Initialize()
 
     interp = NpCreateMainInterp();
     if (interp == NULL) {
-	NpLog("NPP_Initialize: interp == NULL\n", 0, 0, 0);
+	NpLog("NPP_Initialize: interp == NULL\n");
 	return NPERR_GENERIC_ERROR;
     }
 
@@ -181,11 +181,11 @@ NPP_Initialize()
      */
 
     if (NpInit(interp) != TCL_OK) {
-	NpLog("NPP_Initialize: NpInterp != TCL_OK\n", 0, 0, 0);
+	NpLog("NPP_Initialize: NpInterp != TCL_OK\n");
 	return NPERR_GENERIC_ERROR;
     }
 
-    NpLog("NPP_Initialize FINISHED OK\n", 0, 0, 0);
+    NpLog("NPP_Initialize FINISHED OK\n");
     return NPERR_NO_ERROR;
 }
 
@@ -242,7 +242,7 @@ NPP_Shutdown()
 
 
     if (oldServiceMode != TCL_SERVICE_ALL) {
-	NpLog("Old service mode is not TCL_SERVICE_ALL!\n", 0, 0, 0);
+	NpLog("Old service mode is not TCL_SERVICE_ALL!\n");
     }
 
     /*
@@ -280,20 +280,19 @@ NPP_Shutdown()
     
     if (nptcl_stack != 0) {
 	NpLog("SERIOUS ERROR (potential crash): Invalid shutdown stack = %d\n",
-		nptcl_stack, 0, 0);
+		nptcl_stack);
     }
     if (nptcl_instances != 0) {
-	NpLog("ERROR Invalid shutdown instances count = %d\n", nptcl_instances,
-		0 , 0);
+	NpLog("ERROR Invalid shutdown instances count = %d\n",
+		nptcl_instances);
     }
     if (NpTclStreams(0) != 0) {
-	NpLog("ERROR Invalid shutdown streams count = %d\n", NpTclStreams(0),
-		0 , 0);
+	NpLog("ERROR Invalid shutdown streams count = %d\n", NpTclStreams(0));
     }
 
     nptcl_shutdown = 1;
 
-    NpLog("EXITING SHUTDOWN\n",0 ,0 , 0);
+    NpLog("EXITING SHUTDOWN\n");
 
     /* NpStopLog(); */
 }
@@ -329,13 +328,13 @@ NPP_New(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc,
     Tcl_Obj *objPtr;
 
     if (instance == NULL) {
-	NpLog(">>> NPP_New NULL instance\n", 0, 0, 0);
+	NpLog(">>> NPP_New NULL instance\n");
 	return NPERR_INVALID_INSTANCE_ERROR;
     }
 
     if (nptcl_shutdown) {
 	NPP_Initialize();
-	NpLog("WARNING: we had to call Initialize from NPP_New\n", 0 , 0, 0);
+	NpLog("WARNING: we had to call Initialize from NPP_New\n");
     }
 
     oldServiceMode = NpEnter("NPP_New");
@@ -391,8 +390,7 @@ NPP_New(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc,
         default:
 	    Tcl_ListObjAppendElement(NULL, objPtr,
 		    Tcl_NewStringObj("hidden", -1));
-	    NpLog("Undefined mode (%d) in NPP_New, assuming 'hidden'\n",
-		    mode, 0, 0);
+	    NpLog("Undefined mode (%d) in NPP_New, assuming 'hidden'\n", mode);
             break;
     }
     Tcl_IncrRefCount(objPtr);
@@ -440,7 +438,7 @@ NPP_Destroy(NPP instance, NPSavedData **savePtrPtr)
     Tcl_Obj *objPtr;
 
     if (instance == NULL) {
-	NpLog(">>> NPP_Destroy NULL instance\n", 0, 0, 0);
+	NpLog(">>> NPP_Destroy NULL instance\n");
 	return NPERR_INVALID_INSTANCE_ERROR;
     }
 
@@ -504,25 +502,25 @@ NPP_SetWindow(NPP instance, NPWindow *window)
     int oldServiceMode;
 
     if (instance == NULL) {
-	NpLog(">>> NPP_SetWindow NULL instance\n", 0, 0, 0);
+	NpLog(">>> NPP_SetWindow NULL instance\n");
 	return NPERR_INVALID_INSTANCE_ERROR;
     }
 
     if (window == NULL) {
-	NpLog(">>> NPP_SetWindow(%p) NPWindow == NULL\n", (int)instance, 0, 0);
+	NpLog(">>> NPP_SetWindow(%p) NPWindow == NULL\n", instance);
 	return NPERR_GENERIC_ERROR;
     }
 
     oldServiceMode = NpEnter("NPP_SetWindow");
 
     NpLog("*** NPP_SetWindow instance %p window %p window->window %p\n",
-	    (int) instance, (int) window, (int) window->window);
+	    instance, window, window->window);
 
     interp = NpGetMainInterp();
 
     if (window->window == NULL) {
 	NpLog(">>> Ignoring NPP_SetWindow with NULL window (%d x %d)\n",
-		(int)window->width, (int)window->height, 0);
+		window->width, window->height);
     } else {
 	char buf[256];
 	Tcl_Obj *objPtr;
@@ -531,7 +529,7 @@ NPP_SetWindow(NPP instance, NPWindow *window)
 		(int) window->window,
 		(int) window->x, (int) window->y,
 		(int) window->width, (int) window->height);
-	NpLog("*** NPP_SetWindow %s\n", (int) buf, 0, 0);
+	NpLog("*** NPP_SetWindow %s\n", buf);
 
 	/*
 	 * Call platform specific call which will remember that 
@@ -628,10 +626,9 @@ NPP_GetValue(NPP instance, NPPVariable variable, void *value)
     static char msgBuf[512];
     NPError rv = NPERR_NO_ERROR;
 
-    NpLog("NPP_GetValue(%p, %p, %p)\n",
-	    (int) instance, (int) variable, (int) value);
+    NpLog("NPP_GetValue(%p, %p, %p)\n", instance, variable, value);
     if (instance == NULL) {
-	NpLog(">>> NPP_GetValue NULL instance\n", 0, 0, 0);
+	NpLog(">>> NPP_GetValue NULL instance\n");
 	/* return NPERR_INVALID_INSTANCE_ERROR; */
     }
 
@@ -684,9 +681,9 @@ NPP_SetValue(NPP instance, NPNVariable variable, void *value)
 {
     NPError rv = NPERR_NO_ERROR;
 
-    NpLog("NPP_SetValue(%p, %p, %p)\n", (int) variable, (int) value, 0);
+    NpLog("NPP_SetValue(%p, %p, %p)\n", variable, value);
     if (instance == NULL) {
-	NpLog(">>> NPP_SetValue NULL instance\n", 0, 0, 0);
+	NpLog(">>> NPP_SetValue NULL instance\n");
 	return NPERR_INVALID_INSTANCE_ERROR;
     }
     return rv;
@@ -713,9 +710,9 @@ NPP_HandleEvent(NPP instance, void* event)
 {
     uint16 rv = 0;
 
-    NpLog("NPP_HandleEvent(%p)\n", (int) event, 0, 0);
+    NpLog("NPP_HandleEvent(%p)\n", event);
     if (instance == NULL) {
-	NpLog(">>> NPP_HandleEvent NULL instance\n", 0, 0, 0);
+	NpLog(">>> NPP_HandleEvent NULL instance\n");
 	return NPERR_INVALID_INSTANCE_ERROR;
     }
     return rv;
@@ -741,7 +738,7 @@ NPP_HandleEvent(NPP instance, void* event)
 jref
 NPP_GetJavaClass()
 {
-    NpLog("NPP_GetJavaClass()\n", 0, 0, 0);
+    NpLog("NPP_GetJavaClass()\n");
     return NULL;
 }
 
@@ -773,13 +770,12 @@ NpEnter(CONST char *msg)
     oldServiceMode = Tcl_SetServiceMode(TCL_SERVICE_NONE);
     nptcl_stack++;
 
-    NpLog("ENTERED %s,\toldServiceMode == %d\t",
-	    (int)msg, oldServiceMode, 0);
+    NpLog("ENTERED %s,\toldServiceMode == %d\t", msg, oldServiceMode);
     NpLog("[[ STACK = %d, INSTANCES = %d, STREAMS = %d ]]\n",
 	    nptcl_stack, nptcl_instances, NpTclStreams(0));
 
     if (nptcl_shutdown) {
-	NpLog("SERIOUS ERROR: called NpEnter while shutdown\n", 0, 0, 0);
+	NpLog("SERIOUS ERROR: called NpEnter while shutdown\n");
     }
 
     return oldServiceMode;
@@ -807,13 +803,12 @@ void
 NpLeave(CONST char *msg, int oldServiceMode)
 {
     if (nptcl_shutdown) {
-	NpLog("SERIOUS ERROR: called NpLeave while shutdown\n", 0, 0, 0);
+	NpLog("SERIOUS ERROR: called NpLeave while shutdown\n");
     }
 
     nptcl_stack--;
 
-    NpLog("LEAVING %s,\toldServiceMode == %d\t",
-	    (int)msg, oldServiceMode, 0);
+    NpLog("LEAVING %s,\toldServiceMode == %d\t", msg, oldServiceMode);
 
     NpLog("[[ STACK = %d, INSTANCES = %d, STREAMS = %d ]]\n",
 	    nptcl_stack, nptcl_instances, NpTclStreams(0));

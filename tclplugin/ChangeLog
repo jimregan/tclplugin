@@ -1,3 +1,21 @@
+2003-02-09  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* configure:
+	* tclconfig/tcl.m4: regen
+
+	* generic/np.h:       rewrite NpLog definition to be varargs style
+	* generic/npCmds.c:
+	* generic/npInit.c:
+	* generic/npInterp.c:
+	* generic/npLog.c:
+	* generic/npStream.c:
+	* generic/npTcl.c:
+	* unix/npUnix.c:
+	* unix/npUnixPlat.c:
+	* unix/npxtnotify.c:
+	* win/npWin.c:
+	* win/npWinPlat.c:
+
 2003-01-17  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* Makefile.in: do not use TCL_DEFS in build

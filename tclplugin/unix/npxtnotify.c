@@ -185,7 +185,7 @@ NpPlatformSetAppContext(appContext, inputMask)
             notifier.appContext = XtCreateApplicationContext();
             notifier.appContextCreated = 1;
 	    NpLog("%d: NpPlatformSetAppContext CREATED new app context %p\n",
-                  getpid(), (int) appContext, 0);
+                  getpid(), appContext);
         } else {
 
 	    /*
@@ -197,7 +197,7 @@ NpPlatformSetAppContext(appContext, inputMask)
             notifier.appContext = appContext;
 
 	    NpLog("%d: NpPlatformSetAppContext SET app context to %p\n",
-                  getpid(), (int)appContext, 0);
+                  getpid(), appContext);
         }
     }
     
@@ -228,14 +228,14 @@ InitNotifier(void)
      * can get reinitialized after its own exit handler has run, because
      * of exit handlers for the I/O and timer sub-systems (order dependency).
      */
-    NpLog("Called InitNotifier\n", 0, 0, 0);
+    NpLog("Called InitNotifier\n");
 
     if (TclInExit()) {
-	NpLog("In Exit so no init\n", 0, 0, 0);
+	NpLog("In Exit so no init\n");
 	return;
     }
     if (count !=0) {
-	NpLog("Warning: Invalid stack count %d\n", count, 0, 0);
+	NpLog("Warning: Invalid stack count %d\n", count);
 	count =0 ;
     }
 
@@ -277,9 +277,9 @@ InitNotifier(void)
 void
 NpXtStopNotifier()
 {
-    NpLog("entering NpXtStopNotifier\n", 0, 0, 0);
+    NpLog("entering NpXtStopNotifier\n");
     if (count !=0) {
-	NpLog("ERROR: Invalid notifier stack count %d\n", count, 0, 0);
+	NpLog("ERROR: Invalid notifier stack count %d\n", count);
     }
     if (notifier.currentTimeout != 0) {
         XtRemoveTimeOut(notifier.currentTimeout);
@@ -294,7 +294,7 @@ NpXtStopNotifier()
     notifier.appContext = NULL;
     initialized = 0;
 
-    NpLog("leaving NpXtStopNotifier\n", 0, 0, 0);
+    NpLog("leaving NpXtStopNotifier\n");
 }
 
 /*
@@ -324,7 +324,7 @@ SetTimer(timePtr)
     NpPlatformSetAppContext(NULL, 0);
     if (notifier.currentTimeout != 0) {
 #ifdef	NP_DEBUG
-        NpLog("Removing timeout id 0x%x\n", (int)notifier.currentTimeout, 0,0);
+        NpLog("Removing timeout id 0x%x\n", (int)notifier.currentTimeout);
 #endif
 	XtRemoveTimeOut(notifier.currentTimeout);
     }
@@ -336,14 +336,14 @@ SetTimer(timePtr)
         
 	timeout = timePtr->sec * 1000 + timePtr->usec / 1000;
 #ifdef	NP_DEBUG
-        NpLog("before timer of %d msecs\n", timeout, 0, 0);
+        NpLog("before timer of %d msecs\n", timeout);
 #endif
         notifier.currentTimeout =
             XtAppAddTimeOut(notifier.appContext, (unsigned long) timeout,
                     (XtTimerCallbackProc) TimerProc, NULL);
 #ifdef	NP_DEBUG
         NpLog("after timer of %d msecs id 0x%x\n", timeout,
-                (int) notifier.currentTimeout, 0);
+                (int) notifier.currentTimeout);
 #endif
     } else {
         /*
@@ -354,7 +354,7 @@ SetTimer(timePtr)
         
         notifier.currentTimeout = 0;
 #ifdef	NP_DEBUG
-        NpLog("called SetTimer with NULL timeout\n", 0, 0, 0);
+        NpLog("called SetTimer with NULL timeout\n");
 #endif
     }
 }
@@ -382,8 +382,8 @@ TimerProc(data, id)
     XtIntervalId *id;
 {
 #ifdef	NP_DEBUG
-    NpLog("TimerProc called with %d 0x%x vs. 0x%x\n", (int) data, (int) *id,
-            (int) notifier.currentTimeout);
+    NpLog("TimerProc called with %d 0x%x vs. 0x%x\n", data, *id,
+            notifier.currentTimeout);
 #endif
     if (*id != notifier.currentTimeout) {
 	return;
@@ -423,7 +423,7 @@ CreateFileHandler(fd, mask, proc, clientData)
 {
     FileHandler *filePtr;
 #ifdef NP_DEBUG
-    NpLog("CreateFileHandler %d\n", fd, 0, 0);
+    NpLog("CreateFileHandler %d\n", fd);
 #endif
 
     NpPlatformSetAppContext(NULL, 0);
@@ -518,7 +518,7 @@ DeleteFileHandler(fd)
 {
     FileHandler *filePtr, *prevPtr;
 #ifdef NP_DEBUG
-    NpLog("DeleteFileHandler %d\n", fd, 0, 0);
+    NpLog("DeleteFileHandler %d\n", fd);
 #endif
 
     NpPlatformSetAppContext(NULL, 0);
@@ -531,11 +531,11 @@ DeleteFileHandler(fd)
     for (prevPtr = NULL, filePtr = notifier.firstFileHandlerPtr; ;
 	    prevPtr = filePtr, filePtr = filePtr->nextPtr) {
 #ifdef NP_DEBUG
-	NpLog(".", 0 , 0 , 0);
+	NpLog(".");
 #endif
 	if (filePtr == NULL) {
 #ifdef NP_DEBUG
-	    NpLog("-> not found\n", 0 , 0 , 0);
+	    NpLog("-> not found\n");
 #endif
 	    return;
 	}
@@ -544,7 +544,7 @@ DeleteFileHandler(fd)
 	}
     }
 #ifdef NP_DEBUG
-    NpLog("-> found\n", 0 , 0 , 0);
+    NpLog("-> found\n");
 #endif
 
     /*
@@ -597,7 +597,7 @@ FileProc(clientData, fd, id)
     int mask = 0;
 
 #ifdef NP_DEBUG
-    NpLog("Notifier: FileProc %d %d\n", filePtr->fd, *fd, 0);
+    NpLog("Notifier: FileProc %d %d\n", filePtr->fd, *fd);
 #endif
 
     /*
@@ -670,7 +670,7 @@ FileHandlerEventProc(evPtr, flags)
     int mask;
 
 #ifdef NP_DEBUG
-    NpLog("FileHandlerEventProc %d\n", fileEvPtr->fd, 0, 0);
+    NpLog("FileHandlerEventProc %d\n", fileEvPtr->fd);
 #endif
 
     if (!(flags & TCL_FILE_EVENTS)) {
@@ -739,7 +739,7 @@ WaitForEvent(
     int timeout;
     
 #ifdef NP_DEBUG
-    NpLog("entering WaitForEvent\n", 0, 0, 0);
+    NpLog("entering WaitForEvent\n");
 #endif
 
     NpPlatformSetAppContext(NULL, 0);
@@ -761,12 +761,12 @@ process:
     count ++;
 #ifdef NP_DEBUG
     NpLog("entering XtAppProcessEvent %p %d (%d)\n",
-	    (int)notifier.appContext, (int)notifier.inputMask, count);
+	    notifier.appContext, notifier.inputMask, count);
 #endif
     XtAppProcessEvent(notifier.appContext, notifier.inputMask);
 #ifdef NP_DEBUG
     NpLog("exiting  XtAppProcessEvent %p %d (%d)\n",
-	    (int)notifier.appContext, (int)notifier.inputMask, count);
+	    notifier.appContext, notifier.inputMask, count);
 #endif
     count --;
 

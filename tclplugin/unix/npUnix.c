@@ -120,12 +120,12 @@ NpLoadLibrary(void *tclHandle, void *tkHandle)
 
     /* Try based on full path. */
     sprintf(libname, "%s/%s", LIB_RUNTIME_DIR, TCL_LIB_FILE);
-    NpLog("Attempt to load Tcl dll '%s'\n", (int) libname, 0, 0);
+    NpLog("Attempt to load Tcl dll '%s'\n", libname);
     tclHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
     if (!tclHandle) {
 	/* Try based on anywhere in the path. */
 	strcpy(libname, TCL_LIB_FILE);
-	NpLog("Attempt to load Tcl dll '%s'\n", (int) libname, 0, 0);
+	NpLog("Attempt to load Tcl dll '%s'\n", libname);
 	tclHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
     }
     if (!tclHandle) {
@@ -136,7 +136,7 @@ NpLoadLibrary(void *tclHandle, void *tkHandle)
 	}
 	*pos = '9'; /* count down from '8' to '4'*/
 	while (!tclHandle && (--*pos > '3')) {
-	    NpLog("Attempt to load Tcl dll '%s'\n", (int) libname, 0, 0);
+	    NpLog("Attempt to load Tcl dll '%s'\n", libname);
 	    tclHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
 	}
     }
@@ -157,7 +157,7 @@ NpLoadLibrary(void *tclHandle, void *tkHandle)
 	    *pos++ = pos[1];
 	}
     }
-    NpLog("Attempt to load Tk dll '%s'\n", (int) libname, 0, 0);
+    NpLog("Attempt to load Tk dll '%s'\n", libname);
     tkHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
     if (!tkHandle) {
 	dlclose(tclHandle);

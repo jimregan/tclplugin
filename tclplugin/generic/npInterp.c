@@ -79,11 +79,10 @@ NpCreateMainInterp()
     char name[MAX_PATH];
 #endif
 
-    NpLog("ENTERING NpCreateMainInterp\n", 0,0,0);
+    NpLog("ENTERING NpCreateMainInterp\n");
 
     if (npInterp != NULL) {
-	NpLog("LEAVING NpCreateMainInterp - USE EXISTING 0x%x\n",
-		(int) npInterp, 0, 0);
+	NpLog("LEAVING NpCreateMainInterp - USE EXISTING 0x%x\n", npInterp);
 	return npInterp;
     }
 
@@ -119,10 +118,10 @@ NpCreateMainInterp()
 #else
     GetModuleFileNameA(NULL, name, MAX_PATH);
 #endif
-    NpLog("Tcl_FindExecutable(%s)\n", (int) name, 0, 0);
+    NpLog("Tcl_FindExecutable(%s)\n", name);
     findExecutable(name);
 #else
-    NpLog("Tcl_FindExecutable(NULL)\n", 0, 0, 0);
+    NpLog("Tcl_FindExecutable(NULL)\n");
     findExecutable(NULL);
 #endif
 
@@ -138,26 +137,26 @@ NpCreateMainInterp()
      * calls without grabbing them by symbol out of the dll.
      * This will be Tcl_PkgRequire for non-stubs builds.
      */
-    NpLog("Tcl_InitStubs(%p)\n", (int) npInterp, 0, 0);
+    NpLog("Tcl_InitStubs(%p)\n", npInterp);
     if (initstubs(npInterp, "8.4", 0) == NULL) {
 	NpPlatformMsg("Failed to create initialize Tcl stubs!",
 		"NpCreateMainInterp");
 	return NULL;
     }
 
-    NpLog("Tcl_Init(%p)\n", (int) npInterp, 0, 0);
+    NpLog("Tcl_Init(%p)\n", npInterp);
     if (Tcl_Init(npInterp) != TCL_OK) {
 	CONST84 char *msg = Tcl_GetVar(npInterp, "errorInfo", TCL_GLOBAL_ONLY);
-	NpLog(">>> NpCreateMainInterp Tcl_Init error: %s\n", (int) msg, 0, 0);
+	NpLog(">>> NpCreateMainInterp Tcl_Init error: %s\n", msg);
 	NpPlatformMsg("Failed to create initialize Tcl!",
 		"NpCreateMainInterp");
 	return NULL;
     }
 
-    NpLog("Tk_Init(%p)\n", (int) npInterp, 0, 0);
+    NpLog("Tk_Init(%p)\n", npInterp);
     if (tkInit(npInterp) != TCL_OK) {
 	CONST84 char *msg = Tcl_GetVar(npInterp, "errorInfo", TCL_GLOBAL_ONLY);
-	NpLog(">>> NpCreateMainInterp Tk_Init error: %s\n", (int) msg, 0, 0);
+	NpLog(">>> NpCreateMainInterp Tk_Init error: %s\n", msg);
     }
 
     /*
@@ -168,7 +167,7 @@ NpCreateMainInterp()
 
     Tcl_StaticPackage(NULL, "Tk", tkInit, tkSafeInit);
 #if 0
-    NpLog("NpInit: Tk_InitConsoleChannels\n", 0,0,0);
+    NpLog("NpInit: Tk_InitConsoleChannels\n");
     Tk_InitConsoleChannels(npInterp);
 #endif
 
@@ -179,7 +178,7 @@ NpCreateMainInterp()
 
     Tcl_Preserve((ClientData) npInterp);
 
-    NpLog("LEAVING NpCreateMainInterp interp == 0x%x\n", (int) npInterp, 0, 0);
+    NpLog("LEAVING NpCreateMainInterp interp == 0x%x\n", npInterp);
     return npInterp;
 }
 
@@ -233,7 +232,7 @@ NpDestroyMainInterp()
      * because this may be the last call from Netscape.
      */
     if (npInterp) {
-	NpLog("Tcl_DeleteInterp(%p)\n", (int) npInterp, 0, 0);
+	NpLog("Tcl_DeleteInterp(%p)\n", npInterp);
 	Tcl_DeleteInterp(npInterp);
 	Tcl_Release((ClientData) npInterp);
 	npInterp = (Tcl_Interp *) NULL;

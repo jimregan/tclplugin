@@ -77,7 +77,7 @@ static LRESULT CALLBACK	ContainerProc _ANSI_ARGS_((HWND hwnd,
 void
 NpPlatformMsg(CONST84 char *msg, char *title)
 {
-    NpLog("MSG [%s]: %s\n", (int) title, (int) msg, 0);
+    NpLog("MSG [%s]: %s\n", title, msg);
     MessageBox(NULL, msg, title, MB_OK);
 }
 
@@ -262,7 +262,7 @@ ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     WNDPROC oldProc;
 
     NpLog("CONTAINERPROC message 0x%x wParam 0x%x hwnd 0x%x\n",
-	    (int) message, (int) wParam, (int) hwnd);
+	    message, wParam, hwnd);
 
     for (ptr = firstContainerPtr; ptr != NULL; ptr = ptr->nextPtr) {
 	if (ptr->hwnd == hwnd) {

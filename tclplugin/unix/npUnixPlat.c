@@ -41,7 +41,7 @@
 void
 NpPlatformMsg(CONST84 char *msg, char *title)
 {
-    NpLog("MSG [%s]: %s\n", (int) title, (int) msg, 0);
+    NpLog("MSG [%s]: %s\n", title, msg);
     fprintf(stderr, "MSG [%s]: %s\n", title, msg);
 }
 

@@ -136,12 +136,11 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 #ifndef NP_LOG_FILENAME
 #   define NP_LOG_FILENAME "nplog.txt"
 #endif
-EXTERN void		NpLog _ANSI_ARGS_((CONST char *format, int arg1,
-			    int arg2, int arg3));
+EXTERN void		NpLog _ANSI_ARGS_(TCL_VARARGS(CONST char *, format));
 EXTERN void		NpStartLog _ANSI_ARGS_((CONST char *filename));
 EXTERN void		NpStopLog _ANSI_ARGS_((void));
 #else
-#define NpLog(f, a1, a2, a3)
+#define NpLog(...)
 #define NpStartLog(f)
 #define NpStopLog()
 #endif

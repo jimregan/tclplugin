@@ -3,11 +3,7 @@
  *
  *	File based logging for the Tcl plugin.
  *
- * ORIGINAL AUTHORS:	Jacob Levy			Laurent Demailly
- *
- * Copyright (c) 1995-1997 Sun Microsystems, Inc.
- * Copyright (c) 2000 by Scriptics Corporation.
- * Copyright (c) 2002 ActiveState Corporation.
+ * Copyright (c) 2002-2003 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -19,13 +15,12 @@
 
 #ifdef	NP_LOG
 
-#ifndef MAC_TCL
 #include <time.h>
-#endif
 
 /*
  * Static variables in this file:
  */
+static void	NpLogVA (CONST char *format, va_list argList);
 
 static FILE *logFile = NULL;
 
@@ -49,22 +44,60 @@ static FILE *logFile = NULL;
 
 	/* VARARGS ARGSUSED */
 EXTERN void
-NpLog(CONST char *format, int a1, int a2, int a3)
+NpLog TCL_VARARGS_DEF(CONST char *,arg1)
 {
-    /*
-     * Prevent crash if we stopped logging or could not open the file.
-     */
-    
-    if (logFile != NULL) {
-#ifdef MAC_TCL
-	unsigned long TclpGetClicks _ANSI_ARGS_((void));
-	fprintf(logFile, "[%lu] ",  TclpGetClicks());
-#else
-	fprintf(logFile, "[%lu] ", (unsigned long) time((time_t *) NULL));
-#endif
-        fprintf(logFile, format, a1, a2, a3);
-        fflush(logFile);
+    va_list argList;
+    CONST char *format;
+
+    format = TCL_VARARGS_START(CONST char *,arg1,argList);
+    NpLogVA(format, argList);
+    va_end (argList);
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * NpLogVA --
+ *
+ *	Print an error message and kill the process.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	The process dies, entering the debugger if possible.
+ *
+ *----------------------------------------------------------------------
+ */
+
+static void
+NpLogVA (format, argList)
+    CONST char *format;		/* Format string, suitable for passing to
+				 * fprintf. */
+    va_list argList;		/* Variable argument list. */
+{
+    char *arg1, *arg2, *arg3, *arg4;	/* Additional arguments (variable in
+					 * number) to pass to fprintf. */
+    char *arg5, *arg6, *arg7, *arg8;
+
+    arg1 = va_arg(argList, char *);
+    arg2 = va_arg(argList, char *);
+    arg3 = va_arg(argList, char *);
+    arg4 = va_arg(argList, char *);
+    arg5 = va_arg(argList, char *);
+    arg6 = va_arg(argList, char *);
+    arg7 = va_arg(argList, char *);
+    arg8 = va_arg(argList, char *);
+
+    if (logFile == NULL) {
+	return;
     }
+
+    (void) fprintf(logFile, "[%lu] ", (unsigned long) time(NULL));
+    (void) fprintf(logFile, format, arg1, arg2, arg3, arg4, arg5, arg6,
+	    arg7, arg8);
+    /* (void) fprintf(logFile, "\n"); */
+    (void) fflush(logFile);
 }
 
 /*
@@ -89,9 +122,9 @@ NpStartLog(CONST char *filename)
 {
     if (logFile == NULL) {
         logFile = fopen(filename, "a");
-        NpLog("\n ###### LOG STARTED ###### [NEW]\n\n", 0, 0, 0);
+        NpLog("\n ###### LOG STARTED ###### [NEW]\n\n");
     } else {
-        NpLog("\n ###### LOG STARTED ###### [EXISTING LOGFILE]\n\n", 0, 0, 0);
+        NpLog("\n ###### LOG STARTED ###### [EXISTING LOGFILE]\n\n");
     }
 }
 
@@ -115,7 +148,7 @@ EXTERN void
 NpStopLog()
 {
     if (logFile != NULL) {
-        NpLog("====== LOG STOPPED ======\n\n", 0, 0, 0);
+        NpLog("====== LOG STOPPED ======\n\n");
         fclose(logFile);
         logFile = NULL;
     }

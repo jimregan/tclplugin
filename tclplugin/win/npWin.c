@@ -53,14 +53,14 @@ NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle)
      * Try based on full path.
      */
     sprintf(libname, "%s/%s", LIB_RUNTIME_DIR, TCL_LIB_FILE);
-    NpLog("Attempt to load Tcl dll '%s'\n", (int) libname, 0, 0);
+    NpLog("Attempt to load Tcl dll '%s'\n", libname);
     hinst = LoadLibrary(libname);
     if (hinst) {
 	*tclHandle = hinst;
 
 	sprintf(libname, "%s/tk%s", LIB_RUNTIME_DIR,
 		TCL_LIB_FILE+3 /* skip 'tcl' */);
-	NpLog("Attempt to load Tk dll '%s'\n", (int) libname, 0, 0);
+	NpLog("Attempt to load Tk dll '%s'\n", libname);
 	hinst = LoadLibrary(libname);
 	if (hinst) {
 	    *tkHandle = hinst;
@@ -74,8 +74,7 @@ NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle)
     result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, TCL_REG_DIR_KEY, 0,
 	    KEY_READ, &regKey);
     if (result != ERROR_SUCCESS) {
-	NpLog("Could not access registry \"%s\"\n",
-		(int) TCL_REG_DIR_KEY, 0, 0);
+	NpLog("Could not access registry \"%s\"\n", TCL_REG_DIR_KEY);
 	return TCL_ERROR;
     }
 
@@ -84,7 +83,7 @@ NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle)
     RegCloseKey(regKey);
     if (result != ERROR_SUCCESS) {
 	NpLog("Could not access registry \"%s\" CurrentVersion\n",
-		(int) TCL_REG_DIR_KEY, 0, 0);
+		TCL_REG_DIR_KEY);
 	return TCL_ERROR;
     }
 
@@ -92,7 +91,7 @@ NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle)
 
     result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, path, 0, KEY_READ, &regKey);
     if (result != ERROR_SUCCESS) {
-	NpLog("Could not access registry \"%s\"\n", (int) path, 0, 0);
+	NpLog("Could not access registry \"%s\"\n", path);
 	return TCL_ERROR;
     }
 
@@ -100,17 +99,16 @@ NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle)
     result = RegQueryValueEx(regKey, NULL, NULL, NULL, path, &size);
     RegCloseKey(regKey);
     if (result != ERROR_SUCCESS) {
-	NpLog("Could not access registry \"%s\" Default\n",
-		(int) TCL_REG_DIR_KEY, 0, 0);
+	NpLog("Could not access registry \"%s\" Default\n", TCL_REG_DIR_KEY);
 	return TCL_ERROR;
     }
 
-    NpLog("Found current Tcl installation at \"%s\"\n", (int) path, 0, 0);
+    NpLog("Found current Tcl installation at \"%s\"\n", path);
 
     sprintf(libname, "%s\\bin\\%s", path, TCL_LIB_FILE);
     hinst = LoadLibrary(libname);
     if (!hinst) {
-	NpLog("NpLoadLibrary: could not find dll '%s'\n", (int) libname, 0, 0);
+	NpLog("NpLoadLibrary: could not find dll '%s'\n", libname);
 	return TCL_ERROR;
     }
     *tclHandle = hinst;
@@ -120,7 +118,7 @@ NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle)
     if (!hinst) {
 	FreeLibrary(*tclHandle);
 	*tclHandle = NULL;
-	NpLog("NpLoadLibrary: could not find dll '%s'\n", (int) libname, 0, 0);
+	NpLog("NpLoadLibrary: could not find dll '%s'\n", libname);
 	return TCL_ERROR;
     }
     *tkHandle = hinst;

@@ -78,23 +78,23 @@ PnDisplayStatusCmd(
 {
     NPP instance;
 
-    NpLog("ENTERING PnDisplayStatus\n", 0, 0, 0);
+    NpLog("ENTERING PnDisplayStatus\n");
 
     if (objc != 3) {
 	Tcl_WrongNumArgs(interp, 1, objv, "instance message");
-        NpLog("LEAVING PnDisplayStatus with num args error\n", 0, 0, 0);
+        NpLog("LEAVING PnDisplayStatus with num args error\n");
         return TCL_ERROR;
     }
 
     if (NpGetAndCheckToken(interp, objv[1], NPTCL_INSTANCE,
             (ClientData *) &instance) != TCL_OK) {
-        NpLog("LEAVING PnDisplayStatus with instance error\n", 0, 0, 0);
+        NpLog("LEAVING PnDisplayStatus with instance error\n");
         return TCL_ERROR;
     }
 
     Np_NPN_Status(instance, (const char *) Tcl_GetString(objv[2]));
 
-    NpLog("LEAVING Status: %s\n", (int) Tcl_GetString(objv[2]), 0, 0);
+    NpLog("LEAVING Status: %s\n", Tcl_GetString(objv[2]));
 
     return TCL_OK;
 }
@@ -129,17 +129,17 @@ PnOpenStreamCmd(
     NPStream *streamPtr;
     int status;
 
-    NpLog("ENTERING PnOpenStream\n", 0, 0, 0);
+    NpLog("ENTERING PnOpenStream\n");
     
     if (objc != 4) {
 	Tcl_WrongNumArgs(interp, 1, objv, "instance mimeType frameName");
-        NpLog("Leaving PnOpenStream with num args error\n", 0, 0, 0);
+        NpLog("Leaving PnOpenStream with num args error\n");
         return TCL_ERROR;
     }
     
     if (NpGetAndCheckToken(interp, objv[1], NPTCL_INSTANCE,
             (ClientData *) &instance) != TCL_OK) {
-        NpLog("LEAVING PnOpenStream with instance error\n", 0, 0, 0);
+        NpLog("LEAVING PnOpenStream with instance error\n");
         return TCL_ERROR;
     }
 
@@ -155,7 +155,7 @@ PnOpenStreamCmd(
     if (status != NPERR_NO_ERROR) {
         Tcl_AppendResult(interp, "could not open stream of type \"",
                 mtype, "\" to \"", frame, "\"", (char *) NULL);
-        NpLog("LEAVING PnOpenStream with new stream error\n", 0, 0, 0);
+        NpLog("LEAVING PnOpenStream with new stream error\n");
         return TCL_ERROR;
     }
 
@@ -181,7 +181,7 @@ PnOpenStreamCmd(
     Tcl_SetObjResult(interp, Tcl_NewLongObj((long) streamPtr));
 
     NpLog("LEAVING OpenStream type %s target %s --> 0x%x\n",
-          (int) mtype, (int) frame, (int) streamPtr);
+	    mtype, frame, streamPtr);
 
     return TCL_OK;    
 }
@@ -215,18 +215,18 @@ PnWriteToStreamObjCmd(
     int len;
     char *dataPtr;
 
-    NpLog("Entering PnWriteToStream\n", 0, 0, 0);
+    NpLog("Entering PnWriteToStream\n");
     
     if (objc != 4) {
 	Tcl_WrongNumArgs(interp, 1, objv,
 		"instance stream contents");
-        NpLog("Leaving PnWriteToStream with num args error\n", 0, 0, 0);
+        NpLog("Leaving PnWriteToStream with num args error\n");
         return TCL_ERROR;
     }
 
     if (NpGetAndCheckToken(interp, objv[1], NPTCL_INSTANCE,
 		(ClientData *) &instance) != TCL_OK) {
-        NpLog("Leaving PnWriteToStream with instance token error\n", 0, 0, 0);
+        NpLog("Leaving PnWriteToStream with instance token error\n");
         return TCL_ERROR;
     }
 
@@ -236,7 +236,7 @@ PnWriteToStreamObjCmd(
 
     if (NpGetAndCheckToken(interp, objv[2], NPTCL_STREAM,
 		(ClientData *) &streamPtr) != TCL_OK) {
-        NpLog("Leaving PnWriteToStream with stream token error\n", 0, 0, 0);
+        NpLog("Leaving PnWriteToStream with stream token error\n");
         return TCL_ERROR;
     }
 
@@ -245,7 +245,7 @@ PnWriteToStreamObjCmd(
 
     (void) Np_NPN_Write(instance, streamPtr, len, dataPtr);
 
-    NpLog("Leaving PnWriteToStream (%d) with success\n", len, 0, 0);
+    NpLog("Leaving PnWriteToStream (%d) with success\n", len);
     
     return TCL_OK;
 }
@@ -278,17 +278,17 @@ PnCloseStreamCmd(
     NPStream *streamPtr;
     int status;
 
-    NpLog("ENTERING PnCloseStream\n", 0, 0, 0);
+    NpLog("ENTERING PnCloseStream\n");
 
     if (objc != 3) {
 	Tcl_WrongNumArgs(interp, 1, objv, "instance stream");
-        NpLog("LEAVING PnCloseStream with num args error\n", 0, 0, 0);
+        NpLog("LEAVING PnCloseStream with num args error\n");
         return TCL_ERROR;
     }
     
     if (NpGetAndCheckToken(interp, objv[1], NPTCL_INSTANCE,
             (ClientData *) &instance) != TCL_OK) {
-        NpLog("LEAVING PnCloseStream with instance error\n", 0, 0, 0);
+        NpLog("LEAVING PnCloseStream with instance error\n");
         return TCL_ERROR;
     }
 
@@ -298,7 +298,7 @@ PnCloseStreamCmd(
 
     if (NpGetAndCheckToken(interp, objv[2], NPTCL_STREAM,
             (ClientData *) &streamPtr) != TCL_OK) {
-        NpLog("LEAVING PnCloseStream with stream error\n", 0, 0, 0);
+        NpLog("LEAVING PnCloseStream with stream error\n");
         return TCL_ERROR;
     }
 
@@ -306,7 +306,7 @@ PnCloseStreamCmd(
     if (status != NPERR_NO_ERROR) {
 	Tcl_AppendResult(interp, "could not destroy stream \"",
 		Tcl_GetString(objv[2]), "\"", (char *) NULL);
-        NpLog("LEAVING PnCloseStream with destroy stream error\n", 0, 0, 0);
+        NpLog("LEAVING PnCloseStream with destroy stream error\n");
 	return TCL_ERROR;
     }
 
@@ -324,7 +324,7 @@ PnCloseStreamCmd(
     if (NpGetAndCheckToken(interp, objv[2], NPTCL_STREAM,
             (ClientData *) &streamPtr) == TCL_OK) {
         NpLog("Token for stream %s persists after call to NPN_DestroyStream",
-                (int) Tcl_GetString(objv[2]), 0, 0);
+                Tcl_GetString(objv[2]));
     } else {
         /*
          * NpGetAndCheckToken sets the interpreter result to an error
@@ -335,7 +335,7 @@ PnCloseStreamCmd(
         Tcl_ResetResult(interp);
     }
 
-    NpLog("LEAVING PnDestroyStream with success\n", 0, 0, 0);
+    NpLog("LEAVING PnDestroyStream with success\n");
     
     return TCL_OK;
 }
@@ -367,17 +367,17 @@ PnGetURLCmd(
     NPP instance;
     CONST84 char *url, *frame = NULL;
 
-    NpLog("ENTERING PnGetUrl\n", 0, 0, 0);
+    NpLog("ENTERING PnGetUrl\n");
 
     if ((objc != 3) && (objc != 4)) {
 	Tcl_WrongNumArgs(interp, 1, objv, "instance url ?target?");
-	NpLog("LEAVING PnGetUrl with num args error\n", 0, 0, 0);
+	NpLog("LEAVING PnGetUrl with num args error\n");
 	return TCL_ERROR;
     }
 
     if (NpGetAndCheckToken(interp, objv[1], NPTCL_INSTANCE,
 	    (ClientData *) &instance) != TCL_OK) {
-	NpLog("LEAVING PnGetUrl with instance error\n", 0, 0, 0);
+	NpLog("LEAVING PnGetUrl with instance error\n");
 	return TCL_ERROR;
     }
 
@@ -390,11 +390,11 @@ PnGetURLCmd(
 	    != NPERR_NO_ERROR) {
 	Tcl_AppendResult(interp, "could not get URL \"", url, "\"",
 		(char *) NULL);
-	NpLog("LEAVING PnGetUrl with get url error\n", 0, 0, 0);
+	NpLog("LEAVING PnGetUrl with get url error\n");
 	return TCL_ERROR;
     }
 
-    NpLog("LEAVING PnGetUrl with success\n", 0, 0, 0);
+    NpLog("LEAVING PnGetUrl with success\n");
 
     return TCL_OK;
 }
@@ -434,18 +434,18 @@ PnPostURLObjCmd(
     char *frame, *url, *dataPtr;
     NPError status = NPERR_NO_ERROR;
     
-    NpLog("Entering PnPostUrl\n", 0, 0, 0);
+    NpLog("Entering PnPostUrl\n");
 
     if ((objc != 5) && (objc != 6)) {
 	Tcl_WrongNumArgs(interp, 1, objv,
 		"instance URL target data ?fromFile?");
-	NpLog("Leaving PnPostUrl with num args error\n", 0, 0, 0);
+	NpLog("Leaving PnPostUrl with num args error\n");
 	return TCL_ERROR;
     }
 
     if (NpGetAndCheckToken(interp, objv[1], NPTCL_INSTANCE,
 		(ClientData *) &instance) != TCL_OK) {
-	NpLog("Leaving PnPostUrl with instance error\n", 0, 0, 0);
+	NpLog("Leaving PnPostUrl with instance error\n");
 	return TCL_ERROR;
     }
 
@@ -453,7 +453,7 @@ PnPostURLObjCmd(
     
     if ((objc == 6) &&
 	    (Tcl_GetBooleanFromObj(interp, objv[5], &fromFile) != TCL_OK)) {
-	NpLog("Leaving PnPostUrl with boolean error\n", 0, 0, 0);
+	NpLog("Leaving PnPostUrl with boolean error\n");
 	return TCL_ERROR;
     }
 
@@ -467,12 +467,11 @@ PnPostURLObjCmd(
     if (status != NPERR_NO_ERROR) {
 	Tcl_AppendResult(interp, "could not post to URL \"", url, "\"",
 		(char *) NULL);
-	NpLog("Leaving PnPostUrl with url (%s) error (%d)\n", (int) url, 
-		status, 0);
+	NpLog("Leaving PnPostUrl with url (%s) error (%d)\n", url, status);
 	return TCL_ERROR;
     }
     
-    NpLog("Leaving PnPostUrl with success\n", 0, 0, 0);
+    NpLog("Leaving PnPostUrl with success\n");
 
     return TCL_OK;
 }
@@ -506,17 +505,17 @@ PnUserAgentCmd(
     NPP instance;
     char *userAgentPtr;
 
-    NpLog("ENTERING PnUserAgent\n", 0, 0, 0);
+    NpLog("ENTERING PnUserAgent\n");
     
     if (objc != 2) {
 	Tcl_WrongNumArgs(interp, 1, objv, "instance");
-	NpLog("LEAVING PnUserAgent with num args error\n", 0, 0, 0);
+	NpLog("LEAVING PnUserAgent with num args error\n");
 	return TCL_ERROR;
     }
 
     if (NpGetAndCheckToken(interp, objv[1], NPTCL_INSTANCE,
 	    (ClientData *) &instance) != TCL_OK) {
-	NpLog("LEAVING PnUserAgent with instance error\n", 0, 0, 0);
+	NpLog("LEAVING PnUserAgent with instance error\n");
 	return TCL_ERROR;
     }
 
@@ -525,7 +524,7 @@ PnUserAgentCmd(
 #if 0
 	Tcl_AppendResult(interp, "failed to retrieve useragent",
 		(char *) NULL);
-	NpLog("LEAVING PnUserAgent with user agent error\n", 0, 0, 0);
+	NpLog("LEAVING PnUserAgent with user agent error\n");
 	return TCL_ERROR;
 #else
 	userAgentPtr = "unknown";
@@ -533,7 +532,7 @@ PnUserAgentCmd(
     }
 
     Tcl_AppendResult(interp, userAgentPtr, (char *) NULL);
-    NpLog("LEAVING PnUserAgent OK '%s'\n", (int) userAgentPtr, 0, 0);
+    NpLog("LEAVING PnUserAgent OK '%s'\n", userAgentPtr);
     return TCL_OK;
 }
 
@@ -569,7 +568,7 @@ PnVersionCmd(
     int pMaj, pMin, bMaj, bMin;
     Tcl_Obj *objPtr;
 
-    NpLog("ENTERING PnVersion\n", 0, 0, 0);
+    NpLog("ENTERING PnVersion\n");
 
     /*
      * Ignore arguments
@@ -583,7 +582,7 @@ PnVersionCmd(
     Tcl_ListObjAppendElement(NULL, objPtr, Tcl_NewIntObj(bMin));
     Tcl_SetObjResult(interp, objPtr);
 
-    NpLog("LEAVING PnVersion with success\n", 0, 0, 0);
+    NpLog("LEAVING PnVersion with success\n");
     return TCL_OK;
 }
 

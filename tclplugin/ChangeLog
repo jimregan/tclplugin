@@ -1,3 +1,7 @@
+2002-12-20  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/console.tcl: update console megawidget to v2.
+
 2002-12-19  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	Complete revamp of the plugin directory structure for v3.

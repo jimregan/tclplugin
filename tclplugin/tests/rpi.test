@@ -52,11 +52,11 @@ test rpi-1.1 {communication : big overall test} {
 	interp alias  $i commonSet    {} testSet;
 	# needed to find both logging and rpi
 	interp eval   $i [list set auto_path $auto_path];
-	# Install the logging (::log::truncateStr is needed by rpi)
-	interp eval   $i {package require log 1.0}
+	# Install the logging (::pluglog::truncateStr is needed by rpi)
+	interp eval   $i {package require pluglog 1.0}
 	# replace the log with ours
-	interp alias  $i ::log::log {} testLog $i;
-	interp eval   $i {namespace import ::log::log}
+	interp alias  $i ::pluglog::log {} testLog $i;
+	interp eval   $i {namespace import ::pluglog::log}
     }
     proc bgerror msg {
 	puts stderr "*** FAILED TEST: bgerror occured in Master : $msg"

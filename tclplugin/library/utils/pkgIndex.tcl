@@ -9,7 +9,7 @@
 # full path name of this file's directory.
 
 package ifneeded cfg 1.0 [list source [file join $dir cfg.tcl]]
-package ifneeded log 1.1 [list source [file join $dir log.tcl]]
+package ifneeded pluglog 1.2 [list source [file join $dir log.tcl]]
 package ifneeded plugtcl 1.1 [list source [file join $dir plugtcl.tcl]]
 package ifneeded plugtk 1.0 [list source [file join $dir plugtk.tcl]]
 package ifneeded policy 1.3 [list source [file join $dir policy.tcl]]

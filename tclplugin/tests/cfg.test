@@ -33,7 +33,7 @@ package require cfg 1.0
 namespace import ::cfg::allowed ::cfg::getConstant ::cfg::clear
 
 # Debugging:
-# log::setup stdout
+# pluglog::setup stdout
 
 # Check if we need to load the global definitions file:
 

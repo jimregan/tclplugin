@@ -11,7 +11,6 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) plugtk.tcl 1.5 97/11/11 18:46:23
 # RCS:  @(#) $Id$
 
 package provide plugtk 1.0
@@ -19,6 +18,7 @@ package provide plugtk 1.0
 #
 # Enhanced error management for Tclets (no new toplevel):
 #
+package require pluglog 1.0
 
 # A micro (light!) console (could be used outside bgerror)
 
@@ -56,7 +56,7 @@ proc bgerrorConsole {top {borderColor blue}} {
 
 	pack $wb.b -side right
 	pack $wb.e -side left -expand 1 -fill x
-	pack $wb -fill both -side bottom 
+	pack $wb -fill both -side bottom
 	pack $w -expand 1 -fill both -side top
     }
     $top configure -bg $borderColor
@@ -101,7 +101,7 @@ proc bgerror {errmsg} {
     global errorInfo
     # Log (if log is enabled in the master)
     set errinf [string trim $errorInfo]
-    log "bgerror: $errmsg ($errinf)"
+    ::pluglog::log "bgerror: $errmsg ($errinf)"
     # Set UI
     set top .bgerror
     set msg [bgerrorConsole $top red]

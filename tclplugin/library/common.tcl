@@ -8,7 +8,7 @@
 #
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
-# Copyright (c) 2002 ActiveState Corporation.
+# Copyright (c) 2002-2004 ActiveState Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -21,7 +21,7 @@ package provide setup 1.0
 
 # We require logging (we will initialize it from here):
 
-package require log 1.1
+package require pluglog 1.1
 
 # tkInit : plugin aware Tk will use that proc to initialize themselves
 # if it exists and thus will find directly the Tk where it is expected
@@ -29,7 +29,7 @@ package require log 1.1
 
 proc tkInit {} {
     global tk_library
-    log {} "direct tkInit! -> $tk_library"
+    ::pluglog::log {} "direct tkInit! -> $tk_library"
     uplevel #0 [list source [file join $tk_library tk.tcl]]
 #   rename tkInit {}
 }
@@ -82,7 +82,7 @@ if {[info command wm] == "wm"} {
 		# already done, nothing to do
 		return
 	    }
-	    log {} "Actually loading Tk ([info level -1])"
+	    ::pluglog::log {} "Actually loading Tk ([info level -1])"
 	    # This actually loads / initialize Tk
 	    package require Tk 8.0
 	    # Withdraw the "." untill someone actually need it
@@ -100,27 +100,24 @@ if {[info command wm] == "wm"} {
 proc SetupLogging {} {
     global env
 
-    # bring logging to the global namespace (expected by the other folks)
-    uplevel #0 {namespace import ::log::log ::log::truncateStr}
-
     if {[info exists env(TCL_PLUGIN_TS)]} {
-	proc ::log::TS {} $env(TCL_PLUGIN_TS)
+	proc ::pluglog::TS {} $env(TCL_PLUGIN_TS)
     }
 
-    lappend ::log::attributes SLAVE {-background green -foreground black}
+    lappend ::pluglog::attributes SLAVE {-background green -foreground black}
 
     # Start logging depending on environment vars.
     if {[info exists env(TCL_PLUGIN_LOGFILE)] \
 	    && ($env(TCL_PLUGIN_LOGFILE) != 0) } {
-	::log::setup $env(TCL_PLUGIN_LOGFILE)
+	::pluglog::setup $env(TCL_PLUGIN_LOGFILE)
     } elseif {([info exists env(TCL_PLUGIN_LOGWINDOW)]) \
 	    && ($env(TCL_PLUGIN_LOGWINDOW) != 0)} {
 	# We need Tk for logging to a window :
 	tkLazyInit
 
-	::log::setup window "Log: $::Name"
+	::pluglog::setup window "Log: $::Name"
     }
-}	
+}
 
 # (Eventually) Set up a console if the user wants one:
 
@@ -129,7 +126,7 @@ proc SetupConsole {} {
 
     # Create a console if the user asks for it:
 
-    log {} "Console setup"
+    ::pluglog::log {} "Console setup"
     if {[info exists env(TCL_PLUGIN_CONSOLE)] \
 	    && ($env(TCL_PLUGIN_CONSOLE) != 0)} {
 	if {($env(TCL_PLUGIN_CONSOLE) == 1) || \
@@ -147,9 +144,9 @@ proc SetupConsole {} {
 		    "loading \"$consoleFile\": $msg\n$::errorInfo"
 	    return
 	}
-	log {} "Console file \"$consoleFile\" sourced ok"
+	::pluglog::log {} "Console file \"$consoleFile\" sourced ok"
     } else {
-	log {} "No console created"
+	::pluglog::log {} "No console created"
     }
 }
 
@@ -158,8 +155,8 @@ proc SetupConsole {} {
 
 proc NotifyError {name msg} {
 
-    log $name $msg ERROR
- 
+    ::pluglog::log $name $msg ERROR
+
     # Load tk if not done already:
 
     tkLazyInit
@@ -175,21 +172,6 @@ proc NotifyError {name msg} {
 
     tk_messageBox -icon error -title "Error: $::Name"\
 	    -message "$name: $msg" -type ok
-}
-
-
-# Check the release date
-
-proc CheckAge {} {
-    global plugin
-    scan $plugin(release) %4d%2d%2d year month day
-    set releaseSec [clock scan $month/$day/$year]
-    set diff [expr {int(([clock scan seconds]-$releaseSec)/86400)}]
-    if {$diff>182} {
-	NotifyError Warning "Your copy of the plugin $plugin(patchLevel)\
-		is outdated (~[format %.1f [expr {$diff/30.4}]] months\
-		old)!\nYou should get a new copy\n(see About Plugins...)"
-    }
 }
 
 # Configuration setup
@@ -215,9 +197,6 @@ proc SetupConfig {} {
     }
     # Now re-init the config with the userConfig
     if {[catch {::cfg::init $::cfg::userConfig} msg]} {
-	log {} "$msg: probable plugin configuration problem" ERROR
+	::pluglog::log {} "$msg: probable plugin configuration problem" ERROR
     }
-
-#   CheckAge
-
 }

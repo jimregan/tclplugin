@@ -9,13 +9,7 @@
 # In order for these tests to run, the "com" tcl package must be on the
 # auto_path ('require'able).
 #
-# CONTACT:		sunscript-plugin@sunscript.sun.com
-#
-# AUTHORS:		Jacob Levy			Laurent Demailly
-#			jyl@eng.sun.com			demailly@eng.sun.com
-#			jyl@tcl-tk.com			L@demailly.com
-#
-# Please contact us directly for questions, comments and enhancements.
+# AUTHORS:      Jacob Levy                      Laurent Demailly
 #
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
@@ -23,7 +17,6 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) wait.test 1.4 97/10/10 12:58:38
 # RCS:  @(#) $Id$
 
 #
@@ -79,7 +72,7 @@ test wait-1.2 {wait-1} {
     set v
 } {released}
 
-::log::setup stdout
+::pluglog::setup stdout
 
 test wait-2.1 {wait} {
     puts "***"

@@ -7,7 +7,7 @@
 #
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
-# Copyright (c) 2002 ActiveState Corporation.
+# Copyright (c) 2002-2004 ActiveState Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -18,7 +18,7 @@
 package require http 2
 
 # We require logging
-package require log 1.0
+package require pluglog 1.0
 
 # we need url parsing tools:
 package require url 1.0
@@ -50,7 +50,7 @@ package provide browser 1.0
 namespace eval $::cfg::implNs {
 
     # used features
-    namespace import ::safe::error ::log::log ::safe::interpAlias
+    namespace import ::safe::error ::safe::interpAlias
 
     # exported APIs. We export the "private" APIs ISet and IUnset for
     # sub-packages of this package.
@@ -72,7 +72,7 @@ namespace eval $::cfg::implNs {
     # State variables for each slave are internally stored as arrays
     # called "S${slave}", only the following 5 functions should
     # access those arrays directly:
-    
+
     # Public function to check if a given state attribute is available
 
     proc iexists {slave attribute} {
@@ -159,7 +159,7 @@ namespace eval $::cfg::implNs {
     proc LogAlias {slave args} {
 	# remove all special chars
 	regsub -nocase -all "\[^ -~\]+" [join $args] {_} str
-	log $slave $str "SLAVE"
+	::pluglog::log $slave $str "SLAVE"
     }
 
     # This alias let the slave use the safe part of the "wm" command
@@ -205,7 +205,7 @@ namespace eval $::cfg::implNs {
 	global plugin
 	variable apiVersion
 	variable userAgent
-	
+
 	# Create the interpreter for this instance and enable the package
 	# and policy mechanism:
 
@@ -233,7 +233,7 @@ namespace eval $::cfg::implNs {
 	# install the "log" mechanism for the slave
 	# (we don't use interpAlias to avoid double logging)
 
-	interp alias $name log {} [namespace current]::LogAlias $name
+	interp alias $name ::pluglog::log {} [namespace current]::LogAlias $name
 
 	# Remember we've not seen a stream for this tclet so far
 	# (the first one ought to be the tclet src=)
@@ -282,7 +282,7 @@ namespace eval $::cfg::implNs {
 	    # If an error occur we don't do anything special beside logging
 	    # it, the "siteSafeInit" has to handle it as they wish.
 	    if {[catch {siteSafeInit $name [iget $name browserArgs]} msg]} {
-		log $name "siteSafeInit error : $msg" ERROR
+		::pluglog::log $name "siteSafeInit error : $msg" ERROR
 	    }
 	}
 
@@ -290,8 +290,8 @@ namespace eval $::cfg::implNs {
 	ISet $name userAgent $userAgent
 	ISet $name apiVersion $apiVersion
 
-	log $name "New Instance initialized"
-	
+	::pluglog::log $name "New Instance initialized"
+
 	if {[iexists $name Script]} {
 	    # We must set the origin, but we must also return to our caller
 	    # so we do that in "after idle"
@@ -324,7 +324,7 @@ namespace eval $::cfg::implNs {
     # Called to destroy an instance (and it's interp, state,...) :
 
     proc DestroyInstance {name} {
-	log $name "entering DestroyInstance"
+	::pluglog::log $name "entering DestroyInstance"
 
 	# Remove wait handlers associated with this Tclet:
 
@@ -335,17 +335,17 @@ namespace eval $::cfg::implNs {
 	# Destroy the slave interpreter:
 
 	if {[catch {::safe::interpDelete $name} msg]} {
-	    log $name "Destroy of slave \"$name\" failed: $msg" ERROR
+	    ::pluglog::log $name "Destroy of slave \"$name\" failed: $msg" ERROR
 	}
 
 	# Discard all the information associated with the destroyed
 	# Tclet:
 
 	if {[catch {IUnset $name} msg]} {
-	    log $name "No state left to unset: $msg" WARNING
+	    ::pluglog::log $name "No state left to unset: $msg" WARNING
 	}
 
-	log $name "done with DestroyInstance"
+	::pluglog::log $name "done with DestroyInstance"
     }
 
     #
@@ -362,11 +362,11 @@ namespace eval $::cfg::implNs {
 	}
 
 	if {![iget $name Tk]} {
-	    log $name "Ignoring SetWindow (non-Tk applet)"
+	    ::pluglog::log $name "Ignoring SetWindow (non-Tk applet)"
 	    return
 	}
 
-	log $name [info level 0] NOTICE
+	::pluglog::log $name [info level 0] NOTICE
 
 	set winGeom ${width}x${height}
 
@@ -389,14 +389,14 @@ namespace eval $::cfg::implNs {
 		# but that would mean transferring the complicated startup
 		# state in the master too. Difficult with the current
 		# implementation. To be solved later.
-		log $name "Window changed: used to be $oldwin, now $win\
+		::pluglog::log $name "Window changed: used to be $oldwin, now $win\
 			(probable tk destruction problem upcoming)" WARNING
 	    }
 
 	    # Check if something actually changed
 
 	    if {[string equal [iget $name windowGeometry] $winGeom]} {
-		log $name "Bogus setWindow with nothing new ?"
+		::pluglog::log $name "Bogus setWindow with nothing new ?"
 	    } else {
 		# This is a resize event:
 		ResizeWindow $name $win $winGeom $x $y $width $height \
@@ -415,7 +415,7 @@ namespace eval $::cfg::implNs {
     proc ResizeWindow {name win winGeom x y width height ct cl cb cr} {
 	# This *should* be handled by embedding but apparently is not (yet?).
 
-	log $name [info level 0] NOTICE
+	::pluglog::log $name [info level 0] NOTICE
 	ISet $name windowGeometry $winGeom
 	ISet $name completeWindowGeometry \
 	    [list $x $y $width $height $ct $cl $cb $cr]
@@ -429,22 +429,22 @@ namespace eval $::cfg::implNs {
 	    interp invokehidden $name wm geometry . $winGeom
 	} else {
 	    if {[catch {interp eval $name wm geometry . $winGeom} msg]} {
-		log $name "Changing the geometry in the slave: $msg" ERROR
+		::pluglog::log $name "Changing the geometry in the slave: $msg" ERROR
 	    }
 	}
 
 	# Only update the embed_args if there are no values for width
 	# and height. In the other cases the Tclet can use winfo geometry.
 	# -- commented out until proved necessary
-	
+
 #	foreach v {height width} {
 #	    if {![iexists $name ${v}Set]} {
 #		ISet $name ${v}Set [set $v]
 #		if {[catch {interp eval $name\
 #			[list set embed_args($v) [set $v]]} msg]} {
-#		    log $name "Could not set embed_args($v) : $msg" WARNING
+#		    ::pluglog::log $name "Could not set embed_args($v) : $msg" WARNING
 #		} else {
-#		    log $name "Successfully set embed_args($v) to [set $v]"
+#		    ::pluglog::log $name "Successfully set embed_args($v) to [set $v]"
 #		}
 #	    }
 #	}
@@ -456,11 +456,11 @@ namespace eval $::cfg::implNs {
     #  destroyed and then a new one is given...)
 
     proc NewWindow {name win geom x y w h ct cl cb cr} {
-	
+
 	# Prevent idle tasks processing
 	variable DontDoIdle 1
 
-	log $name [info level 0] NOTICE
+	::pluglog::log $name [info level 0] NOTICE
 
 	# If we had a window before for this interp,
 	# The browser is probably trying to resize us the hard way,
@@ -470,7 +470,7 @@ namespace eval $::cfg::implNs {
 	#  be reloadable several times (but that's less efficient)}
 
 	if {[iexists $name windowGeometry]} {
-	    log $name "We had a window before and reloading\
+	    ::pluglog::log $name "We had a window before and reloading\
 		    tk will most probably fail now..." WARNING
 	}
 
@@ -484,34 +484,34 @@ namespace eval $::cfg::implNs {
 	    # probably just crash (verified on Unix) so we kill
 	    # the interp
 	    set msg "Tk load failed: $msg (-> destroying $name)"
-	    log $name "Tk load failed: $msg" ERROR
+	    ::pluglog::log $name "Tk load failed: $msg" ERROR
 	    IUnset $name window
 	    if {[catch {DestroyInstance $name} err]} {
-		log $name "failed to destroy instance after Tk load failure:\
+		::pluglog::log $name "failed to destroy instance after Tk load failure:\
 			$err" ERROR
 	    }
 	    set DontDoIdle 0
 	    return -code error $msg
 	}
 
-	log $name "loaded Tk" NOTICE
+	::pluglog::log $name "loaded Tk" NOTICE
 
 	# Set the font scaling to 1.0 has it has no meaning in the plugin
 	# context where things are expressed in pixels and not in points
 
 	if {[catch {interp invokehidden $name tk scaling 1.0} err]} {
-	    log $name "NewWindow invokehidden tk scaling: $err" ERROR
+	    ::pluglog::log $name "NewWindow invokehidden tk scaling: $err" ERROR
 	    if {[catch {interp eval $name tk scaling 1.0} err]} {
-		log $name "NewWindow tk scaling: $err" ERROR
+		::pluglog::log $name "NewWindow tk scaling: $err" ERROR
 	    }
 	}
 
 	# Set the appname
 
 	if {[catch {interp invokehidden $name tk appname $name} err]} {
-	    log $name "NewWindow invokehidden tk appname: $err" ERROR
+	    ::pluglog::log $name "NewWindow invokehidden tk appname: $err" ERROR
 	    if {[catch {interp eval $name tk appname $name} err]} {
-		log $name "NewWindow tk appname: $err" ERROR
+		::pluglog::log $name "NewWindow tk appname: $err" ERROR
 	    }
 	}
 
@@ -532,7 +532,7 @@ namespace eval $::cfg::implNs {
 
 	if {(![iexists $name Script]) && (![iexists $name script])} {
 
-	    log $name "window script not ready : putting the banner on"
+	    ::pluglog::log $name "window script not ready : putting the banner on"
 
 	    # Remember we did something (so we undo before launching tclet)
 	    ISet $name hasLogo 1
@@ -613,9 +613,9 @@ namespace eval $::cfg::implNs {
 	    ISet $name stream,$stream,endHandler   [lindex $handlersList 2]
 
 	    set newHandler [lindex $handlersList 0]
-	    if {![string equal $newHandler {}]} {
-		eval $newHandler \
-		     [list $name $stream $url $mimetype $lastModified $size]
+	    if {[llength $newHandler]} {
+		eval [linsert $newHandler end \
+			  $name $stream $url $mimetype $lastModified $size]
 	    }
 	} else {
 
@@ -624,7 +624,7 @@ namespace eval $::cfg::implNs {
 	    # We thus register a special callback for it.
 
 	    if {![iexists $name gotFirstStream]} {
-		log $name "Unknown Instance for this stream !" ERROR
+		::pluglog::log $name "Unknown Instance for this stream !" ERROR
 		error "Unknown Instance $name  for this stream $stream ($url)!"
 	    }
 
@@ -653,10 +653,10 @@ namespace eval $::cfg::implNs {
 		# of a redirect).
 
 		set msg "Unexpected stream $stream \"$url\" ($canonicalURL)"
-		log $name $msg ERROR
+		::pluglog::log $name $msg ERROR
 
 		# Lets not annoy the user, it could be just a timeout
-		
+
 		#return -code error "$name: $msg"
 		return "$name: $msg"
 	    }
@@ -675,7 +675,7 @@ namespace eval $::cfg::implNs {
 
 	ISet $name stream,$stream,data {}
 
-	log $name "New stream $stream $url ($canonicalURL) $size bytes" NOTICE
+	::pluglog::log $name "New stream $stream $url ($canonicalURL) $size bytes" NOTICE
 
 	return "ok"
     }
@@ -683,10 +683,10 @@ namespace eval $::cfg::implNs {
     # The following procedure writes a chunk of data to a stream:
 
     proc WriteStream {name stream length chunk} {
-	log $name "$length additional bytes received for $stream"
+	::pluglog::log $name "$length additional bytes received for $stream"
 
 	if {![iexists $name stream,$stream,writeHandler]} {
-	    log $name "unknown stream $stream while writing" ERROR
+	    ::pluglog::log $name "unknown stream $stream while writing" ERROR
 	    return
 	}
 
@@ -700,24 +700,24 @@ namespace eval $::cfg::implNs {
 	}
 
 	IAppend $name stream,$stream,data $chunk
-	log $name "stored data for $stream in stream,$stream,data attr"
+	::pluglog::log $name "stored data for $stream in stream,$stream,data attr"
 
 	set handler [iget $name stream,$stream,writeHandler]
 
 	if {![string equal $handler ""]} {
-	    log $name \
+	    ::pluglog::log $name \
 		"evaling write handler $handler $name $stream $length $chunk"
-	    eval $handler [list $name $stream $length $chunk]
+	    eval [linsert $handler end $name $stream $length $chunk]
 	}
     }
 
     # DestroyStream, means we can actually process the stream:
 
     proc DestroyStream {name stream reason} {
-	log $name "destroy stream ($reason) $stream"
+	::pluglog::log $name "destroy stream ($reason) $stream"
 
 	if {![iexists $name stream,$stream,endHandler]} {
-	    log $name "unknown stream $stream at end" ERROR
+	    ::pluglog::log $name "unknown stream $stream at end" ERROR
 	    return
 	}
 
@@ -725,7 +725,7 @@ namespace eval $::cfg::implNs {
 	if {[iexists $name stream,$stream,data]} {
 	    set data [iget $name stream,$stream,data]
 	} else {
-	    log $name "$stream has no data"
+	    ::pluglog::log $name "$stream has no data"
 	    set data {}
 	}
 
@@ -734,33 +734,33 @@ namespace eval $::cfg::implNs {
 
 	if {[iexists $name stream,$stream,url]} {
 	    set url [iget $name stream,$stream,url]
-	    log $name "stream $stream has url $url"
+	    ::pluglog::log $name "stream $stream has url $url"
 	    if {[iexists $name openUrl:$url]} {
 		set s [iget $name openUrl:$url]
 		if {$s == $stream} {
-		    log $name "removing stream $stream from openUrl list"
+		    ::pluglog::log $name "removing stream $stream from openUrl list"
 		    IUnset $name openUrl:$url
 		} else {
-		    log $name "streamm mismatch same url for $s and $stream"\
+		    ::pluglog::log $name "streamm mismatch same url for $s and $stream"\
 			    WARNING
 		}
 	    } else {
-		log $name "but url $url is not in openUrls (ok for src='s url)"
+		::pluglog::log $name "but url $url is not in openUrls (ok for src='s url)"
 	    }
 	} else {
-	    log $name "stream $stream has no url !"
+	    ::pluglog::log $name "stream $stream has no url !"
 	}
 
-	if {![string equal $handler ""]} {
+	if {[llength $handler]} {
 	    # Catch so we do the cleanup even it it fails
 	    # and we don't annoy the user
-	    if {[catch {eval $handler\
-		    [list $name $stream $reason $data]} msg]} {
-		log $name "error in end handler $handler $stream $reason:\
+	    if {[catch {eval [linsert $handler end \
+				  $name $stream $reason $data]} msg]} {
+		::pluglog::log $name "error in end handler $handler $stream $reason:\
 			$msg" ERROR
 	    }
 	} else {
-	    log $name "Unhandled End of stream $stream: $reason" WARNING
+	    ::pluglog::log $name "Unhandled End of stream $stream: $reason" WARNING
 	}
 
 
@@ -773,7 +773,7 @@ namespace eval $::cfg::implNs {
 	    lastModified size url mimetype
 	} {
 	    if {[catch {IUnset $name stream,$stream,$field} msg]} {
-		log $name "stream $stream had no $field"
+		::pluglog::log $name "stream $stream had no $field"
 	    }
 	}
     }
@@ -795,7 +795,7 @@ namespace eval $::cfg::implNs {
 	if {[iexists $name originURL]} {
 	    set msg "Trying to change the originURL (to $originURL)\
 		    while it has been set already (to [iget $name originURL])"
-	    log $name $msg SECURITY
+	    ::pluglog::log $name $msg SECURITY
 	    error $msg
 	}
 
@@ -823,10 +823,10 @@ namespace eval $::cfg::implNs {
 
 	    set canonicalURL [::url::format $Proto $Host $Port $Path $Key]
 	    ISet $name originURL $canonicalURL
-	    log $name "originURL set to \"$originURL\""
+	    ::pluglog::log $name "originURL set to \"$originURL\""
 
 	    # Save the home url (directory) of the tclet
-	    
+
 	    ISet $name originHomeDirURL [::url::join $canonicalURL ./]
 
 	    # We compute what host to use in socket requests with special
@@ -854,12 +854,12 @@ namespace eval $::cfg::implNs {
 
 	# We need to initialize the policy mechanism
 	# (which in turns will use our provided "iget",...)
-	
+
 	::safe::initPolicies
 
 	# If we are on Unix, try to load the '~/.tclpluginrc'
 	# Otherwise read 'tclplugin.rc' from the plugin library.
-	
+
 	if {$tcl_platform(platform) == "unix"} {
 	    set fname "~/.tclpluginrc"
 	} else {
@@ -867,7 +867,7 @@ namespace eval $::cfg::implNs {
 	}
 	if {[file exists $fname] \
 		&& [catch {uplevel #0 [list source $fname]} msg]} {
-	    log INIT "error sourcing $fname: $msg" ERROR
+	    ::pluglog::log INIT "error sourcing $fname: $msg" ERROR
 	}
 
 	# Try to load site specific stuff into the main interpreter. This
@@ -881,7 +881,7 @@ namespace eval $::cfg::implNs {
 	# where we find siteInit, among other things..
 
 	if {[catch {uplevel #0 siteInit} msg]} {
-	    log INIT "siteInit failed ($msg)" WARNING
+	    ::pluglog::log INIT "siteInit failed ($msg)" WARNING
 	}
 
 	SetupConsole
@@ -889,7 +889,7 @@ namespace eval $::cfg::implNs {
 
 
     proc SetPageOrigin {name} {
-	log $name "called SetPageOrigin"
+	::pluglog::log $name "called SetPageOrigin"
 
 	# We must set the origin. We use the javascript trick to get the
 	# page url; if it fails we call InitState with empty which
@@ -910,7 +910,7 @@ namespace eval $::cfg::implNs {
     }
 
     proc DonePageOrigin {name stream reason data} {
-	
+
 	# Done:
 
 	# Remove the timeout handler
@@ -923,15 +923,15 @@ namespace eval $::cfg::implNs {
 	IUnset $name originURL
 
 	if {[string equal $reason "EOF"]} {
-	    log $name "got page source url ($stream): \"$data\""
+	    ::pluglog::log $name "got page source url ($stream): \"$data\""
 	    InitState $name $data
 	} else {
-	    log $name "can't get page source url ($stream): $reason" WARNING
+	    ::pluglog::log $name "can't get page source url ($stream): $reason" WARNING
 	    InitState $name {}
 	}
-	
+
 	if {[iexists $name ToLaunch]} {
-	    log $name "will start tclet!"
+	    ::pluglog::log $name "will start tclet!"
 	    LaunchTclet $name {}
 	}
     }
@@ -963,11 +963,11 @@ namespace eval $::cfg::implNs {
 		    # This is done at the end of NewInstance.
 		}
 		"tk" {
-		    log $name "tk specified ($value)" DEBUG
+		    ::pluglog::log $name "tk specified ($value)" DEBUG
 		    ISet $name Tk [string is true -strict $value]
 		}
 		"hidden" {
-		    log $name "hidden specified ($value)" DEBUG
+		    ::pluglog::log $name "hidden specified ($value)" DEBUG
 		    ISet $name Tk 0
 		}
 	    }
@@ -980,7 +980,7 @@ namespace eval $::cfg::implNs {
 #		}
 #	    }
 	}
-	
+
 	set narglst [array get narg]
 
 	# Save the processed args:
@@ -999,8 +999,8 @@ namespace eval $::cfg::implNs {
 
     # Get the user agent (represents the embedding browser version etc.)
     # and decide, based on that, whether to disable some of the
-    # commands.  
-   
+    # commands.
+
     proc ConfigureCommands {name} {
 	global plugin
 	variable userAgent
@@ -1015,7 +1015,7 @@ namespace eval $::cfg::implNs {
 
 	set apiVersion [lindex $vl 0].[lindex $vl 1]
 
-	log $name "set [namespace current]::userAgent=($userAgent)"
+	::pluglog::log $name "set [namespace current]::userAgent=($userAgent)"
 
 	# Disable advanced commands if the container browser does not
 	# support them. Currently we know that Microsoft Internet Explorer
@@ -1027,14 +1027,14 @@ namespace eval $::cfg::implNs {
 	    }
 	    default {}
 	}
-    
+
     }
 
     # Disable commands that do not work properly in some browsers:
 
     proc DisableCommands {ua} {
 	foreach cmd {openStream writeToStream closeStream GetURL PostURL} {
-	    log {} "Disabling command $cmd for $ua"
+	    ::pluglog::log {} "Disabling command $cmd for $ua"
 	    proc $cmd {name args} [list error "$cmd is disabled in $ua"]
 	}
     }
@@ -1052,7 +1052,7 @@ namespace eval $::cfg::implNs {
 	# Prevent idle tasks processing
 	variable DontDoIdle 1
 
-	log $name "Actually Executing code in tclet"
+	::pluglog::log $name "Actually Executing code in tclet"
 	if {$direct} {
 	    set expr $cmd
 	} else {
@@ -1060,14 +1060,14 @@ namespace eval $::cfg::implNs {
 	    if {[iget $name hasLogo]} {
 		ISet $name hasLogo 0
 		if {[catch {interp eval $name {destroy .logo}} msg]} {
-		    log $name "removing splash screen failure (tk destroyed) :\
+		    ::pluglog::log $name "removing splash screen failure (tk destroyed) :\
 			    $msg" ERROR
 		}
 	    }
 	    # Try to use our installed bgerror.
 	    set expr {set plugin(ret) [}
 	    append expr [list catch [list uplevel #0 $cmd] plugin(res)]
-	    # only launch the error console if there is really an 
+	    # only launch the error console if there is really an
 	    # "error" (=1) return code
 	    append expr {]; if {$plugin(ret)==1} {bgerror $plugin(res)};}
 	    # still, we return what we got.
@@ -1076,10 +1076,10 @@ namespace eval $::cfg::implNs {
 	}
 	set ret [catch {interp eval $name $expr} res]
 	if {$ret} {
-	    log $name "Slave eval ($direct) return code $ret ($cmd): $res"\
+	    ::pluglog::log $name "Slave eval ($direct) return code $ret ($cmd): $res"\
 		    ERROR
 	} else {
-	    log $name "Done Executing tclet code: $res"
+	    ::pluglog::log $name "Done Executing tclet code: $res"
 	}
  	set DontDoIdle 0
     }
@@ -1090,18 +1090,18 @@ namespace eval $::cfg::implNs {
 	AddIdleTask [list BgEval $name $direct $cmd]
     }
 
-    # Work around after idle non binary cleanness wrappers 
+    # Work around after idle non binary cleanness wrappers
     # And "task management"
 
     proc AddIdleTask {cmd {first 0}} {
 	variable IdleTasks
 	set l [llength $IdleTasks]
 	if {$first} {
-	    log IDLE "Inserting \"$cmd\" first in IdleTasks list ($l)"
+	    ::pluglog::log IDLE "Inserting \"$cmd\" first in IdleTasks list ($l)"
 	    # (nb: works for empty list only with tcl8.0p1)
 	    set IdleTasks [lreplace $IdleTasks 0 -1 $cmd]
 	} else {
-	    log IDLE "Appending \"$cmd\" to IdleTasks list ($l)"
+	    ::pluglog::log IDLE "Appending \"$cmd\" to IdleTasks list ($l)"
 	    lappend IdleTasks $cmd
 	}
 	after idle [namespace current]::DoIdle
@@ -1112,20 +1112,20 @@ namespace eval $::cfg::implNs {
 	variable DontDoIdle
 	set l [llength $IdleTasks]
 	if {$l <= 0} {
-	    log IDLE "Called DoIdle with empty IdleTasks list !" ERROR
+	    ::pluglog::log IDLE "Called DoIdle with empty IdleTasks list !" ERROR
 	    set DontDoIdle 0
 	} else {
 	    if {$DontDoIdle} {
-		log IDLE "*** Can't do Idle now, postponing ($DontDoIdle)"
+		::pluglog::log IDLE "*** Can't do Idle now, postponing ($DontDoIdle)"
 		if {[incr DontDoIdle]>200} {
 		    # this should never happen...
 		    set IdleTasks {}
 		    set msg "BUG tight event loop or missing\
 			    'set DontDoIdle 0': removing all idle tasks"
-		    log IDLE $msg ERROR
+		    ::pluglog::log IDLE $msg ERROR
 		    NotifyError DoIdle $msg
 		    return
-		}		
+		}
 		# We can not just after idle because all idle tasks
 		# are processed now and we would go into a tight loop
 		after 0 [list after idle [namespace current]::DoIdle]
@@ -1133,10 +1133,10 @@ namespace eval $::cfg::implNs {
 	    }
 	    set cmd [lindex $IdleTasks 0]
 	    set IdleTasks [lrange $IdleTasks 1 end]
-	    # Eval it here 
-	    # (could be namespace eval [namespace current] but we don't need 
+	    # Eval it here
+	    # (could be namespace eval [namespace current] but we don't need
 	    #  really that context)
-	    log IDLE "Idle task ($l): \"$cmd\""
+	    ::pluglog::log IDLE "Idle task ($l): \"$cmd\""
 	    eval $cmd
 	}
     }
@@ -1164,21 +1164,21 @@ namespace eval $::cfg::implNs {
 		# Remove 'ToLaunch' content so we don't evaluate things twice
 		IUnset $name ToLaunch
 		# Prepare for launch (when idle)
-		log $name "actually scheduling the tclet launch now"
+		::pluglog::log $name "actually scheduling the tclet launch now"
 		BgSpawn $name 0 $script
 	    } else {
-		log $name "would launch the tclet, but nothing to launch now!"
+		::pluglog::log $name "would launch the tclet, but nothing to launch now!"
 	    }
 	} else {
-	    log $name "not yet ready to go ([iget $name waiting] to go)"
+	    ::pluglog::log $name "not yet ready to go ([iget $name waiting] to go)"
 	}
     }
 
-    # Decrement the ref counting of tasks we are still waiting 
+    # Decrement the ref counting of tasks we are still waiting
     # completion, if it reaches 0 then actually launch the tclet:
 
     proc DecrWaiting {name} {
-	log $name "decrementing the waiting counter ([iget $name waiting])"
+	::pluglog::log $name "decrementing the waiting counter ([iget $name waiting])"
 	IIncr $name waiting -1
 	EventuallyLaunch $name
     }
@@ -1203,7 +1203,7 @@ namespace eval $::cfg::implNs {
 	    AddToScript $name $data
 	    EventuallyLaunch $name
 	} else {
-	    log $name "Tclet code's stream $stream ended with reason $reason"\
+	    ::pluglog::log $name "Tclet code's stream $stream ended with reason $reason"\
 		    ERROR
 	}
     }
@@ -1218,7 +1218,7 @@ namespace eval $::cfg::implNs {
 	    error "not supported: multiple pending requests for same URL\
 		    ($url)"
 	}
-	
+
 	ISet $name stream,handler:$url \
 		[list $newCallBack $writeCallBack $endCallBack]
 
@@ -1232,7 +1232,7 @@ namespace eval $::cfg::implNs {
 	    error "not supported: multiple pending requests for same URL\
 		    ($url)"
 	}
-	
+
 	ISet $name stream,handler:$url \
 		[list $newCallBack $writeCallBack $endCallBack]
 
@@ -1242,7 +1242,7 @@ namespace eval $::cfg::implNs {
     # Temporary file for posts
     proc TempFile {name data} {
 	set fname [file join $::cfg::Tmp $name]
-	log $name "creating temp file $fname"
+	::pluglog::log $name "creating temp file $fname"
 	set fd [open $fname w]
 	puts $fd $data
 	close $fd
@@ -1294,7 +1294,7 @@ namespace eval $::cfg::implNs {
 	    set token [::wait::token]
 	    set endCallBackHandler [list genericEndHandler $token]
 	    # Check the validity of the timeout argument
-			    
+
 	    # If no timeout was specified, use the default value:
 	    if {[string equal $aTimeout {}]} {
 		variable timeout
@@ -1320,7 +1320,7 @@ namespace eval $::cfg::implNs {
 		    "commonFetcher:$op" $aTimeout} res]
 	    if {$resCode && ([lindex $::errorCode 0] == "TIMEOUT")} {
 		# We need to cleanup the stream
-		log $name "timeout, cleaning up for \"$url\"" WARNING
+		::pluglog::log $name "timeout, cleaning up for \"$url\"" WARNING
 		DestroyStreamFromUrl $name $url TIMEOUT
 		error "timeout"
 	    }
@@ -1334,15 +1334,15 @@ namespace eval $::cfg::implNs {
 
     proc DestroyStreamFromUrl {name url reason} {
 	if {[iexists $name stream,handler:$url]} {
-	    log $name "DestroyStreamFromUrl ($reason): we did not even had\
+	    ::pluglog::log $name "DestroyStreamFromUrl ($reason): we did not even had\
 		    the new stream for $url" WARNING
 	    IUnset $name stream,handler:$url
 	} elseif {[iexists $name openUrl:$url]} {
 	    set stream [iget $name openUrl:$url]
-	    log $name "DestroyStreamFromUrl ($reason): will close $stream"
+	    ::pluglog::log $name "DestroyStreamFromUrl ($reason): will close $stream"
 	    DestroyStream $name $stream $reason
 	} else {
-	    log $name "DestroyStreamFromUrl ($reason): can not find \"$url\""\
+	    ::pluglog::log $name "DestroyStreamFromUrl ($reason): can not find \"$url\""\
 		    ERROR
 	}
     }
@@ -1359,7 +1359,7 @@ namespace eval $::cfg::implNs {
     # This callback releases a blocking geturl or posturl call:
 
     proc genericEndHandler {token name stream reason data} {
-	log $name "calling endGenericHandler $name $stream $reason"
+	::pluglog::log $name "calling endGenericHandler $name $stream $reason"
 	if {[string equal $reason "EOF"]} {
 	    ::wait::release $token $name "endGenericHandler" ok $data
 	} else {
@@ -1387,7 +1387,7 @@ namespace eval $::cfg::implNs {
     # This routine removes the association between a stream and a Tclet.
 
     proc ForgetStream {name stream reason dataPlaceHolder} {
-	log $name "forgetting stream $stream : $reason"
+	::pluglog::log $name "forgetting stream $stream : $reason"
 	IUnset $name streamsToBrowser,$stream
     }
 
@@ -1440,14 +1440,14 @@ namespace eval $::cfg::implNs {
     # Short cut for javascript get urls
 
     proc javascript {name script {callback ""}} {
-	log $name "called javascript:$script, callback $callback"
+	::pluglog::log $name "called javascript:$script, callback $callback"
 	getURL $name javascript:$script 1000 {} {} $callback
     }
 
     # This routine displays a status message:
 
     proc status {name message} {
-	log $name "status \"$message\"" NOTICE
+	::pluglog::log $name "status \"$message\"" NOTICE
 	pnExecute Status $name [list $message]
     }
 
@@ -1456,9 +1456,9 @@ namespace eval $::cfg::implNs {
     proc openStream {name target {type "text/html"}} {
 	set stream [pnExecute OpenStream $name [list $type $target]]
 	if {[OwnsStream $name $stream]} {
-	    log $name "duplicate stream $stream for target $target" WARNING
+	    ::pluglog::log $name "duplicate stream $stream for target $target" WARNING
 	} else {
-	    log $name "openStream \"$target\" --> \"$stream\""
+	    ::pluglog::log $name "openStream \"$target\" --> \"$stream\""
 	    RecordStream $name $stream
 	}
 	return $stream
@@ -1471,7 +1471,7 @@ namespace eval $::cfg::implNs {
 	    error "permission denied" \
 		  "slave $name tried to write to unknown stream $stream"
 	}
-	log $name "writeToStream \"$stream\" \"$contents\"" NOTICE
+	::pluglog::log $name "writeToStream \"$stream\" \"$contents\"" NOTICE
 	pnExecute WriteToStream $name [list $stream $contents]
     }
 
@@ -1482,7 +1482,7 @@ namespace eval $::cfg::implNs {
 	    error "permission denied" \
 		  "slave $name tried to close unknown stream $stream"
 	}
-	log $name "closeStream \"$stream\"" NOTICE
+	::pluglog::log $name "closeStream \"$stream\"" NOTICE
 	pnExecute CloseStream $name [list $stream]
     }
 

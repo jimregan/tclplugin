@@ -1,3 +1,19 @@
+2004-02-11  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* doc/plugin.n:          rename 'log' package 'pluglog' to avoid
+	* installer/install.tcl: conflict with other packages.
+	* library/browser.tcl, library/common.tcl, library/installed.cfg
+	* library/plugmain.tcl, library/remoted.tcl
+	* library/safetcl/feature.tcl, library/safetcl/network.tcl
+	* library/safetcl/persist.tcl, library/safetcl/stream.tcl
+	* library/safetcl/unsafe.tcl, library/safetcl/url.tcl
+	* library/utils/cfg.tcl, library/utils/log.tcl,
+	* library/utils/pkgIndex.tcl, library/utils/plugtcl.tcl
+	* library/utils/plugtk.tcl, library/utils/policy.tcl
+	* library/utils/rpi.tcl, library/utils/utils.tcl
+	* library/utils/wait.tcl
+	* tests/cfg.test, tests/rpi.test, tests/wait.test
+
 2004-02-02  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* doc/Announce.txt (removed): updated docs to clean up old refs

@@ -11,7 +11,6 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) url.tcl 1.11 97/11/13 16:54:37
 # RCS:  @(#) $Id$
 
 # We provide the "url" features set:
@@ -48,7 +47,6 @@ namespace eval ::safefeature::url {
 	variable slaveNs
 
 	foreach {alias 		directFlag} {
-
 		 getURL 	0
 		 displayURL 	0
 		 getForm	0
@@ -66,7 +64,7 @@ namespace eval ::safefeature::url {
 		# If there is no security checks to perform (directFlag = 1)
 		# We will call directly the implementation, otherwise
 		# we go through here
-			
+
 		if {$directFlag} {
 		    interpAlias $slave $nameInSlave ${implNs}::${alias}
 		} else {
@@ -78,7 +76,7 @@ namespace eval ::safefeature::url {
 		interp eval $slave [list namespace eval $slaveNs \
 		    [list namespace export $alias]]
 	    } else {
-		log $slave "denied alias \"$alias\" for \"$policy\""
+		safelog $slave "denied alias \"$alias\" for \"$policy\""
 	    }
 	}
     }
@@ -110,7 +108,7 @@ namespace eval ::safefeature::url {
 
     proc targetIsOk {slave policy frame} {
 	variable frames
-	log $slave "called for $policy to display in \"$frame\""
+	safelog $slave "called for $policy to display in \"$frame\""
 	if {![allowed $slave $policy "frames" $frame]} {
 	    error "permission denied: policy $policy does not allow\
 		    display in frame \"$frame\""
@@ -136,7 +134,7 @@ namespace eval ::safefeature::url {
 	    error "too many frames" "frame \"$frame\",\
 		    maxFrames $::cfg::maxFrames ($frames(_blank)+1)"
 	}
-	log $name "new frame \"$frame\""
+	safelog $name "new frame \"$frame\""
 	incr frames(_blank) ; # not $frame
     }
 
@@ -148,7 +146,7 @@ namespace eval ::safefeature::url {
 
 	# Relative ---> canonical url:
 	set cUrl [::url::join [iget $slave originURL] $url]
-	log $slave "url $url -> $cUrl" NOTICE
+	safelog $slave "url $url -> $cUrl" NOTICE
 
 	if {[allowed $slave $policy "urls" $cUrl]} {
 	    return $cUrl

@@ -2,22 +2,15 @@
 #
 #     Installer for the Tcl plugin.
 #
-# CONTACT:      sunscript-plugin@sunscript.sun.com
-#
-# AUTHORS:      Jacob Levy              Laurent Demailly
-#               jyl@eng.sun.com         demailly@eng.sun.com
-#               jyl@tcl-tk.com          dl@mail.org , L@demailly.com
-#
-# Please contact us directly for questions, comments and enhancements.
+# ORIGINAL AUTHORS:	Jacob Levy			Laurent Demailly
 #
 # Copyright (c) 1995-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
 #
-# SCCS: @(#) install.tcl 1.41 98/01/16 10:12:38
 # RCS:  @(#) $Id$
 
-set supportEmail "plugin@scriptics.com"
-set supportUrl   "http://www.scriptics.com/plugin/"
+set supportEmail "tclplugin-core@lists.sourceforge.net"
+set supportUrl   "http://www.tcl.tk/software/plugin/"
 
 
 # Check if this is running with the plugin environment
@@ -40,7 +33,7 @@ set netscape "netscape ${supportUrl}applets.html#V2"
 
 # Start logging
 
-if {[catch {package require log 1.0} msg]} {
+if {[catch {package require pluglog 1.0} msg]} {
    puts stderr "Can not install - distribution problem:\n\
     \tpackage require log failed: $msg\n\
     \t$DETAILS"
@@ -53,12 +46,12 @@ set uniq "[clock format [clock seconds] -format "%m\%d\%H\%M\%S"]"
 set logFileName inst$uniq.log
 #set logFileName stderr
 
-::log::setup $logFileName
+::pluglog::setup $logFileName
 
 puts "Installation log file is : $logFileName"
 
 proc log {msg {type {}}} {
-    ::log::log {} $msg $type
+    ::pluglog::log {} $msg $type
 }
 
 log "Installing $PRODUCT $DETAILS"
@@ -182,7 +175,6 @@ proc MoveAwayOldVersions {in what dest} {
     }
     return $found
 }
-   
 
 proc Install {targetdir} {
 
@@ -243,7 +235,7 @@ proc Install {targetdir} {
     set exitcode 0
 
     log "Installation completed !"
-	
+
     tellUser "Done!
 
     Comments, bug reports and questions --> email to :
@@ -303,7 +295,6 @@ if {$GUI} {
     label .top.left -image tclimage
     label .top.right -image tclimage
 
-    
     message .msg -aspect 2000
     frame .buttons -bd 5
     label .buttons.l -text "Choose one of:"
@@ -318,7 +309,7 @@ if {$GUI} {
     button .faqb -text FAQ -command FAQ
     button .new -text "What's New?" -command NEW
     button .quit -text "Quit" -command {
-	catch {::log::setup stop}
+	catch {::pluglog::setup stop}
 	set ::exit $exitcode
     }
     button .back -text "Back" -command {
@@ -569,7 +560,7 @@ if {$GUI} {
 
     proc troubleReport {{err {}}} {
 	global logFileName logfile trouble
-	catch {::log::setup stop}
+	catch {::pluglog::setup stop}
 	catch {destroy .troubleview}
 
 	set w .troublechoice

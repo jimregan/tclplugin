@@ -7,11 +7,11 @@
 #
 # Copyright (c) 1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
+# Copyright (c) 2004 ActiveState Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) feature.tcl 1.8 97/11/11 21:11:04
 # RCS:  @(#) $Id$
 
 
@@ -47,12 +47,12 @@ if {[llength [info command ::safe::policy]] == 0} {
 # package require cfg 1.0
 
 # Same for logging
-# package require log 1.0
+# package require pluglog 1.0
 
 namespace eval ::safefeature {
 
     # Public entry point:
-    namespace export setup importAndCheck checkArgs
+    namespace export setup importAndCheck checkArgs safelog
 
     # List of the namespaces from which we need import functions
     # into our child namespaces
@@ -61,7 +61,7 @@ namespace eval ::safefeature {
     set importList {
 	cfg  {allowed getConstant}
 	safe {error interpAlias invokeAndLog}
-	log  {log}
+	safefeature {safelog}
 	{}   {checkArgs}
     }
 
@@ -76,10 +76,15 @@ namespace eval ::safefeature {
 
     variable implNs
 
+    proc safelog {args} {
+	catch {uplevel 1 [list ::pluglog::log] $args}
+    }
+
     # Utility function that import and check that the import actually
     # worked from a source to a destination namespace a given command
 
     proc importAndCheck {destNs srcNs cmd} {
+	if {$destNs eq $srcNs} { return }
 	namespace eval $destNs [list namespace import ${srcNs}::${cmd}]
 	if {[llength [info commands ${destNs}::${cmd}]] == 0} {
 	    error "failed import \"$cmd\" from \"${srcNs}::\"\
@@ -92,7 +97,7 @@ namespace eval ::safefeature {
     # in allowed set
 
     proc checkArgs {allowedList usage flag {withDash 1}} {
-	log {} "flag=\"$flag\", withDash=$withDash,\
+	safelog {} "flag=\"$flag\", withDash=$withDash,\
 		allowedList=\"$allowedList\""
 	if {$withDash} {
 	    if {![string match "-*" $flag]} {
@@ -109,7 +114,7 @@ namespace eval ::safefeature {
 	}
     }
 
-    # Init 
+    # Init
 
     proc init {} {
 
@@ -121,24 +126,24 @@ namespace eval ::safefeature {
 	variable implNs $::cfg::implNs
 
 	# If the iget proc does not yet exist in the slave
-	# we get it from the "implNs" 
-		
+	# we get it from the "implNs"
+
 	if {[llength [info commands ::cfg::iget]] == 0} {
-	    log {} "Installing iget in ::cfg"
+	    safelog {} "Installing iget in ::cfg"
 	    importAndCheck ::cfg $implNs iget
 	}
 
 	# Now setup ourselves (we want access to common utilities
 	# (log, error...) too)
 	setup [namespace current]
-	
+
 	return $implNs
     }
 
     # Setup common parts:
 
     proc setup {namespace} {
-	log {} "setting up namespace $namespace"
+	safelog {} "setting up namespace $namespace"
 
 	variable importList
 	variable implCmdList
@@ -155,7 +160,7 @@ namespace eval ::safefeature {
 		set ns [namespace current]
 	    }
 	    if {[string equal $ns $namespace]} {
-		log {} "setting up $namespace, skipping $cmdList self imports"
+		safelog {} "setting up $namespace, skipping $cmdList self imports"
 		continue
 	    }
 	    foreach cmd $cmdList {

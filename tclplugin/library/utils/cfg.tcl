@@ -64,7 +64,6 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) cfg.tcl 1.31 97/12/02 19:23:34
 # RCS:  @(#) $Id$
 
 # This file provides the "cfg" package:
@@ -73,14 +72,10 @@ package provide cfg 1.0
 
 # We use the 'fancy' logging:
 
-package require log 1.0
+package require pluglog 1.0
 
 namespace eval ::cfg {
     namespace export init allowed getConstant clear
-
-    # We use the fancy logger:
-
-    namespace import ::log::log
 
 ### DEBUG
 #   set ::log::strTruncLen 500
@@ -118,7 +113,7 @@ namespace eval ::cfg {
 
 	if {![string equal $aConfigDir ""]} {
 	    # arg given:
-	    log $name "setting config dir to $aConfigDir"
+	    ::pluglog::log $name "setting config dir to $aConfigDir"
 	    set configDir $aConfigDir
 	}
 
@@ -126,7 +121,7 @@ namespace eval ::cfg {
 	    # arg not given:
 	    set masterConfigFile [file join $configDir $name.cfg]
 	    if {[file exists $masterConfigFile]} {
-		log $name "will use $name.cfg in $configDir\
+		::pluglog::log $name "will use $name.cfg in $configDir\
 			as the master config"
 	    } else {
 		# As a fall back, try to find the config file
@@ -134,7 +129,7 @@ namespace eval ::cfg {
 		set dir [file dirname [info nameofexecutable]]
 		set masterConfigFile [file join $dir $name.cfg]
 		if {[file exists $masterConfigFile]} {
-		    log $name "wil use $name in $dir as the master config"
+		    ::pluglog::log $name "wil use $name in $dir as the master config"
 		} else {
 		    return -code error "could not find $name.cfg (in "
 		}
@@ -158,9 +153,9 @@ namespace eval ::cfg {
 	variable $arrayName
 	if {[info exists $arrayName]} {
 	    unset $arrayName
-	    log {} "cleared config \"$config\""
+	    ::pluglog::log {} "cleared config \"$config\""
 	} else {
-	    log {} "nothing to clear for config \"$config\""
+	    ::pluglog::log {} "nothing to clear for config \"$config\""
 	}
     }
 
@@ -189,7 +184,7 @@ namespace eval ::cfg {
 	set allowSectionVarName [VarName $config $section allow]
 
 	if {![info exists $allowSectionVarName]} {
-	    log $logToken "no match: \"$section\", \"$args\" in $config"
+	    ::pluglog::log $logToken "no match: \"$section\", \"$args\" in $config"
 	    RestoreState $state
 	    return 0
 	}
@@ -210,7 +205,7 @@ namespace eval ::cfg {
 	    RestoreState $state
 	    return 0
 	}
-	
+
 	# If there are no disallows in this section, we found a match,
 	# so allow this request:
 
@@ -249,7 +244,7 @@ namespace eval ::cfg {
 	set constantVarName [VarName $config $section constant${name}]
 
 	if {![info exists $constantVarName]} {
-	    log $logToken "constant \"$name\" not found in $section, $config"
+	    ::pluglog::log $logToken "constant \"$name\" not found in $section, $config"
 	    error "no such constant: $name"
 	}
 
@@ -303,7 +298,7 @@ namespace eval ::cfg {
 	variable _CurrentSrcDir
 	variable _CurrentToken
 	set fname [file join $_CurrentSrcDir $filename]
-	log $_CurrentToken "including \"$fname\" ($filename)"
+	::pluglog::log $_CurrentToken "including \"$fname\" ($filename)"
 	uplevel 1 [list source [file join $_CurrentSrcDir $fname]]
     }
 
@@ -330,7 +325,7 @@ namespace eval ::cfg {
 
     proc when {expression} {
 #	variable _CurrentToken
-#	log $_CurrentToken "Doing when \"$expression\""
+#	::pluglog::log $_CurrentToken "Doing when \"$expression\""
 	# (it's not just "expr" because we need to canonalize booleans
 	#  and others so it works in if {![when ...]}...)
 	# *and* because we evaluate in the caller (namespace) frame
@@ -341,7 +336,7 @@ namespace eval ::cfg {
     
     proc unless {expression} {
 #	variable _CurrentToken
-#	log $_CurrentToken "Doing unless \"$expression\""
+#	::pluglog::log $_CurrentToken "Doing unless \"$expression\""
 	return [expr $expression ? 0 : 1]
     }
 
@@ -358,7 +353,7 @@ namespace eval ::cfg {
 	if {![regexp {^(.*)/(.*)$} $section all config section]} {
 	    set config $_CurrentChkConfig
 	}
-	log {} "ifallowed: config=\"$config\" section=\"$section\"" DEBUG
+	::pluglog::log {} "ifallowed: config=\"$config\" section=\"$section\"" DEBUG
 	# We need to subst our last args because they haven't been
 	# subst'ed yet
 	eval allowed [list $_CurrentToken $config $section] [subst $args]
@@ -388,14 +383,14 @@ namespace eval ::cfg {
 
 	set ConfigArrayName [ConfigArrayName $config]
 	variable $ConfigArrayName
-	
+
 	if {![info exists $ConfigArrayName]} {
 	    variable _InSource
 	    variable _CurrentSrcConfig
 
 	    if {$_InSource} {
 		set state [SaveState]
-		log {} "saved cfg state before source recursion\
+		::pluglog::log {} "saved cfg state before source recursion\
 			$_InSource ($_CurrentSrcConfig)"
 	    }
 	    incr _InSource 1
@@ -406,7 +401,7 @@ namespace eval ::cfg {
 		set configFile [file join $configDir $config.cfg]
 	    }
 
-	    log $logToken "sourcing \"$configFile\" for config \"$config\""
+	    ::pluglog::log $logToken "sourcing \"$configFile\" for config \"$config\""
 
 	    # remember the current SrcDir (for include)
 	    variable _CurrentSrcDir [file dirname $configFile]
@@ -425,14 +420,14 @@ namespace eval ::cfg {
 
 	    set res [catch {DoSource $configFile} msg]
 	    if {$res} {
-		log $logToken "sourcing \"$configFile\": $msg" ERROR
+		::pluglog::log $logToken "sourcing \"$configFile\": $msg" ERROR
 		# Cleanup potentially partially initialized state
 		unset $ConfigArrayName
 	    }
 	    incr _InSource -1
 	    if {$_InSource} {
 		RestoreState $state
-		log {} "restored cfg state after source recursion\
+		::pluglog::log {} "restored cfg state after source recursion\
 			$_InSource ($_CurrentSrcConfig)"
 	    }
 	    return -code $res $msg
@@ -442,7 +437,7 @@ namespace eval ::cfg {
     # Save/restore the state (Current*)
 
     proc SaveState {} {
-	log {} "saving cfg state   [info level] [info level -1]" DEBUG
+	::pluglog::log {} "saving cfg state   [info level] [info level -1]" DEBUG
 	set savedState {}
 	foreach v [info vars [namespace current]::_Current*] {
 	    if {[info exists $v]} {
@@ -456,7 +451,7 @@ namespace eval ::cfg {
 	foreach {v value} $state {
 	    set $v $value
 	}
-	log {} "restored cfg state [info level] [info level -1]" DEBUG
+	::pluglog::log {} "restored cfg state [info level] [info level -1]" DEBUG
     }
 
 
@@ -485,12 +480,12 @@ namespace eval ::cfg {
 	set il [llength $items]
 	set al [llength $arguments]
 	if {$al > $il} {
-	    log $logToken  "can't match \"$items\"\
+	    ::pluglog::log $logToken  "can't match \"$items\"\
 		    with \"$arguments\": args # mismatch"
 	    return 0
 	} elseif {$il > $al} {
 	    set moreItems [lrange $items $al end]
-#	    log $logToken "extra arguments ($moreItems):\
+#	    ::pluglog::log $logToken "extra arguments ($moreItems):\
 #		    will conditionally eval if begining match"
 	    set items [lrange $items 0 [expr {$al-1}]]
 	} else {
@@ -498,11 +493,11 @@ namespace eval ::cfg {
 	}
 	foreach i $items a $arguments {
 	    if {![MatchItem $logToken $i $a]} {
-		log $logToken "didn't match $i with $a" DEBUG
+		::pluglog::log $logToken "didn't match $i with $a" DEBUG
 		return 0
 	    }
 	}
-	log $logToken "matched \"$items\" against \"$arguments\""
+	::pluglog::log $logToken "matched \"$items\" against \"$arguments\""
 	if {[llength $moreItems]} {
 	    # Tricky stuff :
 
@@ -510,18 +505,18 @@ namespace eval ::cfg {
 	    # (moreItems is a list, so we need concat)
 	    set script [concat $moreItems]
 
-	    log $logToken "matched so far, extra args to eval: \"$script\""
+	    ::pluglog::log $logToken "matched so far, extra args to eval: \"$script\""
 	    # We don't eval in the namespace context because the variable
 	    # have only the indirect value there (and are thus pretty
 	    # useless
 	    if {[catch {eval $script} res]} {
-		log $logToken "error processing extra args ($script): $res"\
+		::pluglog::log $logToken "error processing extra args ($script): $res"\
 			ERROR
-		log $logToken "errorInfo=($::errorInfo)" ERROR
+		::pluglog::log $logToken "errorInfo=($::errorInfo)" ERROR
 		return 0
 	    }
 	    # We might want to check that res is a boolean/number...
-	    log $logToken "match res=$res"
+	    ::pluglog::log $logToken "match res=$res"
 	    return $res
 	} else {
 	    return 1
@@ -541,10 +536,10 @@ namespace eval ::cfg {
 
 	if {[catch {namespace eval [namespace current]\
 		[list subst $rawItem]} item]} {
-	    log $logToken "error (probably ok) in subst \"$rawItem\" : $item"
+	    ::pluglog::log $logToken "error (probably ok) in subst \"$rawItem\" : $item"
 	    set item $rawItem
 	}
-	
+
 	# "rawItem" comes from the config file, and can be a list.
 	# "item" is the substituted value of "rawItem".
 	# "arg" is what has been requested by the slave.
@@ -556,7 +551,6 @@ namespace eval ::cfg {
 	}
 
 	if {[string is integer -strict $arg]} {
-	    
 	    # Match rule #3:
 
 	    if {[regexp {^([\-]*[0-9]+)-([\-]*[0-9]+)$} $item dummy n1 n2]} {
@@ -610,7 +604,7 @@ namespace eval ::cfg {
 
 	variable _CurrentSrcConfig
 	variable _CurrentSection
-	
+
 	if {$checkLen} {
 	    variable _CurrentSectionNumArgs
 

@@ -32,7 +32,6 @@
 #
 # ORIGINAL AUTHORS:      Jacob Levy              Laurent Demailly
 #
-# SCCS: @(#) rpi.tcl 1.18 98/02/26 15:02:33
 # RCS:  @(#) $Id$
 
 # We provide the remote procedure invocation:
@@ -41,7 +40,7 @@ package provide rpi 1.1
 
 # Package the we need:
 
-package require log 1.0
+package require pluglog 1.0
 package require wait 1.0
 
 # This is OO design and we emulate a class using the nice namespace
@@ -55,8 +54,6 @@ namespace eval ::rpi {
 
     namespace export newServer newClient invoke iset iget iexists\
 	    shutdown delete serverWaitConnect spawn
-
-    namespace import ::log::log
 
     # Default class wide list of allowed server connection
     variable accessList [list "127.0.0.1:*"]
@@ -126,7 +123,7 @@ namespace eval ::rpi {
     # named "this" containing the instance name: ('class' emulation)
 
     proc ISet {attribute value} {
-	upvar this this
+	upvar 1 this this
 #	puts stderr \
 #		"Set this=($this), attribute=($attribute), value=($value)"
 	set ${this}($attribute) $value
@@ -134,7 +131,7 @@ namespace eval ::rpi {
 
     # Private API to get a value
     proc IGet {attribute} {
-	upvar this this
+	upvar 1 this this
 #	puts stderr \
 #		"IGet ([info level -1]) this=($this), attribute=($attribute)"
 	set ${this}($attribute)
@@ -142,33 +139,33 @@ namespace eval ::rpi {
 
     # Private API to check existance of an attribute
     proc IExists {attribute} {
-	upvar this this
+	upvar 1 this this
 	info exists ${this}($attribute)
     }
 
     # Private API to check unset an attribute
     proc IUnset {attribute} {
-	upvar this this
+	upvar 1 this this
 	unset ${this}($attribute)
     }
 
     # Private API to append to a (list) attribute
     proc ILappend {attribute value} {
-	upvar this this
+	upvar 1 this this
 	lappend ${this}($attribute) $value
     }
 
     # Private API to lreplace in a (list) attribute
     proc ILvreplace {attribute args} {
-	upvar this this
+	upvar 1 this this
 	set ${this}($attribute)\
 	    [eval [list lreplace [set ${this}($attribute)]] $args]
     }
 
     # Private API to log a message
     proc ILog {args} {
-	upvar this this
-	eval [list log $this] $args
+	upvar 1 this this
+	eval [list ::pluglog::log $this] $args
     }
 
     # Private API to create new instance
@@ -575,13 +572,13 @@ namespace eval ::rpi {
     proc SendMsg {socket message} {
 	set what [Encode $message]
 	puts $socket $what
-	log {} "Sent $socket \"$what\"" DEBUG
+	::pluglog::log {} "Sent $socket \"$what\"" DEBUG
     }
 
     proc GetMsg {socket} {
 	# Our messages are always newline terminated
 	set what [gets $socket]
-	log {} "Read $socket \"$what\"" DEBUG
+	::pluglog::log {} "Read $socket \"$what\"" DEBUG
 	return [Decode $what]
     }
 

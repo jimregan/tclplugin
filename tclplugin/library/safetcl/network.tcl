@@ -11,7 +11,6 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) network.tcl 1.8 97/10/16 14:33:34
 # RCS:  @(#) $Id$
 
 
@@ -46,7 +45,7 @@ namespace eval ::safefeature::network {
 	    if {[allowed $slave $policy aliases $alias]} {
 		interpAlias $slave $alias ${nsc}::${alias}Alias $policy
 	    } else {
-		log $slave "denied alias \"$alias\" for $policy"
+		safelog $slave "denied alias \"$alias\" for $policy"
 	    }
 	}
     }
@@ -70,7 +69,7 @@ namespace eval ::safefeature::network {
     proc fconfigureAlias {slave policy sock args} {
 	set allowedList {blocking buffering buffersize
              eofchar translation peername}
-	
+
 	set usage "should be one of -[join $allowedList ", -"]."
 
 	if {[llength $args] == 0} {
@@ -96,14 +95,14 @@ namespace eval ::safefeature::network {
 	    eval [list invokeAndLog $slave fconfigure $sock] $args
 	}
     }
-    
+
     # Security clearance functions
 
     # This procedure decides whether the host and port are allowed for the
     # policy currently in use by the requesting Tclet.
 
     proc hostAndPortAreOk {slave policy host port} {
-	if {![regexp {^[0-9]+$} $port]} {
+	if {![string is integer -strict $port]} {
 	    error "permission denied: non numeric port $port"
 	}
 	if {![allowed $slave $policy {hosts ports} $host $port]} {

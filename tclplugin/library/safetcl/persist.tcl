@@ -14,7 +14,6 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) persist.tcl 1.13 97/12/04 14:19:11
 # RCS:  @(#) $Id$
 
 
@@ -75,7 +74,7 @@ namespace eval ::safefeature::persist {
 	    # catch, above, and this means that the given prefix was bad.
 
 	    if {[info exists key]} {
-		log $slave "bad prefix \"$prefix\": $key" WARNING
+		safelog $slave "bad prefix \"$prefix\": $key" WARNING
 	    }
 
 	    # Switch to using the original URL, and set the prefix in
@@ -83,13 +82,13 @@ namespace eval ::safefeature::persist {
 
 	    set key $originURL
 	    set prefix $originPath
-	    log $slave "bad or empty prefix, using \"$prefix\": \"$key\""
+	    safelog $slave "bad or empty prefix, using \"$prefix\": \"$key\""
 	    if {[catch {interp eval $slave \
 		    [list set ::embed_args(prefix) $prefix]} msg]} {
-		log $slave "could not update embed_args(prefix): $msg" WARNING
+		safelog $slave "could not update embed_args(prefix): $msg" WARNING
 	    }
 	} else {
-	    log $slave "prefix \"$prefix\": \"$key\""
+	    safelog $slave "prefix \"$prefix\": \"$key\""
 	}
 
 
@@ -130,7 +129,7 @@ namespace eval ::safefeature::persist {
 	    if {[allowed $slave $policy aliases $alias]} {
 		interpAlias $slave $alias ${nsc}::${alias}Alias $policy
 	    } else {
-		log $slave "denied alias \"$alias\" for $policy"
+		safelog $slave "denied alias \"$alias\" for $policy"
 	    }
 	}
 
@@ -183,16 +182,16 @@ namespace eval ::safefeature::persist {
 
 	if {[catch {cfg::getConstant $slave $policy persist storage} where]} {
 	    set where $policy
-	} 
+	}
 	set storage [file join $StorageRoot $where]
 
 
 	# Refresh the map from the disk file:
 
 	set fname [file join $storage persist.map]
-	
+
 	if {[catch {source $fname} msg]} {
-	    log $slave "source \"$fname\" failed: $msg" WARNING
+	    safelog $slave "source \"$fname\" failed: $msg" WARNING
 	}
 
 	# Set the dirty bit which indicates that we need to save the
@@ -235,8 +234,8 @@ namespace eval ::safefeature::persist {
 	    puts $fd [list array set Map [array get Map]]
 	    close $fd
 	}
-	
-	log $slave "using \"$key\", \"$policy\" for file directory \"$dir\""
+
+	safelog $slave "using \"$key\", \"$policy\" for file directory \"$dir\""
 
 	return $dir
     }
@@ -268,14 +267,14 @@ namespace eval ::safefeature::persist {
 	    # Try to create the directory:
 	    file mkdir $dir
 	    if {![file exists $dir]} {
-		log $slave "could not create $dir"
+		safelog $slave "could not create $dir"
 		error "permission denied: could not open $fileName" \
 		      "can't create local directory $dir for $slave"
-	    }	
+	    }
 	} elseif {![file isdirectory $dir]} {
 	    error "permission denied: could not open $fileName" \
 		  "local directory $dir for $slave is a file"
-	}	    
+	}
 
 	# Ignore any leading pathname components in the requested file
 	# name, so we won't be fooled into opening a file outside of
@@ -328,7 +327,7 @@ namespace eval ::safefeature::persist {
 	}
 	if {$size > $fileSizeLimit} {
 	    set fileSizeLimit $size
-	    log $slave \
+	    safelog $slave \
 		"file size \"$real\" is $size, bigger than $fileSizeLimit"
 	}
 	ISet $slave FileSizeLimit${fd} $fileSizeLimit
@@ -340,7 +339,7 @@ namespace eval ::safefeature::persist {
 		[expr {1 + [iget $slave openChannelCounter]}]
 	ISet $slave PersistentFile${fd} $real
 
-	log $slave "opened local persistent file \"$real\" in mode $mode"
+	safelog $slave "opened local persistent file \"$real\" in mode $mode"
 
 	return $fd
     }
@@ -387,7 +386,7 @@ namespace eval ::safefeature::persist {
 			   [file tail [lindex $args 1]]]
 	    file delete $fname
 
-	    log $slave "deleted local persistent file \"$fname\""
+	    safelog $slave "deleted local persistent file \"$fname\""
 
 	    return
 	}
@@ -436,7 +435,7 @@ namespace eval ::safefeature::persist {
 		      "slave $slave tried to exceed file size limit\
 		      ($size (=$tell+strlen) > $limit)"
 	    }
-	    log $slave "new file size for $fd: $size"
+	    safelog $slave "new file size for $fd: $size"
 	}
 	interp invokehidden $slave puts -nonewline $fd $string
     }
@@ -506,28 +505,24 @@ namespace eval ::safefeature::persist {
 	    error "wrong # args: should be \"glob pattern ?pattern ...?\""
 	}
 
-	set dir [iget $slave PersistentFileDir]
-
+	set dir  [iget $slave PersistentFileDir]
 	set list {}
 
-	foreach f [glob -nocomplain -- [file join $dir *]] {
-	    lappend list [file tail $f]
+	foreach f [glob -nocomplain -tails -directory $dir -- *] {
+	    lappend list $f
 	}
-	
+
 	set res {}
 
-	foreach pattern $args {
-	    foreach f $list {
-		if {[string match $pattern $f] \
-			&& [lsearch -exact $res $f] < 0} {
+	foreach f $list {
+	    foreach pattern $args {
+		if {[string match $pattern $f]} {
 		    lappend res $f
+		    break
 		}
 	    }
 	}
-	return $res
+	return [lsort -unique $res]
 
     }
-
-
-
 }

@@ -9,7 +9,7 @@
 #
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
-# Copyright (c) 2002 ActiveState Corporation.
+# Copyright (c) 2002-2004 ActiveState Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -45,7 +45,7 @@ proc remotedInit {} {
 	lappend auto_path $plugin(topdir)
     }
 
-    # common Setup 
+    # common Setup
 
     package require setup 1.0
 
@@ -62,7 +62,7 @@ proc remotedInit {} {
     }
 
     if {![string match "*Plugin*" $::tcl_patchLevel]} {
-	log {} "Likely failure upcoming because of invalid tcl\
+	::pluglog::log {} "Likely failure upcoming because of invalid tcl\
 		version: $::tcl_patchLevel" WARNING
     }
 
@@ -71,20 +71,20 @@ proc remotedInit {} {
 	set tk_library [file join $plugin(topdir) $tkdir]
 	if {[string compare $p $tk_library] == 0} {
 	    set msg "Installation problem: can't find safetk.tcl in \"$p\""
-	    log {} $msg ERROR
+	    ::pluglog::log {} $msg ERROR
 	    NotifyError "Fatal" $msg
 	    exit -1
 	}
-	log {} "no safetk.tcl in \"$p\", switching to \"$tk_library\"!" WARNING
+	::pluglog::log {} "no safetk.tcl in \"$p\", switching to \"$tk_library\"!" WARNING
 	if {![file exists [file join $tk_library safetk.tcl]]} {
-	    log {} "no safetk.tcl in $tk_library either! aborting" ERROR
+	    ::pluglog::log {} "no safetk.tcl in $tk_library either! aborting" ERROR
 	    NotifyError "Fatal" "can't find safetk.tcl in \"$p\"\
 		    nor in\ \"$tk_library\" misconfiguration somewhere..."
 	    exit -1
 	}
     }
 
-    log {} "AutoPath = $auto_path"
+    ::pluglog::log {} "AutoPath = $auto_path"
 
     # The correct value has been set by our caller:
     if {![info exists ::cfg::Tmp]} {
@@ -108,7 +108,7 @@ proc remotedInit {} {
     # Install our own limk down handler
 
     proc ::rpi::linkDown {args} {
-	log {} "LinkDown ($args): bye bye !" WARNING
+	::pluglog::log {} "LinkDown ($args): bye bye !" WARNING
 	set ::Exiting 1
 	exit
     }
@@ -133,7 +133,7 @@ proc pnExecute {cmd key aList} {
 # visible presence.
 
 proc bgerror {msg} {
-    log {} "bgerror $msg ($::errorInfo)" ERROR
+    ::pluglog::log {} "bgerror $msg ($::errorInfo)" ERROR
     puts stderr "BgError: $msg\n$::errorInfo"
 }
 
@@ -142,7 +142,7 @@ proc bgerror {msg} {
 
 remotedInit
 
-log {} "remoted.tcl init done"
+::pluglog::log {} "remoted.tcl init done"
 
 # Now wait forever (or at least until someone set the ::Exiting variable).
 

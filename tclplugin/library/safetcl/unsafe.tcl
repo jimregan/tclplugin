@@ -10,7 +10,6 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) unsafe.tcl 1.9 97/11/21 18:49:10
 # RCS:  @(#) $Id$
 
 
@@ -41,7 +40,7 @@ namespace eval ::safefeature::unsafe {
     proc install {slave policy arglist} {
 	variable nsc
 
-	log $slave "starting installation of the UNSAFE features" SECURITY
+	safelog $slave "starting installation of the UNSAFE features" SECURITY
 
 	# If the policy allows this, mark the interpreter as trusted, to
 	# disable the hard-wired checks for safety in Tcl and Tk core. The
@@ -59,7 +58,7 @@ namespace eval ::safefeature::unsafe {
 	# Restore all the commands that we hid previously, removing any
 	# commands with the same name in the process, as allowed by the
 	# policy:
-	
+
 	foreach cmd [interp hidden $slave] {
 	    # If we are not allowed to restore this command by this policy
 	    # then just skip it:
@@ -98,7 +97,7 @@ namespace eval ::safefeature::unsafe {
 		if {[info exists ::$var]} {
 		    if {[catch {interp eval $slave [list unset ::$var]} \
 				msg]} {
-			log $slave "unset ::$var: $msg" WARNING
+			safelog $slave "unset ::$var: $msg" WARNING
 		    }
 		    interp eval $slave \
 			[list array set ::$var [array get ::$var]]
@@ -110,7 +109,7 @@ namespace eval ::safefeature::unsafe {
 	# changed:
 
 	if {[catch {interp eval $slave ::tcl::autoReset} msg]} {
-	    log $slave "failed to auto_reset: $msg" WARNING
+	    safelog $slave "failed to auto_reset: $msg" WARNING
 	}
 
 	# Add master alias
@@ -120,17 +119,17 @@ namespace eval ::safefeature::unsafe {
 	    if {[allowed $slave $policy aliases $alias]} {
 		interpAlias $slave $alias ${nsc}::${alias}Alias $policy
 	    } else {
-		log $slave "denied alias \"$alias\" for $policy"
+		safelog $slave "denied alias \"$alias\" for $policy"
 	    }
-	}	    
+	}
 
 	# Do extra logging because of the potential danger of this feature:
 
-	log $slave "successfully installed UNSAFE features" SECURITY
+	safelog $slave "successfully installed UNSAFE features" SECURITY
     }
 
     proc masterAlias {slave policy args} {
-	log $slave "requested master eval of $args"
+	safelog $slave "requested master eval of $args"
 	if {[catch {uplevel #0 $args} msg]} {
 	    error $msg "giving full error"
 	} else {

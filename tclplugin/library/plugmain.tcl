@@ -9,7 +9,7 @@
 #
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
-# Copyright (c) 2002 ActiveState Corporation.
+# Copyright (c) 2002-2004 ActiveState Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -44,19 +44,19 @@ package require setup 1.0
 # start it, and make it available globally:
 
 SetupLogging
-#log::setup C:/temp/nptcllog.txt
+#::pluglog::setup C:/temp/nptcllog.txt
 
-log MAIN "PLUGIN(LIBRARY) = $plugin(library)"
-log MAIN "PATCHLEVEL      = $plugin(patchLevel)"
-log MAIN "PKGVERSION      = $plugin(pkgVersion)"
-log MAIN "TCL_PATCHLEVEL  = $tcl_patchLevel"
-log MAIN "AUTO_PATH       = $auto_path"
+::pluglog::log MAIN "PLUGIN(LIBRARY) = $plugin(library)"
+::pluglog::log MAIN "PATCHLEVEL      = $plugin(patchLevel)"
+::pluglog::log MAIN "PKGVERSION      = $plugin(pkgVersion)"
+::pluglog::log MAIN "TCL_PATCHLEVEL  = $tcl_patchLevel"
+::pluglog::log MAIN "AUTO_PATH       = $auto_path"
 
 # Initialiaze the configuration (install time / raw parameters):
 
 SetupConfig
 
-log MAIN "PLUGIN(RELEASE) = $plugin(release)"
+::pluglog::log MAIN "PLUGIN(RELEASE) = $plugin(release)"
 
 # Compute what directory to use for temporary files:
 # If it has not been set already in the config
@@ -88,7 +88,7 @@ if {![info exists ::cfg::Tmp]} {
 }
 
 if {[catch {file mkdir $env(TEMP)} msg]} {
-    log MAIN "Can't create storage directory: $msg" ERROR
+    ::pluglog::log MAIN "Can't create storage directory: $msg" ERROR
 }
 
 # Make note that we are not yet ready (with respect to
@@ -102,10 +102,10 @@ set plugin(uaConf) 0
 # started.
 
 proc npInit {} {
-    global tcl_platform env plugin tcl_version
+    global env plugin
 
     # Run out-of-process by default on Unix only.
-    set wish [string equal $tcl_platform(platform) "unix"]
+    set wish [string equal $::tcl_platform(platform) "unix"]
 
     # If the env var TCL_PLUGIN_WISH is set, use it to select a default
     # executable.
@@ -118,17 +118,17 @@ proc npInit {} {
 	return
     }
 
-    if {($wish == "1") || (![file executable $wish])} {
-	set wish $::plugin(executable)
+    if {($wish == "1") || ![file executable $wish]} {
+	set wish $plugin(executable)
 	if {![file executable $wish]} {
-	    log npInit "revert to in-process execution, can't use \"$wish\"" \
+	    ::pluglog::log npInit "revert to in-process execution, can't use \"$wish\"" \
 		ERROR
 	    inprocInit
 	    return
 	}
     }
 
-    log npInit "Will attempt to use \"$wish\""
+    ::pluglog::log npInit "Will attempt to use \"$wish\""
 
     # Save the current environment so that we can restore it after init. We
     # set env(TCL_PLUGIN_WISH) but it does not accumulate so we are OK.
@@ -144,7 +144,7 @@ proc npInit {} {
 	if {[catch {fconfigure $curfname}]} {
 	    set newfname "[file rootname $curfname]D[file extension $curfname]"
 	    set env(TCL_PLUGIN_LOGFILE) $newfname
-	    log npInit "$wish will use file \"$newfname\" for logging" WARNING
+	    ::pluglog::log npInit "$wish will use file \"$newfname\" for logging" WARNING
 	}
     }
 
@@ -155,7 +155,7 @@ proc npInit {} {
 
     if {[catch {NpExec $wish [file join $plugin(library) remoted.tcl] \
 		    [::rpi::iget $srv Port]} msg]} {
-        log npInit "External wish \"$wish\" startup error:\
+        ::pluglog::log npInit "External wish \"$wish\" startup error:\
 		$msg - falling back to inprocess" ERROR
 
 	# Restore environement
@@ -204,21 +204,21 @@ proc NpExec {executable script port} {
 	    } else {
 		set env(LD_LIBRARY_PATH) $plugin(sharedLibraryDir)
 	    }
-	    log NpExec "LD_LIBRARY_PATH1=($env(LD_LIBRARY_PATH))"
+	    ::pluglog::log NpExec "LD_LIBRARY_PATH1=($env(LD_LIBRARY_PATH))"
 	} elseif {$tcl_platform(platform) == "windows"} {
 	    if {[info exists env(PATH)]} {
 		set env(PATH) "$plugin(sharedLibraryDir);$env(PATH)"
 	    } else {
 		set env(PATH) $plugin(sharedLibraryDir)
 	    }
-	    log NpExec "PATH1=($env(PATH))"
+	    ::pluglog::log NpExec "PATH1=($env(PATH))"
 	}
     }
 
-    log NpExec "exec'ing '$executable $script $port'"
+    ::pluglog::log NpExec "exec'ing '$executable $script $port'"
 
     set ::WishPid [exec $executable $script $port &]
-    log NpExec "Exec ok (pid $::WishPid)"
+    ::pluglog::log NpExec "Exec ok (pid $::WishPid)"
 }
 
 
@@ -231,19 +231,19 @@ proc NpExec {executable script port} {
 
 proc npShutDown {} {
 
-    log npShutDown "Plugin entered npShutDown"
+    ::pluglog::log npShutDown "Plugin entered npShutDown"
 
     # Work around Tcl bug where the sockets aren't being (always) closed
     # when we destroy the interp
 
     if {[info exists ::Cli]} {
 	if {[catch {::rpi::delete $::Cli} msg]} {
-	    log npShutDown "error deleting client socket ${::Cli}: $msg"
+	    ::pluglog::log npShutDown "error deleting client socket ${::Cli}: $msg"
 	} else {
-	    log npShutDown "sucessfully deleted client socket $::Cli"
+	    ::pluglog::log npShutDown "sucessfully deleted client socket $::Cli"
 	}
     } else {
-	log npShutDown "No peer socket to delete"
+	::pluglog::log npShutDown "No peer socket to delete"
     }
 
     # Work around a Tk bug where Tk can try to map a destroyed but never
@@ -252,7 +252,7 @@ proc npShutDown {} {
     #     might never be executed)
     catch {destroy .}
 
-    log npShutDown "Plugin done with npShutDown"
+    ::pluglog::log npShutDown "Plugin done with npShutDown"
 }
 
 #
@@ -263,14 +263,14 @@ proc npShutDown {} {
 set npAPIbody {
     if {![info exists ::id2name($id)]} {
 	set msg "called API with unknown instance id \"$id\""
-	log {} $msg ERROR
+	::pluglog::log {} $msg ERROR
 	return -code error $msg
     }
     set name $::id2name($id)
-    log $name "called API $args" DEBUG
+    ::pluglog::log $name "called API $args" DEBUG
     if {[catch {EXEC API $name $args} res]} {
 	set msg "in API: $res"
-	log $name $msg ERROR
+	::pluglog::log $name $msg ERROR
 	return -code error $msg
     }
 }
@@ -304,7 +304,7 @@ proc CompleteInit {name} {
     if {$plugin(ready)} {
 	return
     }
-    log $name "Plugin not ready..."
+    ::pluglog::log $name "Plugin not ready..."
 
     # Are we waiting for server connection
     if {[info exists plugin(server)]} {
@@ -326,7 +326,7 @@ proc CompleteInit {name} {
 	    if {[catch {::rpi::serverWaitConnect $srv ::Cli} msg]} {
 		# We timed out, fall back
 		# (NB: We should kill the exec'ed process (using $::WishPid))
-		log {} "No connection from external wish received ($msg)\
+		::pluglog::log {} "No connection from external wish received ($msg)\
 			falling back to inprocess" ERROR
 		::rpi::delete $srv
 		set plugin(fallBackToInProc) 1
@@ -334,13 +334,13 @@ proc CompleteInit {name} {
 		# We close the listening server (1 connection only)
 		::rpi::delete $srv
 		set plugin(ready) 1
-		log $name "Marking the plugin as ready (and fully unwinded)"
+		::pluglog::log $name "Marking the plugin as ready (and fully unwinded)"
 	    }
 	} else {
-	    log $name "We've wait so it should be 'almost' ready now\
+	    ::pluglog::log $name "We've wait so it should be 'almost' ready now\
 		    (except for the unwind)"
 	    if {![info exists ::Cli]} {
-		log $name "Except that we don't have the connection!\
+		::pluglog::log $name "Except that we don't have the connection!\
 			fall back! to inproc..."
 		set plugin(fallBackToInProc) 1
 	    }
@@ -357,7 +357,7 @@ proc CompleteInit {name} {
 		CompleteInit $name
 		return
 	    }
-	    log $name "initializing the communication procs"
+	    ::pluglog::log $name "initializing the communication procs"
 	    serverInit
 	    # setup the available commands based on UserAgent...
 	    npExecute ConfigureCommands $name {}
@@ -388,19 +388,19 @@ proc npNewInstance {id args} {
     set name "tclet$::TcletId"
     if {[info exists ::id2name($id)]} {
 	set msg "called NewInstance with id \"$id\" already known!!"
-	log $name $msg ERROR
+	::pluglog::log $name $msg ERROR
 	return -code error $msg
     }
-    log $name "NewInstance: Assigned name \"$name\" to token \"$id\""
+    ::pluglog::log $name "NewInstance: Assigned name \"$name\" to token \"$id\""
     set ::id2name($id) $name
     set ::name2id($name) $id
 
     # Complete the initialization
     CompleteInit $name
 
-    log $name "called npNewInstance $args" DEBUG
+    ::pluglog::log $name "called npNewInstance $args" DEBUG
     if {[catch {npExecute NewInstance $name $args} res]} {
-	log $name $res ERROR
+	::pluglog::log $name $res ERROR
 	return -code error $res
     }
 }
@@ -408,20 +408,20 @@ proc npNewInstance {id args} {
 proc npDestroyInstance {id args} {
     if {![info exists ::id2name($id)]} {
 	set msg "called DestroyInstance with unknown instance id \"$id\""
-	log {} $msg ERROR
+	::pluglog::log {} $msg ERROR
 	return -code error $msg
     }
     set name $::id2name($id)
-    log $name "called DestroyInstance $args" DEBUG
+    ::pluglog::log $name "called DestroyInstance $args" DEBUG
     if {[catch {npExecute DestroyInstance $name $args} res]} {
-	log $name $res ERROR
+	::pluglog::log $name $res ERROR
 	unset ::id2name($id)
 	unset ::name2id($name)
 	return -code error $res
     }
-#    log $name "going to spawn DestroyInstance"
+#    ::pluglog::log $name "going to spawn DestroyInstance"
 #    npSpawn DestroyInstance $name $args
-#    log $name "done spawn DestroyInstance"
+#    ::pluglog::log $name "done spawn DestroyInstance"
 
     unset ::id2name($id)
     unset ::name2id($name)
@@ -435,14 +435,14 @@ proc npDestroyInstance {id args} {
 set pnAPIbody {
     if {![info exists ::name2id($name)]} {
 	set msg "called API with unknown name \"$name\""
-	log {} $msg ERROR
+	::pluglog::log {} $msg ERROR
 	return -code error $msg
     }
     set id $::name2id($name)
-    log $name "called API $args" DEBUG
+    ::pluglog::log $name "called API $args" DEBUG
     if {[catch {uplevel #0 pniAPI $id $args} res]} {
 	set msg "in API: $res"
-	log $name $msg ERROR
+	::pluglog::log $name $msg ERROR
 	return -code error $msg
     }
     set res
@@ -466,7 +466,7 @@ foreach api {
 proc SetupExecute {inproc} {
     if {$inproc} {
 	set ::inprocTk 1
-	log {} "configuring npExecute and friends for INPROC"
+	::pluglog::log {} "configuring npExecute and friends for INPROC"
 	# N->P 
 	# find the command in the configured implementation namespace
 	proc npExecute {cmd name aList} {
@@ -488,7 +488,7 @@ proc SetupExecute {inproc} {
 	}
     } else {
 	set ::inprocTk 0
-	log {} "configuring npExecute and friends for OUTPROC"
+	::pluglog::log {} "configuring npExecute and friends for OUTPROC"
 	# N->P   (P->N is on the remoted.tcl side)
 	proc npExecute {cmd name aList} {
 	    ::rpi::invoke $::Cli "\${cfg::implNs}::$cmd $name $aList"
@@ -539,18 +539,18 @@ proc inprocInit {} {
 
     ${::cfg::implNs}::init
 
-    log inprocInit "plugin started in-process."
+    ::pluglog::log inprocInit "plugin started in-process."
 }
 
 
 # This procedure handles background errors:
 
 proc bgerror {msg} {
-    log {} "bgerror $msg ($::errorInfo)" ERROR
+    ::pluglog::log {} "bgerror $msg ($::errorInfo)" ERROR
     puts stderr "BgError: $msg\n$::errorInfo"
 }
 
 npInit
 
-log MAIN "pluginmain.tcl initialized."
+::pluglog::log MAIN "pluginmain.tcl initialized."
 

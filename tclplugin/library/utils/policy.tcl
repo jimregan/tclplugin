@@ -10,7 +10,6 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) policy.tcl 1.42 98/01/15 15:05:32
 # RCS:  @(#) $Id$
 
 # This file provides the policy package:
@@ -29,7 +28,7 @@ package require Tcl 8.0
 
 # We use the external improved logging mechanism
 
-package require log 1.0
+package require pluglog 1.0
 
 # We require the configuration mechanism
 # (supposedly already initialized at this point
@@ -47,9 +46,8 @@ namespace eval ::safe {
 	    error interpAlias invokeAndLog getattr
 
     # What we import:
-    
-    namespace import ::cfg::allowed ::log::log
 
+    namespace import ::cfg::allowed
 
     # Place to set information about an error that shall not
     # go to the slave. Used by "safe::error"
@@ -68,7 +66,7 @@ namespace eval ::safe {
     # It must be called before using policies
 
     proc initPolicies {} {
-	log {} "policies initialization" NOTICE
+	::pluglog::log {} "policies initialization" NOTICE
 
 	# We need to have the common safetcl/features
 	# loaded and init'ed (they will for instance define
@@ -173,7 +171,7 @@ namespace eval ::safe {
 	# initialized.
 
 	if {[catch {InstallFeatures $slave $policy $args} num]} {
-	    log $slave \
+	    ::pluglog::log $slave \
 		"InstallFeatures $policy $args failed : $num ($::errorInfo),\
 		killing slave" SECURITY
 	    SaveErrorInfo
@@ -184,7 +182,7 @@ namespace eval ::safe {
 		    "Failed for policy \"$args\": $num\
 		    \nCheck your installation and configuration\
 		    ($::cfg::configDir)\n"} msg]} {
-		log $slave "could not NotifyError: $msg" WARNING
+		::pluglog::log $slave "could not NotifyError: $msg" WARNING
 	    }
 	    error "failed to install features for policy $policy" "dead interp"
 	}
@@ -198,7 +196,7 @@ namespace eval ::safe {
 
 	# At this point the policy is loaded in the slave.
 
-	log $slave "policy \"$args\" loaded" SECURITY
+	::pluglog::log $slave "policy \"$args\" loaded" SECURITY
 
 	return [Set $pname]
     }
@@ -208,15 +206,15 @@ namespace eval ::safe {
     # the Tclet.
 
     proc InstallFeatures {slave policy arglist} {
-	
+
 	set num 0
 	# The overall features list is saved in the cfg:: namespace
 	# (set from config/<application>.cfg)
 
 	foreach feature $::cfg::featuresList {
 	    if {[allowed $slave $policy "features" $feature]} {
-		log $slave "installing feature $feature for policy $policy"
-		
+		::pluglog::log $slave "installing feature $feature for policy $policy"
+
 		# If an error occur, this is a bad sign, for security
 		# reason we'd rather kill the slave, so we don't catch
 		# the package require here: (and thus 'policy' will
@@ -232,7 +230,7 @@ namespace eval ::safe {
 		incr num
 
 	    } else {
-		log $slave "disallowing feature $feature for policy $policy"
+		::pluglog::log $slave "disallowing feature $feature for policy $policy"
 	    }
 	}
 	return $num
@@ -245,10 +243,10 @@ namespace eval ::safe {
     # interception , logging using InterpInvokeAlias.
 
     proc interpAlias {slave nameInSlave nameInMaster args} {
-	log $slave "new alias: \"$nameInSlave\" -> (invoke) \"$nameInMaster $args\""
+	::pluglog::log $slave "new alias: \"$nameInSlave\" -> (invoke) \"$nameInMaster $args\""
 	set previous [interp alias $slave $nameInSlave]
 	if {![string equal $previous ""]} {
-	    log $slave "replacing previous alias: \"$previous\""
+	    ::pluglog::log $slave "replacing previous alias: \"$previous\""
 	}
 	interp alias $slave $nameInSlave \
 	    {} [namespace current]::InterpInvokeAlias \
@@ -293,7 +291,7 @@ namespace eval ::safe {
 	if {[string equal $command {}]} {
 	    if {[catch {eval interp invokehidden [list $slave] \
 			    $alias $argsList $args} res]} {
-		log $slave "error in slave while executing \"$alias $args\":\
+		::pluglog::log $slave "error in slave while executing \"$alias $args\":\
 			$res" ERROR
 		ReturnError $res
 	    }
@@ -307,23 +305,23 @@ namespace eval ::safe {
 		    if {[regexp "^no value given for parameter \"\[^\"]+\"" \
 			      $res safem] \
 			    || [regexp {too many arguments$} $res safem]} {
-			log $slave "probable slave's syntax error: $res\
+			::pluglog::log $slave "probable slave's syntax error: $res\
 			      -> $safem ($command $argsList $args)" ERROR
 			set res $safem
 		    } else {
-			log $slave "unexpected in\
+			::pluglog::log $slave "unexpected in\
 				\"$command $argsList $args\" ($alias): $res"\
 				ERROR
 			set res "error"
 		    }
 		} else {
-		    log $slave "$errorMessage ($command $argsList $args\
+		    ::pluglog::log $slave "$errorMessage ($command $argsList $args\
 			    ($alias): $res)" ERROR
 		}
 		ReturnError $res
 	    }
 	}
-	log $slave "$command $argsList $args ($alias) -> $res" NOTICE
+	::pluglog::log $slave "$command $argsList $args ($alias) -> $res" NOTICE
 	return $res
     }
 
@@ -344,7 +342,7 @@ namespace eval ::safe {
 		 res]} {
 	    error $res "invoking $command $args"
 	}
-	log $slave "$command $args -> $res" NORMAL
+	::pluglog::log $slave "$command $args -> $res" NORMAL
 	return $res
     }
 
@@ -353,6 +351,6 @@ namespace eval ::safe {
     # more powerfull ::log::
 
     rename Log LogOld
-    proc Log {slave msg {type ERROR}} {log $slave $msg $type}
+    proc Log {slave msg {type ERROR}} {::pluglog::log $slave $msg $type}
 
 }

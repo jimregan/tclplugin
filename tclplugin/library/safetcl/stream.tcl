@@ -11,7 +11,6 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) stream.tcl 1.2 97/10/06 18:30:15
 # RCS:  @(#) $Id$
 
 # We provide the "stream" feature set and security checks:
@@ -48,7 +47,6 @@ namespace eval ::safefeature::stream {
 
 	foreach {alias		directFlag} {
 		 openStream	0
-
 		 closeStream	1
 		 writeToStream	1
 	} {
@@ -60,7 +58,7 @@ namespace eval ::safefeature::stream {
 		# If there is no security checks to perform (directFlag = 1)
 		# We will call directly the implementation, otherwise
 		# we go through here
-			
+
 		if {$directFlag} {
 		    interpAlias $slave $nameInSlave ${implNs}::${alias}
 		} else {
@@ -72,7 +70,7 @@ namespace eval ::safefeature::stream {
 		interp eval $slave [list namespace eval $slaveNs \
 		    [list namespace export $alias]]
 	    } else {
-		log $slave "denied alias \"$alias\" for \"$policy\""
+		safelog $slave "denied alias \"$alias\" for \"$policy\""
 	    }
 	}
     }

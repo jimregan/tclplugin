@@ -19,14 +19,15 @@ package provide plugtcl 1.1
 # Default error management for Tclets (without Tk, Tk version is in
 # plugtk package)
 #
+package require pluglog 1.0
 
 proc bgerror {errmsg} {
     global errorInfo
-    log "bgerror: $errmsg ($errorInfo)"
+    ::pluglog::log {} "bgerror: $errmsg ($errorInfo)"
 }
 
 # This loads misc general purpose utilities
-# (must not be lasy loading or the tcl::autoReset call in
+# (must not be lazy loading or the tcl::autoReset call in
 #  safetcl unsafe.tcl will fail)
 
 package require tcl::utils 1.0

@@ -5,7 +5,7 @@
 #
 # Copyright (c) 1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
-# Copyright (c) 2002 ActiveState Corporation.
+# Copyright (c) 2002-2004 ActiveState Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -18,7 +18,7 @@
 
 package provide tcl::utils 1.0
 
-package require log 1.0
+package require pluglog 1.0
 
 namespace eval ::tcl {
     namespace export autoReset

@@ -21,7 +21,7 @@ package provide wait 1.1
 
 # Package the we need:
 
-package require log 1.0
+package require pluglog 1.0
 
 # As usual, public APIs and externally settable variables start lowercase
 # We use [namespace current] everywhere we need the namespace name so
@@ -30,8 +30,6 @@ package require log 1.0
 namespace eval ::wait {
 
     namespace export token register hold release wait
-
-    namespace import ::log::log
 
     # number of stacked waits
     variable InWait 0
@@ -123,20 +121,20 @@ namespace eval ::wait {
 
 	if {$l == 0} {
 	    if {$scriptGiven} {
-		log $logname "WALL stack empty for $msg, executing script now"
+		::pluglog::log $logname "WALL stack empty for $msg, executing script now"
 		if {[catch {uplevel #0 $script} err]} {
-		    log $logname "$msg: $err" ERROR
+		    ::pluglog::log $logname "$msg: $err" ERROR
 		}
-		return 
+		return
 	    } else {
-		log $logname "WALL stack empty for $msg"
+		::pluglog::log $logname "WALL stack empty for $msg"
 		return 0
 	    }
 	}
 
 	set i 0
 
-	log $logname "WALL for $msg : $l / $InWait / $Rcount"
+	::pluglog::log $logname "WALL for $msg : $l / $InWait / $Rcount"
 
 	# Find the deepest un released var
 	while {$i<$l} {
@@ -144,9 +142,9 @@ namespace eval ::wait {
 	    set vstat [lindex [set $vname] 0]
 	    if {[string equal $vstat "waiting"]} {
 		# Found !
-		log $logname "WALL $i -> $vname for $msg : $InWait"
+		::pluglog::log $logname "WALL $i -> $vname for $msg : $InWait"
 		vwait $vname
-		log $logname "WALL $i <- $vname for $msg : $InWait"
+		::pluglog::log $logname "WALL $i <- $vname for $msg : $InWait"
 		break
 	    }
 	    incr i
@@ -154,11 +152,11 @@ namespace eval ::wait {
 
 
 	if {$scriptGiven} {
-	    log $logname "WALL DONE for $msg: $InWait / $Rcount - re-queing"
+	    ::pluglog::log $logname "WALL DONE for $msg: $InWait / $Rcount - re-queing"
 	    # Next time we get called we (should) have unwind all the above
 	    after idle [list [namespace current]::wait $logname "${msg}+" $script]
 	} else {
-	    log $logname "WALL DONE for $msg: $InWait / $Rcount"
+	    ::pluglog::log $logname "WALL DONE for $msg: $InWait / $Rcount"
 	    return $InWait
 	}
     }
@@ -191,12 +189,10 @@ namespace eval ::wait {
 	} else {
 	    set resultIsHere 0
 	}
-	
+
 	if {$resultIsHere} {
 	    # The variable already holds a result, nothing to do
-
 	    set common "hold $token : already exist (immediate return)"
-	    
 	} else {
 	    # 'Normal' case, we have to wait/hold for release:
 
@@ -212,7 +208,7 @@ namespace eval ::wait {
 			     [list TIMEOUT $token $timeout]]]
 
 	    set common "hold $token $msg ($vname) timeout $timeout"
-	    log $logname "Entering  $common - $InWait to go."
+	    ::pluglog::log $logname "Entering  $common - $InWait to go."
 	    set $vname [list "waiting" $id]
 	    EnQueue $vname
 	    vwait $vname
@@ -222,7 +218,7 @@ namespace eval ::wait {
 	}
 
 	set resList [set $vname]
-	log $logname "Exiting   $common - res($resList),\
+	::pluglog::log $logname "Exiting   $common - res($resList),\
 		$InWait wait to go - $Rcount releases pending"
 	unset $vname
 
@@ -240,7 +236,7 @@ namespace eval ::wait {
 	if {![info exists $vname]} {
 	    set msg "invalid (expired? not registered?)\
 		    release token \"$token\" ($msg) ($vname)"
-	    log $logname $msg ERROR
+	    ::pluglog::log $logname $msg ERROR
 	    return -code error $msg
 	}
 	set vstat [lindex [set $vname] 0]
@@ -252,22 +248,22 @@ namespace eval ::wait {
 	    "waiting" {
 		incr Rcount
 		if {[IsLast $vname]} {
-		    log $logname $commonMsg
+		    ::pluglog::log $logname $commonMsg
 		} else {
-		    log $logname "$commonMsg Not Last! (wrong order)" WARNING
+		    ::pluglog::log $logname "$commonMsg Not Last! (wrong order)" WARNING
 		}
 		set $vname $common
 		after cancel $id
 	    }
 	    "registered" {
-		log $logname "$commonMsg BEFORE hold"
+		::pluglog::log $logname "$commonMsg BEFORE hold"
 		set $vname $common
 	    }
 	    default {
 		# all other cases are result already here and thus errors:
 		set msg "multiple release attempt for token \"$token\"\
 			($msg) ($vname,{$vstat $id} ignoring {$common})"
-		log $logname $msg ERROR
+		::pluglog::log $logname $msg ERROR
 		return -code error $msg
 	    }
 	}

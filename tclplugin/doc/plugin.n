@@ -284,8 +284,7 @@ All of these variables are accessible in the master interpreter in the
 global Tcl array \fBenv\fR.
 .TP
 \fBTCL_PLUGIN_DLL\fR
-If set, this specifies the Tcl dll to attempt to load first,
-valid on unix only.
+If set, this specifies the Tcl dll to attempt to load first.
 .TP
 \fBTCL_PLUGIN_DIR\fR
 The value is used to find the runtime library for the Tcl plugin.
@@ -301,7 +300,7 @@ executable that will be used as an external process to run Tclets. The
 executable must be based on Tcl/Tk 8.0 or later.
 .TP
 \fBTCL_PLUGIN_CONSOLE\fR
-If set to \fB1\fR, a console using Jeff Hobb's \fBtkCon\fR application will
+If set to \fB1\fR, a console using Jeff Hobbs' \fBtkcon\fR application will
 be created; if set to another value, the console will be created by
 \fBsource\fRing the value as a Tcl script.
 The console window is created and iconified; it will show up as an icon on

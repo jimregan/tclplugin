@@ -104,8 +104,7 @@ proc ::plugin::init_extern {} {
     global env plugin
 
     # Run out-of-process by default on Unix only.
-    #set wish [string equal $::tcl_platform(platform) "unix"]
-    set wish 0
+    set wish [string equal $::tcl_platform(platform) "unix"]
 
     # If the env var TCL_PLUGIN_WISH is set, use it to select a default
     # executable.

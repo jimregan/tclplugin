@@ -163,8 +163,7 @@ install-binaries: binaries
 	@$(INSTALL_PROGRAM) $($(PACKAGE)_LIB_FILE) $(DESTDIR)$(NSP_DESTDIR)
 	@echo "Verify data in $(DESTDIR)$(pkglibdir)/installed.cfg"
 	@echo "     set ::plugin(executable) to latest 8.4 wish binary"
-	@echo "     set ::plugin(sharedLibraryDir) as necessary"
-	@echo "set ::plugin(executable) \"$(WISH_PROG)\"" \
+	@echo "set ::plugin(executable) {`@CYGPATH@ $(WISH_PROG)`}" \
 		>> $(DESTDIR)$(pkglibdir)/installed.cfg
 
 install-libraries: libraries

@@ -156,6 +156,7 @@ AC_SUBST(LIB_RUNTIME_DIR)
 AC_SUBST(TCL_LIB_FILE)
 
 TEA_PROG_TCLSH
+TEA_PROG_WISH
 
 # Checks for library functions.
 

@@ -309,7 +309,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CONFIGDIR NPTCL_VERSION NPTCL_MAJOR_VERSION NPTCL_MINOR_VERSION NPTCL_PATCH_LEVEL NPTCL_RELEASE_LEVEL NPTCL_RELEASE_SERIAL NPTCL_INTERNAL_VERSION PACKAGE VERSION nptcl_LIB_FILE CYGPATH EXEEXT TCL_VERSION TCL_BIN_DIR TCL_SRC_DIR TCL_LIB_FILE TCL_LIB_FLAG TCL_LIB_SPEC TCL_STUB_LIB_FILE TCL_STUB_LIB_FLAG TCL_STUB_LIB_SPEC TCL_LIBS TCL_DEFS TCL_EXTRA_CFLAGS TCL_LD_FLAGS TCL_SHLIB_LD_LIBS MOZILLA_DIR CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC OBJEXT INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA SET_MAKE RANLIB ac_ct_RANLIB CPP EGREP LIBOBJS TCL_INCLUDES LN_S EXTRA_OBJECTS CLEANFILES TCL_THREADS SHARED_BUILD AR DL_LIBS CFLAGS_DEBUG CFLAGS_OPTIMIZE CFLAGS_WARNING EXTRA_CFLAGS STLIB_LD SHLIB_LD SHLIB_CFLAGS SHLIB_LDFLAGS SHLIB_LD_LIBS LDFLAGS_DEBUG LDFLAGS_OPTIMIZE TCL_DBGX CFLAGS_DEFAULT LDFLAGS_DEFAULT MAKE_LIB MAKE_SHARED_LIB MAKE_STATIC_LIB MAKE_STUB_LIB LIB_RUNTIME_DIR TCLSH_PROG LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CONFIGDIR NPTCL_VERSION NPTCL_MAJOR_VERSION NPTCL_MINOR_VERSION NPTCL_PATCH_LEVEL NPTCL_RELEASE_LEVEL NPTCL_RELEASE_SERIAL NPTCL_INTERNAL_VERSION PACKAGE VERSION nptcl_LIB_FILE CYGPATH EXEEXT TCL_VERSION TCL_BIN_DIR TCL_SRC_DIR TCL_LIB_FILE TCL_LIB_FLAG TCL_LIB_SPEC TCL_STUB_LIB_FILE TCL_STUB_LIB_FLAG TCL_STUB_LIB_SPEC TCL_LIBS TCL_DEFS TCL_EXTRA_CFLAGS TCL_LD_FLAGS TCL_SHLIB_LD_LIBS MOZILLA_DIR CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC OBJEXT INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA SET_MAKE RANLIB ac_ct_RANLIB CPP EGREP LIBOBJS TCL_INCLUDES LN_S EXTRA_OBJECTS CLEANFILES TCL_THREADS SHARED_BUILD AR DL_LIBS CFLAGS_DEBUG CFLAGS_OPTIMIZE CFLAGS_WARNING EXTRA_CFLAGS STLIB_LD SHLIB_LD SHLIB_CFLAGS SHLIB_LDFLAGS SHLIB_LD_LIBS LDFLAGS_DEBUG LDFLAGS_OPTIMIZE TCL_DBGX CFLAGS_DEFAULT LDFLAGS_DEFAULT MAKE_LIB MAKE_SHARED_LIB MAKE_STATIC_LIB MAKE_STUB_LIB LIB_RUNTIME_DIR TCLSH_PROG WISH_PROG LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -10078,6 +10078,41 @@ echo "$as_me: error: No tclsh found in PATH:  $search_path" >&2;}
 
 
 
+    echo "$as_me:$LINENO: checking for wish" >&5
+echo $ECHO_N "checking for wish... $ECHO_C" >&6
+
+    if test "${ac_cv_path_wish+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+	search_path=`echo ${TK_BIN_DIR}:${TK_BIN_DIR}/../bin:${TCL_BIN_DIR}:${TCL_BIN_DIR}/../bin:${exec_prefix}/bin:${prefix}/bin:${PATH} | sed -e 's/:/ /g'`
+	for dir in $search_path ; do
+	    for j in `ls -r $dir/wish[8-9]*${EXEEXT} 2> /dev/null` \
+		    `ls -r $dir/wish*${EXEEXT} 2> /dev/null` ; do
+		if test x"$ac_cv_path_wish" = x ; then
+		    if test -f "$j" ; then
+			ac_cv_path_wish=$j
+			break
+		    fi
+		fi
+	    done
+	done
+
+fi
+
+
+    if test -f "$ac_cv_path_wish" ; then
+	WISH_PROG=$ac_cv_path_wish
+	echo "$as_me:$LINENO: result: $WISH_PROG" >&5
+echo "${ECHO_T}$WISH_PROG" >&6
+    else
+	{ { echo "$as_me:$LINENO: error: No wish found in PATH:  $search_path" >&5
+echo "$as_me: error: No wish found in PATH:  $search_path" >&2;}
+   { (exit 1); exit 1; }; }
+    fi
+
+
+
 # Checks for library functions.
 
           ac_config_files="$ac_config_files Makefile"
@@ -10787,6 +10822,7 @@ s,@MAKE_STATIC_LIB@,$MAKE_STATIC_LIB,;t t
 s,@MAKE_STUB_LIB@,$MAKE_STUB_LIB,;t t
 s,@LIB_RUNTIME_DIR@,$LIB_RUNTIME_DIR,;t t
 s,@TCLSH_PROG@,$TCLSH_PROG,;t t
+s,@WISH_PROG@,$WISH_PROG,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
 

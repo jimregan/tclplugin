@@ -133,11 +133,11 @@ NpPlatformSetWindow(NPP instance, NPWindow *window)
     ContainerInfo *cptr;
     HWND hwnd = (HWND) window->window;
     WNDPROC curProc;
-    
+
     /*
      * Subclass the window only if it was not yet subclassed by us.
      */
-    
+
     curProc = (WNDPROC) GetWindowLong(hwnd, GWL_WNDPROC);
     if (curProc == (WNDPROC) ContainerProc) {
         return;
@@ -156,7 +156,7 @@ NpPlatformSetWindow(NPP instance, NPWindow *window)
         cptr->nextPtr = firstContainerPtr;
         cptr->child = NULL;
         cptr->oldProc = curProc;
-        
+
         firstContainerPtr = cptr;
     }
 
@@ -210,7 +210,7 @@ NpPlatformDestroy(NPP instance)
     if (cPtr == (ContainerInfo *) NULL) {
         return;
     }
-        
+
     /*
      * Remove the container info from the list.
      */
@@ -224,14 +224,14 @@ NpPlatformDestroy(NPP instance)
     /*
      * Unsubclass only if the current window proc is what we installed.
      */
-    
+
     hwnd = cPtr->hwnd;
     curProc = (WNDPROC) GetWindowLong(hwnd, GWL_WNDPROC);
     if (curProc != (WNDPROC) ContainerProc) {
         ckfree((char *) cPtr);
         return;
     }
-    
+
     (void) SetWindowLong(hwnd, GWL_WNDPROC, (DWORD) cPtr->oldProc);
     ckfree((char *) cPtr);
 }
@@ -302,6 +302,18 @@ ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	    MoveWindow(ptr->child, 0, 0, rect.right - rect.left,
 		    rect.bottom - rect.top, TRUE);
 	    return 0;
+	}
+
+	case WM_PAINT: {
+	    /*
+	     * Mozilla/Firefox doesn't propagate the WM_PAINT requests to us,
+	     * so catch them and trigger the ERASEBKGND.
+	     * This isn't needed for IE, but doesn't bother it either.
+	     */
+	    PAINTSTRUCT ps;
+	    BeginPaint(hwnd, &ps);
+	    EndPaint(hwnd, &ps);
+	    break;
 	}
 
 	case WM_PARENTNOTIFY: {

@@ -95,11 +95,11 @@ NpCreateMainInterp()
     /* Determine the libname and version number dynamically */
 
     strcpy(libname, TCL_LIB_FILE); /* in case it is clobbered */
-    pos = strstr(libname,"tcl")+4;
+    pos = strrstr(libname,"tcl")+4;
     if (*pos == '.') {
 	pos++;
     }
-    *pos = '4'; /* count down from '3' to '1'*/
+    *pos = '5'; /* count down from '4' to '1'*/
     while(!tclHandle && (--*pos>'0')) {
 	tclHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
     }
@@ -107,7 +107,7 @@ NpCreateMainInterp()
 	goto failed;
     }
     /* Derive the name of Tk's library from Tcl's. Should work on all platforms */
-    pos = strstr(libname,"tcl")+2;
+    pos = strrstr(libname,"tcl")+2;
     *pos-- = 'k';
     while (pos > libname) {
 	*pos-- = pos[-1];

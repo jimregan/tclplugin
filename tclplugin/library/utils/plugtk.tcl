@@ -101,7 +101,7 @@ proc bgerror {errmsg} {
     global errorInfo
     # Log (if log is enabled in the master)
     set errinf [string trim $errorInfo]
-    ::pluglog::log "bgerror: $errmsg ($errinf)"
+    ::pluglog::log {} "bgerror: $errmsg ($errinf)"
     # Set UI
     set top .bgerror
     set msg [bgerrorConsole $top red]

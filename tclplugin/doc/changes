@@ -1,0 +1,218 @@
+#### This file contains detailed description of the
+#### changes made to the plugin source.
+
+**** Start from the end of this file for the most recent changes
+
+Early July 97 : (failed after the 10th) attempt to keep a log the changes. (DL)
+
+7/2/97 (new feature) First version using autoconf (unix) : configure...
+Lots of changes everywhere... (DL)
+
+7/2/97 (new feature) Binary tclets are now ok. (DL)
+
+7/7/97 (bug fixes) Improvements in autoconf/configure/Makefile.
+tested ok on Solaris 2.5.1 and SunOS 4.1.4 (DL)
+
+7/10/97 (change of feature) Tcl/Tk has tcl/tkLibObjs as an echo target
+instead of a .lst file, corresponding changes in plugin makefile/configure.
+Taking advantage of new "make objs" target in tcl/tk too.
+Temporarily discontinued support for TCL/TK.patch (latest TCL/TK
+development source tree is needed) (DL)
+
+Jul-Aug 97 (changes) Lots of changes ! (DL & JL)
+
+8/26/97 (major cleanup) Big simplification of architecture and
+organization. (DL)
+
+Sept 97 and Early Oct 97 : more major changes, the accurate changes
+log will start after the first 2.0 beta release (2.0.3-beta).
+For high level changes see the (upcoming) what's new section 
+in doc/ or on the web at http://sunscript.sun.com/plugin/  (DL & JL)
+
+---- Tcl Plugin 2.0.3-beta released, start of accurate changes log ----
+
+10/13/97 (bug fix) Added tk_library to list of restored variables in
+the unsafe feature. (JL)
+
+10/13/97 (bug fix) SHELL=/bin/sh needed in Makefile.in for some
+platforms. (DL)
+
+10/13/97 (bug fix) Disable font scaling because in the plugin context
+all sizes are absolute in pixels. (DL)
+
+10/13/97 (bug fix) NotifyError was called without the right number of args
+in the (unlikely) case where installed.cfg was not found. (JI)
+
+10/16/97 (missing features & fixes) wm geometry querying now allowed through
+new wm alias. Generalized the "checkArgs" utility proc and moved it from 
+safefeature::network to safefeature::. Improved error logging.
+Lints and more explanations in some comments. Added "width" and
+"height" to the attributes list. Setting a better "tk appname" for
+the tclets and the plugin itself. Updated the console.tcl. {next
+step is to use the latest one from Jeffrey, when I'll manage
+to make it work} (DL)
+
+10/17/97 added "cfg::clear" to clear config cache for a given config. added
+optional config to the section argument of "ifallowed" and numerous
+tests (syntax is "config/section"). added an "include" directive to config 
+files (ie sourcing in the current config directory). made multiple/mixed 
+recursion in allowed/ifallowed/sourcing working. (DL)
+
+10/17/97 (bug fix) windows installer script was not properly referencing
+the IE registry key to remove. (DL,JL)
+
+10/22/97 (doc lints)
+
+10/23/97 (bug fix) Forget container was called before the last (potential)
+use of the window by the tclet. (JI)
+
+10/23/97 (cleanup) removed some more DStringAppend and replaced by
+DStringAppendElement when constructing the scripts to evaluate.
+{next step is to use objects instead...}. (DL)
+
+10/30/97 (bug fix) added fixed tkCanvPs.c so canvas postscript
+command works in tclets (unix only {would work on windows too if
+we'd change tk80.dll or make a fat library}). (DL)
+
+10/30/97 changed configure and build processes to be based on and 
+require tcl/tk 8.0p1. (DL)
+
+11/3/97 added https: in the list of valid protocols for urls. (DL)
+
+11/3/97 added a browser::sendMail command. (DL)
+
+11/3/97 posting now always use the file option because it does not
+work well otherwise. (DL)
+
+11/3/97 added a "frames" section for checking which target frames 
+are allowed by a given policy, can be used to limit to some frames
+and disable the magic targets _* (_parent, _self, _blank...). The
+home policy can access any frame except the empty one. Javascript can 
+now use the {} frame which means an asynchronous callback (useful for
+mailto: for instance (though you can now use the new "sendMail" as a
+shortcut). (DL)
+
+11/4/97 changed the low level logging so it can save in different log
+files between the external process (tclshp) and the in proc Tcl. (DL)
+
+11/4/97 simplified even more the C flow, specially the SetWindow code.
+Changed the NpPlatform (private) API names to reflect more closely what 
+is going on and the way they'll be used on the Macintosh. (DL)
+
+11/10/97 improved unix installer so it moves away and make backup copy
+of previous Tcl plugin installs' files. it also better handle 
+"Test It!" failures (checking exec result). It also now requires
+that the user enter something describing what is wrong and gives
+some choices to start from. (DL)
+
+11/10/97 added a (pretty nice) default error management, all tclets will 
+now start with a working bgerror, uncaught error are be displayed (nicely)
+within the Tclet (for security reason, to avoid abuse). changed tclet
+startup code so it use the bgerror if needed. (DL)
+
+11/11/97 added a micro console mode in the bgerror to you can (eventually)
+debug the tclets interactively or query more information inline. 
+you can popup the microconsole by hitting the hot console key combination
+Ctrl-Shift-C. (DL)
+
+11/11/97 clean up of some package dependencies and other lints. Added a 
+filter proc to logging package. Using it to reduce the log flood (due 
+to auto-loading for instance). (DL)
+
+11/12/97 added a timeout to the internal call to javascript call
+currently used to get inline tclets origin url for the case where 
+javascript is disabled on the browser. Note that browser::javascript,
+ inproc, with Netscape 4 on unix does not work properly (always seem 
+to timeout) unless you use the optional callback. Note also there is
+a javascript security exception generated in the multi tclets/multi
+frames case when we try to get the location.href... (DL)
+
+11/12/97 failure when installing security features for a given policy
+previously resulted in a silent killing of the tclet (for security
+reasons) now it also notifies the user (NotifyError) of a probable
+mis-configuration. (DL)
+
+11/12/97 the "hidden" embed args now automatically implies "tk=0".
+misc lints in plugmain.tcl. added error management for tk-less tclets
+(just logging to master). improved code invocation in tclets.
+bug fix: the validity of the timeout argument was not checked.
+Made the callback in slave generate bgerror's in case of error. (DL)
+
+11/13/97 added a "maxFrames" variable to limit the total amount of
+frames that can be used by all the tclets. security fix. updated
+part of the documentation. (DL)
+
+11/14/97 Improved the Win32 installer so it now saves an older installation
+of the 2.0 plugin if found, and gives a message to the user explaining how
+to get back any modifications they made in that older installation. (JL)
+
+---- Released Tcl Plugin 2.0.4-beta - Nov 14th 1997 ----
+
+11/21-26/97 More security fixes in both the plugin and the base Safe-Tcl/Tk.
+Tcl/Tk-p2+'plugin fixes' is needed to get the full fixes (tmp). (DL)
+
+11/21/97 Added a working tcl::autoReset utility allowing the tclets
+using the unsafe feature to properly find packages. (DL)
+
+11/26/96 Added safe type checking utilities and C side tcl::quote
+utility and tests. (DL)
+
+11/26/97 Make sure the default auto_path does not contain
+invalid build time tcl_pkgPath which could cause a different
+tk.so to be loaded and thus crash. (DL)
+
+11/27/97 Make sure that tclshp use the plugin(dir) to find Tcl and Tk
+library and does not depend on TCL_LIBRARY or TK_LIBRARY. Moved 
+common initialization from plugmain.tcl to Plug_Init. (DL)
+
+12/1/97 Preparation for 2.0.5-beta release. Added a platform
+argument to unix staging makefile target and unix installer,
+uniformized distributions naming scheme. Removed the tcl/tk
+version string from the paths because the right plugin version is
+already required/enforced in the plugin to directory. Added 
+make runtest target on unix. (DL)
+
+12/2/97 Using the username as part of the ::cfg::Tmp temp
+directory on unix (used by persistance storage). Made persist
+directories mapping using "dirN" instead of "tcletN" to avoid
+confusion with the interp name. Added a "glob" alias to the
+persist feature. (DL)
+
+12/2/97 The "log" alias in the tclet now accepts any number of 
+arguments. (DL)
+
+12/2/97 External wish not based on the plugin versions of Tcl and
+Tk will not work: dynamically load your extensions into the provided
+version, or if you need statically linked extensions, use the
+source distribution to add your extensions in the tclAppInit.c
+**** POTENTIAL INCOMPATIBILITY ****
+
+12/2/97 No splash screen when there is an inline tclet. (DL)
+
+12/3/97 Unix: Added the NPX_PLUGIN_PATH to the list of directories
+searched for finding the plugin library. Made the search order
+match Netscape search order for plugins. (DL)
+
+12/4/97 Switched (back) to a naming scheme and numbering consistent
+with Tcl and Tk habits for the external release patchLevel and names.
+While also exposing the internal, machine parseable 4 digits release 
+numbers: MajorVersion,MinorVersion,ReleaseLevel,ReleaseSerial
+For the plugin package version, and in order that 2.0b5 is found
+newer than 2.0.4 we use for the 2.0 series  
+MajorVersion.MinorVersion.(ReleaseLevel*100+ReleaseSerial)
+so 2.0.105 is the new plugin package version. For 2.1 or later
+we will probably use 2.1.level.serial (DL)
+**** POTENTIAL INCOMPATIBILITY ****
+
+12/4/97 Handle the case where the persist can't get at it's temp
+storage directory. Made sure feature installation error reporting
+is done correctly. (DL)
+
+12/4/97 First alpha level release of source code for the 
+Macintosh plugin. (JI)
+
+12/4/97 Bug fix in Windows installer for NS4 plugins directory
+determination and other improvements to the windows installer
+script. (DL)
+
+---- Released Tcl Plugin 2.0b5 - Dec 5th 1997 ----

@@ -1,0 +1,113 @@
+	Welcome to the Tcl Plugin SOURCE release
+        ========================================
+
+Contacts for questions, updates, etc... :
+
+         Web  : http://sunscript.sun.com/plugin/
+
+         Email: sunscript-plugin@sunscript.sun.com
+
+ (If you are not familiar with the compilation of programs
+  on your platform, see the URL above for a binary (executable)
+  distribution for your platform)
+
+ You need to use the provided version of Tcl and Tk to
+ build the plugin from source. It is based on version 8.0 
+ patch level 2 (8.0p2) with some modifications needed for
+ embedding inside a browser and Safe-Tcl security. You should
+ not use this modified version for any other use (It has
+ no added value for regular Tcl/Tk applications and could
+ even have more bugs than the last stable Tcl/Tk versions: 8.0p2).
+
+
+ Unix Build Instructions:
+ ------------------------
+ The configuration and Makefile provided here allows you
+ to build a standalone 'fat' shared library for the plugin
+ it will include all the tcl and tk .o's so the plugin
+ is installable and usable without needing to install
+ Tcl and Tk beforehand.
+ 
+ You need first to make (the modified) Tcl and Tk's .o files,
+ and both must be configured using --enable-shared (then just do
+ "make" not "make install")
+
+ When you've done this :
+
+ cd to the plugin unix/ directory (or to any directory if you plan to use
+ VPATH feature to build for several targets or from a read-only distribution)
+ and use 
+        configure 
+	    --with-tcl=<path to tcl8 *build* dir>
+	    --with-tk=<path to tk8 *build* dir>
+            --with-mozilla=<path where you want to install the plugin>
+
+ {If you have installed Netscape 3/4 to the default location or have 
+  set the MOZILLA_HOME environment variable, configure will find out
+  automatically ! 
+  If you want a personal install, use --with-mozilla=$HOME/.netscape }
+
+ then
+         make
+ then  
+         make install
+     to directly install for the configured host
+  or
+         make staging
+     to create a 'binary distribution' for the configured platform
+     (You use/ship the resulting .tar.gz on any host with the same
+      architecture and OS or install it from the created directory 
+      using ./install.sh there and the Tcl/Tk installer)
+ 
+ System specific notes:
+ ---------------------
+   Configure should pick up most of the system specifics and you
+   usually don't have to modify anything by hand, except :
+
+   When using SunOS 4 : It is STRONGLY recommended that you compiled
+     tcl with -DUSEGETWD to avoid
+	 "can't source <> into tkp0" / interrupted system call
+     repeated transient errors.
+
+   In addition, again for SunOS 4, in order to build the fat binary
+   distribution, you MUST use
+
+     make SHLIB_LD_LIBS='-Bstatic -lX11 -lm -lc' \
+	  XTLIB=/usr/openwin/lib/libXt.a
+
+    or edit the configure generated Makefile
+
+   On some Linux configuration and with Netscape 3 (not with 4)
+    you might need to link the shared library with LIBS=-lm
+ 
+
+ Windows
+ -------
+    We have only tested the plugin with VC++ so far, 
+    so you'd better use the makefile.vc files in the Tcl, Tk and 
+    Plugin win/ directories.
+
+    You need first to make (the modified) Tcl and Tk's .o files.
+ 
+    Then you need to chdir to the win/ directory
+
+    We don't have yet a self contained installer for Windows
+    but you'll find a Wise installer file to do the install.
+
+    If you need to manually install... Look at the plugin.wise
+    script to find out what it does, or use the binary 
+    distribution and look at the installed files (c:\tclplug...)
+
+ Mac
+ ---
+    There is a pre-alpha (!) source release but it
+    is not yet very useful nor supported, please wait a bit more...
+
+
+ Any question or problems :
+ --------------------------
+
+    http://sunscript.sun.com/plugin/ 
+
+    sunscript-plugin@sunscript.sun.com
+

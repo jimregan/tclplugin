@@ -1,0 +1,272 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) persist.n 1.6 97/12/02 13:03:32
+'\" 
+.so man.macros
+.TH "persist" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+persist \-  Local persistent file storage for Safe Tcl.
+.SH SYNOPSIS
+.sp
+\fBopen \fIfileName \fR?\fImode\fR?
+.sp
+\fBclose \fIchannel\fR
+.sp
+\fBfconfigure \fIchannel \fR?\fIoptions...\fR?
+.sp
+\fBputs \fR?\fB\-nonewline\fR? ?\fIchannelName\fR? \fIstring\fR
+.sp
+\fBfile \fIarg \fR?\fIarg...\fR?
+.sp
+\fBseek \fIchannel \fIoffset \fR?\fIwhence\fR?
+.sp
+\fBtell \fIchannel\fR
+.sp
+\fBglob \fIpattern\fR ?\fIpattern...\fR?
+.BE
+
+.SH DESCRIPTION
+.PP
+This manual entry describes the \fBpersist\fR feature which provides local
+persistent storage for programs executing in a Safe\-Tcl interpreter.
+It explains the facilities provided and how to control the operation of
+this feature through settings in configuration files.
+This feature is installed into a Safe\-Tcl interpreter by a security policy
+that enables the feature.
+This policy is called the \fBcontrolling\fR security policy, below.
+.PP
+The procedures provided by the \fBpersist\fR feature are described
+in the section \fBPROCEDURES\fR.
+The section \fBCONFIGURATION\fR describes the different aspects of
+controlling the operation of this feature.
+The section \fBSECURITY\fR describes the security risks incurred by
+this feature and how to minimize them through proper configuration.
+
+.SH PROCEDURES
+.PP
+The following procedures are provided in a Tclet by the \fBpersist\fR
+feature when it is installed by a security policy.
+These procedures are aliases redefining procedures present in Tcl 8.0.
+See the manual pages for each procedure for a full description of their
+operation.
+Here we only survey the limitations placed on their operation by security
+restrictions implemented by the controlling policy.
+.TP
+\fBopen \fIfileName \fR?\fImode\fR?
+Opens a local persistent file with the name \fIfileName\fR in the requested
+\fImode\fR, creates the file if necessary, and returns the name of the
+channel to this file.
+Only the last path component of \fIfileName\fR is used; calling open with
+\fB/my/dirty/laundry.tcl\fR causes it to open a file named
+\fBlaundry.tcl\fR.
+The \fBmode\fR argument has the same meaning as in the standard Tcl
+\fBopen\fR command.
+If the limit on the number of open channels or the limit on the number of
+stored files would be exceeded, the procedure returns an error.
+.TP
+\fBclose \fIchannel\fR
+Closes the \fIchannel\fR and if this channel is to a local persistent file,
+decrements the number of currently open channels to local persistent files.
+If \fBopen\fR was previously returning an error because the limit on the
+number of concurrently open channels to local persistent files was reached,
+it will again succeed after this call.
+.TP
+\fBfconfigure \fIchannel \fR?\fIoptions...\fR?
+This procedure is provided to allow a Tclet to configure settings for
+channels obtained from opening local persistent files as well as from other
+sources (e.g. the \fBsocket\fR command).
+.TP
+\fBputs \fR?\fB\-nonewline\fR? ?\fIchannel\fR? \fIstring\fR
+This is the same as the Safe-Tcl \fBputs\fR command described in the
+\fBsafe\fR manual entry in the Tcl 8.0 distribution, except that it limits
+the size of local persistent files opened for writing.
+If \fIchannel\fR is open for writing on a local persistent file and writing
+\fIstring\fR to the file would cause it to grow larger than the file size
+limit imposed by the controlling policy, the procedure returns an error.
+.TP
+\fBfile delete \fIfileName\fR
+In addition to the options supported by the \fBfile\fR command provided in
+the Safe Base, this procedure allows the Tclet to delete local persistent
+files by name.
+For other operations supported by the \fBfile\fR command, see the
+\fBsafe\fR manual entry in the Tcl 8.0 distribution.
+.TP
+\fBseek \fIchannel offset \fR?\fIwhence\fR?
+Moves the access point in \fIchannel\fR to a new location as specified by
+\fIoffset\fR and the optional \fIwhence\fR argument.
+See the \fBseek\fR manual page in the Tcl 8.0 distribution for the details.
+This procedure prevents the seek from increasing the file size beyond the
+limit specified in the controlling policy's configuration.
+However, if the file is opened for reading, the Tclet is allowed to
+\fBseek\fR to all the file even if its current size exceeds the file size
+limit.
+.TP
+\fBtell \fIchannel\fR
+Computes the offset of the current access point in \fIchannel\fR from the
+start of the file.
+.TP
+\fBglob \fIpattern\fR ?\fIpattern...\fR?
+Like regular Tcl glob, returns the list of the filenames
+from the local persistent storage area that matches the given
+patterns.
+
+.SH CONFIGURATION
+.PP
+The \fBpersist\fR feature is controlled by settings in the \fBpersist\fR
+section in the configuration for the controlling policy.
+For an explanation of configurations and policies, see the \fBconfig\fR and
+\fBpolicy\fR manual pages, respectively.
+The location of these configuration files is governed by the value of
+\fB::cfg::configDir\fR, as explained in the \fBplugin\fR manual page.
+.PP
+The \fBstorage\fR constant, if defined, names a sub\-directory of the
+persistent local storage area under which directories for Tclets using this
+policy are created.
+This allows file sharing between Tclets using the same policy or between
+Tclets using different policies that specify the same \fBstorage\fR root.
+File sharing is described in the section \fBSECURITY\fR.
+.PP
+The constant \fBopenFilesLimit\fR defines the number of concurrent channels
+that can be opened with \fBopen\fR on persistent local files.
+If that many open channels are in use by a Tclet, further calls to
+\fBopen\fR return an error until one of the open channels is closed
+with \fBclose\fR.
+.PP
+The constant \fBstoredFilesLimit\fR defines the number of concurrent local
+persistent files that can be stored in a directory.
+If that many files are present in a directory, further attempts to create
+new files with \fBopen\fR return an error until one or more files are
+deleted with \fBfile delete\fR.
+.PP
+The constant \fBfileSizeLimit\fR defines the size, in bytes, of persistent
+local storage files.
+If a call to \fBputs\fR or \fBseek\fR would increase the size of a file
+beyond this limit, an error is returned.
+
+.SH SECURITY
+.PP
+The \fBpersist\fR feature allows Tclets to maintain local persistent files
+on a client's machine.
+These files persist between invocations of the Tclet.
+To prevent resource exhaustion attacks by Tclets, the number and size of
+these files is curtailed by configuration settings in the controlling
+policy.
+.PP
+A Tclet does not know the location on the file system of the directory used
+to store its persistent local files.
+This prevents Tclets from gleaning any information about the structure of
+the local file system by using the \fBpersist\fR feature.
+.PP
+By default, files stored by a Tclet are accessible only in that Tclet and
+only when it is using the same policy as was used when these files were
+created.
+This prevents file sharing between Tclets and between different modes of
+operation of the same Tclet, and prevents privacy attacks by Tclets.
+For example, if no preventive measures were taken, a Tclet using a
+hypothetical \fBlocalFileAccess\fR policy could copy any local file to a
+local persistent file; later, when it uses the \fBoutside\fR policy, it
+could copy the file to a remote host using a network socket.
+Preventing arbitrary file sharing eliminates these privacy attacks.
+.PP
+Sometimes, Tclets must share local persistent files for legitimate
+purposes, and the owner of the client host wants to allow sharing.
+By default, the directory name for storing the local persistent files is
+computed based on the \fBoriginURL\fR attribute of the Tclet.
+If the Tclet has set \fBembed_args(prefix)\fR to a proper prefix of the
+file path portion of this URL, this prefix is used instead to compute the
+name of the directory.
+Thus, two Tclets loaded from the same server and with the same protocol can
+share files by specifying a common prefix of the file path portion in the
+\fBembed_args(prefix)\fR variable.
+In the Tcl plugin this array is initialized from the arguments passed in
+the \fBembed\fR statement that created the Tclet in a web page; the
+variable can also be set programmatically by a Tclet.
+For example, suppose two Tclets were loaded from
+\fBhttp://www.abc.com/root/def/one.tcl\fR and
+\fBhttp://www.abc.com/root/abc/second.tcl\fR.
+If they both set \fBembed_args(prefix)\fR to \fBroot/\fR then they will
+both use the same directory to store local persistent files.
+.PP
+If a value is specified for \fBembed_args(prefix)\fR that does not consist of
+a proper prefix of the file path portion of the URL from which the Tclet
+was loaded, the whole URL is used to compute the directory name for local
+persistent files.
+No error is returned to the Tclet in this case, and the specified prefix is
+silently ignored (the actual prefix used by persist can be checked
+by the tclet because \fBembed_args(prefix)\fR is updated in the tclet
+to show the actual prefix used).
+In that case the Tclet will still be able to use local persistent files 
+but will
+not be able to share these files with other Tclets. To avoid typos
+and errors it is recommended that the tclet computes the prefix
+from \fB[getattr originPath]\fR.
+.PP
+Ordinarily, Tclets using one policy can not share files with Tclets using
+another policy.
+This is because the storage areas for the two policies are under different
+root directories on the local file system.
+To allow sharing between policies, set the \fBstorageRoot\fR in the
+\fBpersist\fR section to some common value.
+As explained in the \fBCONFIGURATION\fR section, if set, the value of
+this constant is used as the name of the root directory for storage for a
+policy.
+Other policies whose configurations specify the same value for
+\fBstorageRoot\fR use the same storage area for Tclets using
+these policies.
+Tclets that specify the same prefix will now be able to share files.
+See the discussion below for the security risks of allowing this kind
+of file sharing.
+.PP
+File sharing between Tclets that are using the same policy and that
+were loaded from the same host may seem relatively safe, but you
+should carefully consider the risks.
+Information may unintentionally be shared amongst Tclets if a Tclet
+specifies a prefix that causes sharing with Tclets that it does not
+necessarily trusts.
+Tclets should examine the setting of
+\fBembed_args(prefix)\fR and modify it before invoking the
+\fBpolicy\fR command to ensure that only intended sharing occurs.
+Because the \fBembed\fR statement in a page can refer to a Tclet from
+a different author, it is not necessarily true that the author of the
+Tclet and the author of the web page trust each other.
+Thus, the web page may specify a prefix in the \fBembed\fR statement
+that will fool the Tclet into unintentional and unsafe sharing of its
+files with other Tclets.
+.PP
+File sharing between Tclets that are using different policies, even
+when they are loaded from the same host, is even more risky.
+This kind of sharing opens the possibility of privacy attacks on the
+client host where the Tclet executes by collaborating Tclets.
+One Tclet may store information obtained from a local
+resource accessible when using a certain policy, and the other Tclet
+(or even the same Tclet) could leak the information to a service
+executing on a remote host when using another policy.
+For example, this kind of attack is possible when file sharing is
+allowed between policies that allow connections to remote services
+using the \fBurl\fR or \fBnetwork\fR features.
+For this reason, file sharing between policies is disabled by default.
+It should probably never be enabled for policies that also enable
+features such as \fBurl\fR or \fBnetwork\fR, because these features
+allow the Tclet to connect to disparate remote services and resources.
+.PP
+Resource attacks can be mounted by a Tclet to exhaust the local
+storage space if the Tclet can cause execution of other Tclets.
+This attack is possible even though none of the collaborating Tclets
+exceeds its own storage space allocation.
+For example, if the Tclet also has access to the \fBurl\fR feature it
+can use \fB::browser::displayURL\fR to display pages that contain
+other Tclets.
+
+.SH "SEE ALSO"
+safe(n), policy(n), config(n), open(n), seek(n), tell(n), close(n),
+file(n), url(n), network(n)
+
+.SH KEYWORDS
+Deleting, file sharing, files, local persistent storage, input, output,
+seeking, telling

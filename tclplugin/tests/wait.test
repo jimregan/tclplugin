@@ -1,0 +1,129 @@
+# wait.test --
+#
+# This file contains a collection of tests for the wait 
+# (vwait encapsulation) package.
+#
+# Sourcing this file into Tcl runs the tests and generates output for
+# errors.  No output means no errors were found.
+#
+# In order for these tests to run, the "com" tcl package must be on the
+# auto_path ('require'able).
+#
+# CONTACT:		sunscript-plugin@sunscript.sun.com
+#
+# AUTHORS:		Jacob Levy			Laurent Demailly
+#			jyl@eng.sun.com			demailly@eng.sun.com
+#			jyl@tcl-tk.com			L@demailly.com
+#
+# Please contact us directly for questions, comments and enhancements.
+#
+# Copyright (c) 1996-1997 Sun Microsystems, Inc.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+#
+# SCCS: @(#) wait.test 1.4 97/10/10 12:58:38
+
+#
+# Nb: currently, those test are ok, only if the user checking the output
+#     find the result ok. The tests still need to be made self conatained.
+#
+
+if {[string compare test [info procs test]] == 1} then {source defs}
+
+package require wait 1.1;
+
+proc testLog {who name str {type NOTICE}} {
+    puts "\tTRACE $who: $name $str";
+}
+
+proc testSet {var args} {
+  eval set [list ::common($var)] $args;
+}
+
+proc VW {vname msg} {
+    puts "\tBefore  $vname $msg"
+    vwait $vname
+    puts "\tAfter   $vname $msg";
+}
+
+proc R {vname msg} {
+    puts "\tRelease $vname $msg";
+    upvar $vname v
+    set v released
+}
+
+
+proc bgerror {msg} {
+    puts "BGERROR $msg\n$::errorInfo";
+}
+
+
+test wait-1.1 {wait-1} {
+    set v waiting
+    after 100 {VW v 1}
+    after 200 {VW v 2}
+    after 300 {VW v 3}
+    after 400 {R v 4}
+    VW v 0
+    set v
+} {released}
+
+test wait-1.2 {wait-1} {
+    puts "***"
+    set v waiting
+    after 100 {after 100 {after 100 {after 100 {R v 4}; VW v 3}; VW v 2} ; VW v 1}
+    VW v 0
+    set v
+} {released}
+
+::log::setup stdout
+
+test wait-2.1 {wait} {
+    puts "***"
+    after 100 {catch {wait::hold [wait::token] wait-2.1 h2 1500}}
+    after 200 {wait::wait wait-2.1 a3}
+    catch {wait::hold [wait::token] wait-2.1 h1 3000}
+} 1
+
+
+test wait-2.2 {wait} {
+    puts "***"
+    after idle {catch {wait::hold [wait::token] wait-2.2 h1 1000}}
+    after idle {catch {wait::hold [wait::token] wait-2.2 h2 2000}}
+    after 1500 {wait::wait wait-2.2 a0 {wait::hold [wait::token] wait-2.2 hX 500}}
+    after 1600 {catch {wait::hold [wait::token] wait-2.2 h3 2000}}
+    update
+} {}
+
+test wait-2.3 {release before hold} {
+    puts "***"
+    set t [wait::token]
+    wait::release $t wait-2.3 "test release" ok {x y z}
+    wait::hold $t wait-2.3 "test hold" 100
+} {x y z}
+
+
+test wait-2.4 {release before hold on unregistered tokens} {
+    puts "***"
+    set t [wait::token 0]
+    list [catch {wait::release $t wait-2.4 "test bogus release" ok {x y z}} msg]\
+	    [string range $msg 0 47]
+} {1 {invalid (expired? not registered?) release token}}
+
+
+test wait-2.5 {multiple release} {
+    puts "***"
+    set t [wait::token]
+    wait::release $t wait-2.5 "test release" ok {u v w}
+    list [catch {wait::release $t wait-2.5 "bogus multiple release"\
+	    ok {a b c}} msg] [string range $msg 0 33] [wait::hold $t wait-2.5 "test hold" 100]
+} {1 {multiple release attempt for token} {u v w}}
+
+test wait-2.6 {timeout} {
+    puts "***"
+    set t [wait::token]
+    list [catch {wait::hold $t wait-2.6 "timeout test" 100}] [lindex $::errorCode 0]
+} {1 TIMEOUT}
+
+

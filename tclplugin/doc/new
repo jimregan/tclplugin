@@ -1,0 +1,310 @@
+* New Features In The Tcl Plugin 2.0
+* Known Problems
+* Plans for future releases of the Tcl Plugin
+=============================================
+
+NEW FEATURES:
+
+* The Tcl Plugin is now based on Tcl/Tk 8.0. This means that you get the
+  benefits of Tcl's just-in-time bytecode compiler, and some scripts will
+  execute significantly faster, especially compute-intensive ones.
+
+* Native look and feel for Tclets on each platform, because the plugin now
+  uses Tk 8.0.
+
+* First source release: the complete source for the plugin and all Tcl
+  files is included!
+
+* The plugin is now free for any use, including redistribution, derivation,
+  commercial use, etc. Please let us know if you redistribute it or
+  derive another piece of software from it - this is just to satisfy our
+  own curiosity, not obligatory.
+
+* New installation locations:
+  - On Unix the plugin installs by default into the Netscape hierarchy,
+    in <yourhome>/.netscape/tclplug.
+  - On Win32, it installs by default into c:\tclplug.
+
+* Comprehensive documentation is provided in <your-install>/doc. Read those
+  manual pages to find out all the nitty gritty details about what's
+  possible with this feature-rich plugin. Use 'nroff -man' or similar to
+  produce a printed copy of the manual pages. An online version of the
+  documentation will be provided shortly.
+
+* New "policy" command instead of overloading the "package require"
+  mechanism.
+
+  The 2.0.3b release includes a new command "policy" that can be used
+  by Tclets to request the use of a policy. Previously the same was
+  achieved by issuing a "package require" command in a Tclet. See the
+  policy manual page.
+
+* Several new security policies: inside, outside, home.
+
+  These policies provide similar functionality to what used to be in
+  Browser, Tempfile and Safesock combined. Each policy provides the same
+  functions, with the only difference being which resources a Tclet can
+  access. The features provides:
+
+  - Communication with the hosting browser to fetch and post URLs.
+  - Access to remote servers through sockets.
+  - Local persistent storage that can be shared with other Tclets loaded
+    from the same site.
+
+  All policy names are now lower-case.
+
+  All policies are documented in manual pages included in the 'doc'
+  directory of the plugin runtime library. All policies are configurable
+  through settings in a separate configuration file for each policy.
+
+  At this time, site administrators are required to edit the configuration
+  files. A future version of the Tcl plugin will come with an admin tool
+  that will let site administrators control these settings from a GUI
+  without having to edit text files.
+
+* Javascript communication is moved into its own policy: javascript.
+
+  The facilities for communicating with Javascript and for generating HTML
+  on the fly into new or existing frames has been moved into its own policy
+  called Javascript. The reason for this was security: it is impossible to
+  restrict access to any URLs when these functions are available, therefore
+  they cannot be available in Home, Inside and Outside.
+  
+* The capabilities provided by the plugin are organized into logical
+  packages called "features".
+
+  All the features are stored in <your-install>/safetcl. The capabilities
+  provided by the plugin have been organized into several features:
+
+  - "url" allows a Tclet to fetch and post to URLs, display URLs, etc.
+  - "network" allows a Tclet to open network sockets.
+  - "persist" enables a Tclet to use local persistent storage.
+  - "stream" allows a Tclet to generate output streams to frames managed
+    by the browser.
+  - "unsafe" restores the unsafe commands that were removed by the
+    Safe Base.
+
+* Flexible configuration package, configuration syntax is "English"-like.
+
+  All configurable parameters of the plugin are controlled from a central
+  configuration file, <your-install>/config/plugin.cfg. The configuration
+  is organized in easy to understand sections and the configuration itself
+  is written in a human readable form.
+
+* Policies are now "codeless", that is, you don't have to know (a lot)
+  of Tcl to write a policy.
+
+  Policies are just named configurations, so you don't need to write a
+  lot of Tcl code to implement a new policy. Policy configurations specify
+  which features they enable and under what circumstances, and they do not
+  contain implementations for those features -- that is left for the
+  features themselves.
+
+  Settings in the plugin.cfg file control which policies are enabled and
+  under what circumstances.
+
+* The plugin now uses namespaces for partitioning its functionality. This
+  means that some aliases are now in the browser:: namespace. More details:
+
+  - safe:: for the Safe Base.
+  - cfg:: for the configuration package.
+  - browser:: for procedures to communicate with the hosting browser.
+  - safefeature:: for procedures implementing feature packages.
+  - rpi:: for remote procedure invocations between the plugin and an
+    external process hosting Tclets (see below).
+
+* Tclets can appear inline in the web page by giving their source as the
+  value of a "script" tag in the embed statement. Both a "script" tag and
+  an "src" tag can appear within the same embed statement.
+
+* Tclets can now execute without display, by specifying "tk=0" in the
+  embed statement. You should also use the "hidden" tag to tell the browser
+  not to reserve space for this instance on the page.
+
+* A Tcl Plugin "how to" web site:
+
+	http://sunscript.sun.com/plugin/tutorial/
+
+  At present the web site is somewhat skeletal, it will fill out quickly
+  now that we're done with 2.0.3. If you want to contribute let us know by
+  email at sunscript-plugin@sunscript.sun.com, or to the developers direct
+  at jyl@eng.sun.com or demailly@eng.sun.com.
+
+* The Tcl Plugin now supports use of an external process to host Tclets,
+  in addition to being able to host Tclets directly within the browser.
+  The external process must contain on Tk 8.0 or later. A default
+  executable is supplied with the plugin and will be used if the user
+  didn't specify which executable to use. 
+
+  In this release, the plugin hosts Tclets inside the browser by default.
+  In a future release the default will be to host Tclets in an external
+  process.
+
+  For information on how to use the external process facility in the
+  plugin, see the plugin manual page.
+
+* Lots of information about the Tclet is now available inside the Tclet
+  itself, e.g. the URL from which it was loaded and the text of the Tclet.
+
+* Many bug fixes related to initialization and de-initialization.
+  Previously these bugs would cause the plugin to eventually fail. 
+
+* Much better support for fonts, using both X11 fonts and portable font
+  name specification. See the Tk 8.0 documentation.
+
+* Much better support for focus propagation on Unix: the Tclet has a chance
+  to get the focus when the mouse enters, and the Tclet loses focus when
+  the mouse leaves.
+
+* Faster loading of Tclets due to smarter use of streaming and the
+  browser cache. Reloading of a previously used Tclet is much faster.
+  A splash screen is provided for slow-loading Tclets to give the user
+  an indication that the plugin is alive and simply slow because the
+  Tclet code hasn't arrived yet.
+
+* The browser::openStream API now supports mime types other than
+  text/html, allowing the Tclet to write image data, for example.
+
+* Most APIs have been made binary-safe. They can now handle data that
+  contains embedded \0's.
+
+* The browser::getForm and browser::displayForm APIs now take unencoded
+  data to submit to the remote service, and do the proper encoding to
+  protect the data in transit.
+
+* The browser::javascript API now accepts arbitrary JavaScript code. As
+  long as you enclose it in curly braces, the right thing will happen.
+
+* The APIs to communicate with the browser have all been enhanced to
+  take callbacks that get called when the appropriate event happens.
+  This allows a Tclet to find out for example when a requested stream of
+  data starts to arrive from a URL. These APIs also take an integer
+  specifying the number of milliseconds to wait before timing out.
+  Finally, they are all non-blocking if callbacks are specified, to
+  allow a Tclet to continue computing or responding to user input while
+  it is waiting for a requested URL's contents to arrive.
+
+* Dynamic loading of Tcl extensions is now supported. We would like to
+  receive bug reports if you encounter problems in this area. If you need
+  to use a special executable that contains the extension statically linked
+  you can do that too, with the TCL_PLUGIN_WISH environment variable. See
+  the plugin(n) manual page.
+
+* Auto-loading now works in Tclets and packages work just as in regular
+  Tcl.
+
+* Supports a console for debugging, and event logging to a window and/or to
+  a file. See the plugin(n) manual page.
+
+* Supports logging of significant events to a file or to a window. See the
+  plugin manual entry for details.
+
+* (Unix) Supports debugging of external process hosting Tclets with gdb.
+  Note that this overwrites .gdbinit in your home directory without asking,
+  which may not be what you want.
+
+* The plugin is now extensible because most of it was rewritten in Tcl. The
+  relevant scripts are provided in the plugin runtime library. This will
+  also make it much easier to support the Mac version in a timely manner in
+  future releases.
+
+* The plugin now works well with Netscape Navigator 3.0 and 4.0 on Unix and
+  Win32. 
+
+* The plugin now works well with IE 3.0 and IE 4.0 on Win32.
+
+* The plugin also works with the Opera 3.0 beta 5 release on Win32,
+  although not perfectly.
+
+* The plugin also works with the Amaya browser from the W3C on Linux 2.0.
+  We have not tested whether the Win32 version works or whether it works
+  with Amaya on other versions of Unix.
+
+* Security enhancements:
+  - Tclets no longer see the auto_path and instead use symbolic tokens.
+    Likewise, tcl_library, tk_library and other paths are symbols now.
+  - vwait and tkwait have been restored so Tclets can now use them.
+  - fixed several security holes in the local persistent storage feature.
+
+* Many bug fixes:
+
+  - Color maps now work better.
+  - More robust if many Tclets are being used at the same time.
+  - Event mechanism overhauled, now more responsive and robust.
+  - Sockets now work reliably, and the plugin uses a reliable efficient
+    RPC package to communicate with the external executable.
+  - Commands that crash IE 3.0 or 4.0 are now disabled if the plugin
+    detects that it's being used in those browsers.
+
+KNOWN PROBLEMS:
+
+* If you're upgrading from a previous release of the plugin, it's probably
+  advisable to uninstall that release before installing the current (2.0.3)
+  release. We have not tested installing 2.0.3 over existing installs of
+  all previous releases on all platforms, so there may be problems. We will
+  make sure in an upcoming release (and in any case before 2.0 final) that
+  it works with most major previous releases pre-installed.
+
+* A Tclet can crash Netscape if the user closes a frame opened by the Tclet
+  with browser::openStream and then the Tclet writes to the frame with
+  browser::writeToStream. The problem is that the Tclet does not get any
+  indication that the frame has been closed "from outside".
+
+  This and other related problems with URL fetching will be fixed when we
+  split the plugin into two packages: the plugin for use with Netscape
+  Navigator and possibly an ActiveX control for use with Microsoft Internet
+  Explorer.
+
+* Killing (or crashing) the external process used to host Tclets causes
+  the plugin to enter an unusable state, because it keeps complaining about
+  losing its connection with the external process. To fix make sure that
+  all top-level browser windows are no longer viewing any Tclets, and then
+  revisit a page with a Tclet in it. This auto-corrects the problem and
+  restarts the external process.
+
+  We decided not to restart the external process automatically because it
+  may cause an infinite loop if there is some problem which prevents it
+  from running. Your suggestions on how to handle this case are appreciated.
+
+* On Unix (observed on Solaris 2.x and Linux 2.0), if you are using
+  an external process and visit a page with more than one Tclet, things
+  go wrong. This is an issue with re-entrancy into the browser's event
+  loop, which causes it to get confused about the number of Tclets. As
+  a result the plugin is improperly left half-unloaded when you leave
+  the page, and eventually the browser crashes.
+
+  This is the reason why we ship the plugin to run Tclets in-process by
+  default, on Unix.
+
+* There are some "screen turd" problems with displaying ovals on Win32.
+  This can be easily observed in the "Eyes" demo on our web site. We have
+  not been able to reproduce this in other cases; if you can come up with a
+  smaller script that does this, let us know!
+
+  Other users have reported similar problems with the "Card Game" demo.
+
+* At install time, on Win32 systems, the WISE installer may cause colors
+  to be somewhat distorted. This problem does not occur when the plugin is
+  used during a regular use of the browser (outside of the install procedure).
+
+* Testing the plugin during installation may not work properly, especially
+  if you install to a non-standard location. This has been observed on all
+  Unix platforms. The issue is that some environment variables must be set
+  in this case for the plugin to work. See the plugin(n) manual page.
+
+PLANNED FEATURES:
+
+* Communication with Java objects in the browser. This is problematic
+  because it's not supported in Microsoft Internet Explorer (yet?). This
+  will allow the Tcl Plugin to e.g. leverage Netscape Navigator's code
+  signing facilities for authenticating Tclets.
+
+  We will probably create a separate ActiveX control for Microsoft Internet
+  Explorer. This will allow us to take full advantage of the features of
+  each platform.
+
+* Better bi-directional communication with Javascript.
+
+* More security policies.
+
+* Much more material on our Tcl Plugin "how to" web site.

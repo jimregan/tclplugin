@@ -1,0 +1,95 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) inside.n 1.10 97/10/10 12:52:24
+'\" 
+.so man.macros
+.TH "inside" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+inside \- The inside security policy.
+.SH SYNOPSIS
+.sp
+\fBpolicy inside\fR
+.BE
+
+.SH DESCRIPTION
+.PP
+The \fBinside\fR security policy installs features into a Safe\-Tcl
+interpreter that allow a Tclet to connect only to resources inside a
+site's Intranet.
+The intent of this policy is to enable access only to resources that are
+inside the Intranet and controlled by trusted system administrators.
+.PP
+The \fBFEATURES\fR section describes the features enabled by this policy.
+The section on \fBCONFIGURATION\fR discusses how to enable or disable use
+of this policy by Tclets and the resources that are controlled by the
+policy's configuration.
+Security issues are discussed in the manual page for each feature allowed
+by the \fBinside\fR policy.
+
+.SH FEATURES
+.PP
+The \fBinside\fR policy enables the \fBpersist\fR, \fBurl\fR and
+\fBnetwork\fR features.
+For a discussion of these features see the \fBpersist\fR, \fBurl\fR and
+\fBnetwork\fR manual pages.
+
+.SH CONFIGURATION
+.PP
+The \fBpolicies\fR section of the application's master configuration
+controls whether Tclets hosted by the application are able to use the
+policy.
+If the policy is not allowed in this section, it can not be used by any
+Tclet hosted in the application.
+For the Tcl plugin, the \fBinside\fR policy is disallowed by default.
+Edit the \fBplugin.cfg\fR file in the directory \fB::cfg::configDir\fR to
+modify this setting.
+The \fBconfig\fR manual page discusses configuration management and the
+syntax of configuration files.
+.PP
+The \fBinside\fR policy uses a configuration stored in the \fBinside.cfg\fR
+file in the directory \fB::cfg::configDir\fR.
+The configuration has the following sections:
+.TP
+\fBfeatures\fR
+The \fBfeatures\fR section selects which features to install into a Tclet.
+It allows the \fBpersist\fR, \fBurl\fR and \fBnetwork\fR features to be
+installed.
+.TP
+\fBaliases\fR
+The \fBaliases\fR section enables aliases provided by the \fBpersist\fR,
+\fBurl\fR and \fBnetwork\fR features to be installed into a Tclet.
+.TP
+\fBurls\fR
+This section controls what URLs can be used in aliases provided by the
+\fBurl\fR feature.
+Edit this section to enable access to URLs on your site's Intranet
+only.
+.TP
+\fBhosts ports\fR
+This section allows the \fBsocket\fR alias to open connections to remote
+services running on specified hosts and ports.
+If your site is protected by a firewall that prevents connections from
+inside the firewall to services on hosts outside of it, your only concern
+is to restrict access to those internal services that you wish to enable.
+If the site is protected by a transparent firewall that allows direct
+connections from inside to services running on hosts outside the firewall,
+ensure that only services on the inside of the firewall are accessible.
+In either case, you must also prevent access to redirecting proxies straddling
+your site's firewall.
+.TP
+\fBpersist\fR
+This section, if present, defines constants that control the resource
+consumption by the \fBpersist\fR feature when used in this policy.
+If the section is absent, the default settings are used.
+
+.SH "SEE ALSO"
+safe(n), config(n), policy(n), url(n), network(n), plugin(n), persist(n)
+
+.SH KEYWORDS
+Safe\-Tcl, policy, access, socket, URL, persistent local storage

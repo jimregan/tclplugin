@@ -1,0 +1,523 @@
+#
+# Makefile for Tcl Plugin for web browsers
+# on Unix platforms.
+#
+# CONTACT:      sunscript-plugin@sunscript.sun.com
+#
+# AUTHORS:      Jacob Levy              Laurent Demailly
+#               jyl@eng.sun.com         demailly@eng.sun.com
+#               jyl@tcl-tk.com          dl@mail.org
+#
+# Please contact us directly for questions, comments and enhancements.
+#
+# Makefile to create a fat (containing tcl+tk) version of the tclplugin -- dl
+#
+# SCCS: @(#) Makefile.in 1.94 97/12/05 18:56:01
+#
+
+VERSION=@VERSION@
+
+# Your usual cc
+CC = @CC@
+# Your favorite additional CC flags
+CNPFLAGS= @CDEBUGFLAGS@
+
+CNPDEBUGFLAGS= $(CNPFLAGS)
+# If you want debugging logging (why would you ever need that?) you should
+# uncomment the following lines: (and add -DNP_DEBUG for as real flood)
+#CNPDEBUGFLAGS= $(CNPFLAGS) -DNP_LOG \
+#               -DNP_LOG_FILENAME=\"/tmp/nptcl.log\" \
+#               -DNP_LOG_EXTFILENAME=\"/tmp/nptclext.log\"
+
+# Flags for Netscape provided sources
+# (no -Wall... because it would complain a lot !)
+CNSDEBUGFLAGS= -O
+
+# Misc tools
+MAKE= make
+RM= rm -f
+AR= ar
+CP= cp
+CHMOD=chmod
+INSTALL= @INSTALL@
+MKDIR= mkdir -p
+# RANLIB= @RANLIB@
+
+INSTALL_DATA= ${INSTALL} -m 644
+INSTALL_PROGRAM= ${INSTALL} -m 755
+INSTALL_DIR= ${INSTALL} -d
+
+# This is needed for some (broken) make implementations
+SHELL=/bin/sh
+
+# Default top-level directories in which to install architecture-
+# specific files (exec_prefix) and machine-independent files such
+# as scripts (prefix).  The values specified here may be overridden
+# at configure-time with the --exec-prefix and --prefix options
+# to the "configure" script.
+prefix =		@prefix@
+exec_prefix =		@exec_prefix@
+
+# The top, architecture dependent directory for installation
+# (in general this is your MOZILLA_HOME directory)
+INST_TOP      = @MOZILLA_DIR@
+
+# Destination directory : for the plugin shared lib
+NSP_DESTDIR = $(INST_TOP)/plugins
+
+# Destination directory : for the external tcl process (server)
+BIN_DIR =     $(INST_TOP)/tclplug
+# Alternate possibility:
+#BIN_DIR =		$(exec_prefix)/bin
+
+# Destination directory : for the plugin librarie files
+# Nb: If you change this to something different from $MOZILLA_HOME/tclplug,
+#     /usr/local/lib/netscape/tclplug or $HOME/tclplug you will need to
+#     set the TCL_PLUGIN_DIR environment var to this dir so the plugin
+#     can find it.
+PLUG_DESTROOT = $(INST_TOP)/tclplug
+
+# Where to find installed libraries (for lean lib version)
+LIB_RUNTIME_DIR =  $(exec_prefix)/lib
+
+
+# Dynamic loading :
+# add the options for building shareable lib / loadable module
+# -fPIC for gcc, +z hpux...etc...
+SHLIB_CFLAGS = @SHLIB_CFLAGS@
+SHLIB_LD =     @SHLIB_LD@
+# If you use gcc you might want to use:
+# SHLIB_LD = gcc -shared
+
+# Linking flags (needed by tk objects)
+LD_SEARCH_FLAGS= @TK_LD_SEARCH_FLAGS@
+# Libraries needed on some platforms
+# (you might not need all that, specially,
+# if you have link failures, try removing "-lc")
+LIBS = @TK_LIBS@ -lc
+# for our custom wish linking
+BUILD_LIB_SPEC= @BUILD_LIB_SPEC@
+XTLIB= -lXt
+TCLSHP_LIBS= $(LIBS) ${XTLIB}
+
+# For most platforms Tcl determined if you need
+# some -l switched at link time and which
+SHLIB_LD_LIBS = @SHLIB_LD_LIBS@
+
+# Unfortunatly for SunOS4 we have to
+# Add -lm
+# (otherwise you get a ld.so: Undefined symbol: _cosh at 
+#  netscape *runtime*)
+# And -lX11 otherwise netscape exits at runtime
+# And -lc for X11 dependencies
+# And -Bstatic so it links the shared lib !
+# Also we need Xt to link the tclshp executable and the shared version
+# seems to miss symbols like XtInherit that it requires, so it needs
+# the full path of the .a lib instead of just -lXt
+#
+# So for SunOS 4 you MUST run 
+#     make SHLIB_LD_LIBS='-Bstatic -lX11 -lm -lc'\
+#          XTLIB='/usr/openwin/lib/libXt.a'"
+# or uncomment the next two lines :
+# SHLIB_LD_LIBS= -Bstatic -lX11 -lm -lc
+# XTLIB=/usr/openwin/lib/libXt.a
+
+
+# Plugin lib file name (with version and OS dependant shared lib extension)
+NSP_LIB_FILE=  @NSP_LIB_FILE@
+
+# To enable Tcl memory debugging
+MEM_DEBUG_FLAGS =
+#MEM_DEBUG_FLAGS = -DTCL_MEM_DEBUG
+
+# Autoconfig defines (in npconf.h)
+ACDEFS = @DEFS@ 
+
+# additional defines : XP_UNIX needed for Netscape's .c/.h on Unix
+DEFINES = -DXP_UNIX
+
+# used by modern make to allow multi-architecture builds
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+# where to find npconfig.h (-I. needed if using srcdir feature)
+# and tcl.h
+TOP_DIR =		@TOP_DIR@
+# absolute version of srcdir (@srcdir@)
+UNIX_DIR =		$(TOP_DIR)/unix
+GENERIC_DIR = 		$(TOP_DIR)/generic
+TESTS_DIR   =		$(TOP_DIR)/tests
+# where to find the tcl source directory tree, where the
+# original generic/tcl.h and library/* are
+TCL_SRC_DIR  =		@TCL_SRC_DIR@
+TCL_INCLDIR  = 		${TCL_SRC_DIR}/generic
+TCL_LIBDIR   =		${TCL_SRC_DIR}/library
+# same for Tk
+TK_SRC_DIR  =		@TK_SRC_DIR@
+TK_INCLDIR  =		${TK_SRC_DIR}/generic
+TK_LIBDIR   =		${TK_SRC_DIR}/library
+# Tk defined X includes
+TK_XINCLUDES=		@TK_XINCLUDES@
+
+INCLPATH= -I. -I${GENERIC_DIR} -I${TCL_INCLDIR} -I${TK_INCLDIR} ${TK_XINCLUDES}
+
+# where are the tcl .o
+TCL_BIN_DIR=		@TCL_BIN_DIR@
+# the symlink to the tcl dir
+TCLBINDIR=	tcl
+
+# tk ones
+TK_BIN_DIR=		@TK_BIN_DIR@
+# the symlink to the tk dir
+TKBINDIR=	tk
+
+TESTDIRTREE = 	tclplug
+
+# ln -s (needed)
+LN_S=@LN_S@
+
+# Distributions name
+DISTRIB_ROOT_NAME=tclplug@NPTCL_DISTRIB_NAME@
+DISTRIB_NAME=$(DISTRIB_ROOT_NAME)-$(DISTRIB)
+DISTRIB_SRC=$(DISTRIB_ROOT_NAME)-src
+
+# Staging directory, default subdirectory of build directory
+STAGEDIR= $(DISTRIB_NAME)
+# Archive file
+STAGEFILE= $(DISTRIB_NAME).tar.gz
+
+# Dist dir (likely to be SunScript specific target anyway)
+# (use make alldist DISTDIRTOP=wherever)
+DISTDIRTOP = /proj/tcl/dist
+
+# should not be changed
+DISTDIRNAME= tclplugin@NPTCL_PATCH_LEVEL@
+DISTDIR1= $(DISTDIRTOP)/$(DISTDIRNAME)
+DISTDIR2= $(DISTDIRTOP)/$(DISTDIRNAME)/plugin$(VERSION)
+
+# additional flags used to compile tcl C source files (they don't use
+# *conf*.h)
+TCL_DEFS= @TCL_DEFS@
+
+# ******************************** Stop ************************************
+# no changes should be needed below... if not plz send to dl@mail.org
+STAGING= 0
+DISTRIB=unknown
+PLUG_TOP_DEST = $(PLUG_DESTROOT)/$(VERSION)
+NPL_DESTDIR = $(PLUG_TOP_DEST)/plugin
+NPL_ICONF= installed.cfg
+NPUTIL_DESTDIR = $(PLUG_TOP_DEST)/utils
+NPCFG_DESTDIR=$(PLUG_TOP_DEST)/config
+#NPPOLICY_DESTDIR=$(PLUG_TOP_DEST)/policies
+#NPTRUST_DESTDIR = $(PLUG_TOP_DEST)/trust
+NPFEATURES_DESTDIR = $(PLUG_TOP_DEST)/safetcl
+NPDOC_DESTDIR = $(PLUG_TOP_DEST)/doc
+NPTCL_DESTDIR = $(PLUG_TOP_DEST)/tcl
+NPTK_DESTDIR  = $(PLUG_TOP_DEST)/tk
+
+# Like the install tree. for testing purposes:
+TSTROOT=tclplug
+TSTTOP=$(TSTROOT)/$(VERSION)
+NPL_TST=$(TSTTOP)/plugin
+NPUTIL_TST=$(TSTTOP)/utils
+NPTCL_TST=$(TSTTOP)/tcl
+NPTK_TST=$(TSTTOP)/tk
+
+# full name and path of tclshp
+TCLSHP= tclshp$(VERSION)
+TCLSHP_PATH= $(BIN_DIR)/$(TCLSHP)
+
+CFLAGS = $(CNPDEBUGFLAGS) $(INCLPATH) $(ACDEFS) \
+	$(DEFINES) $(SHLIB_CFLAGS) $(MEM_DEBUG_FLAGS)
+CNSFLAGS = $(CNSDEBUGFLAGS) $(INCLPATH) $(ACDEFS) \
+	$(DEFINES) $(SHLIB_CFLAGS) $(MEM_DEBUG_FLAGS)
+CTCLFLAGS = $(CNPDEBUGFLAGS) $(INCLPATH) $(ACDEFS) $(TCL_DEFS) \
+	$(DEFINES) $(SHLIB_CFLAGS) $(MEM_DEBUG_FLAGS)
+LDFLAGS= $(CFLAGS) @TCL_LD_SEARCH_FLAGS@
+
+OBJS = npunix.o npunixspec.o nptcl.o npstream.o npunixplatf.o nplog.o \
+      npcmd.o npinterp.o nptoken.o npxtnotify.o tclMiscUtils.o
+
+# tcl & tk objects files (determined by configure)
+TCL_OBJECTS = @TCL_OBJECTS@
+TK_OBJECTS = @TK_OBJECTS@
+
+TARGETS = $(NSP_LIB_FILE) $(TCLSHP)
+
+all: $(TARGETS)
+
+# Create the sym link to tcl build dir (objects) if needed
+$(TCLBINDIR):
+	$(LN_S) $(TCL_BIN_DIR) $(TCLBINDIR)
+
+# same for tk
+$(TKBINDIR):
+	$(LN_S) $(TK_BIN_DIR) $(TKBINDIR)
+
+# Tree for testing
+$(TSTROOT):
+	$(MKDIR) $(TSTROOT)
+$(TSTTOP):
+	$(MKDIR) $(TSTTOP)
+$(NPL_TST):
+	$(LN_S) $(TOP_DIR)/plugin $(NPL_TST)
+$(NPUTIL_TST):
+	$(LN_S) $(TOP_DIR)/library $(NPUTIL_TST)
+$(NPTCL_TST):
+	$(LN_S) $(TCL_LIBDIR) $(NPTCL_TST)
+$(NPTK_TST):
+	$(LN_S) $(TK_LIBDIR) $(NPTK_TST)
+
+runtest: $(TSTROOT) $(TSTTOP) $(NPL_TST) $(NPUTIL_TST) $(NPTCL_TST) $(NPTK_TST)
+	LD_LIBRARY_PATH=`pwd`:$(LD_LIBRARY_PATH); export LD_LIBRARY_PATH; \
+	TCL_PLUGIN_DIR=`pwd`/$(TSTROOT); export TCL_PLUGIN_DIR; \
+	./$(TCLSHP)
+
+# rebuild if tcl objects are missing
+$(TCL_OBJECTS):
+	cd $(TCL_BIN_DIR); $(MAKE) objs
+
+# same for tk
+$(TK_OBJECTS):
+	cd $(TK_BIN_DIR); $(MAKE) objs 
+
+$(NSP_LIB_FILE): $(TCLBINDIR) $(TKBINDIR) $(TCL_OBJECTS) $(TK_OBJECTS) $(OBJS)
+	@echo "Linking the fat library (tcl+tk+plugin objects)..."
+	@echo "  { if you get an error (eventually at netscape runtime!),"
+	@echo "    check the values of :"
+	@echo "         SHLIB_LD       =$(SHLIB_LD)"
+	@echo "    and  LD_SEARCH_FLAGS=$(LD_SEARCH_FLAGS)"
+	@echo "    and  SHLIB_LD_LIBS  =$(SHLIB_LD_LIBS) }"
+	@$(SHLIB_LD) $(TCL_OBJECTS) $(TK_OBJECTS) $(OBJS) -o $(NSP_LIB_FILE) \
+		$(LD_SEARCH_FLAGS) $(SHLIB_LD_LIBS)
+
+$(TKBINDIR)/tkAppInit.o:
+	cd $(TK_BIN_DIR); $(MAKE) tkAppInit.o
+
+$(TCLSHP): $(NSP_LIB_FILE) tclAppInit.o
+	@echo "Linking wish with the fat library, if this fails"
+	@echo "    check SHLIB_LD_LIBS and XTLIB"
+	$(CC) tclAppInit.o -o $(TCLSHP) $(BUILD_LIB_SPEC) $(TCLSHP_LIBS)
+
+staging:
+	@if test "$(DISTRIB)" = "unknown" ; then \
+	  echo " *** Please give the DISTRIB argument, like :";\
+	  echo "     make staging DISTRIB=sparc-solaris25";\
+	  echo "          or =sparc-sunos4, x86-linux2, x86-solaris25..."; \
+	  false ;\
+	fi
+	-$(MKDIR) $(STAGEDIR)
+	$(MAKE) install INST_TOP=$(STAGEDIR) STAGING=1 DISTRIB=$(DISTRIB)
+	@echo "### Install scripts staging..."	
+	$(INSTALL_PROGRAM) $(TOP_DIR)/installer/install.sh $(STAGEDIR)
+	-$(RM) -rf $(STAGEDIR)/installer
+	$(MKDIR) $(STAGEDIR)/installer
+	@for f in $(TOP_DIR)/installer/*.tcl; do \
+		echo "Installing $$f in $(STAGEDIR)/installer"; \
+		$(INSTALL_DATA) $$f $(STAGEDIR)/installer ; \
+	done ;
+	echo $(VERSION) > $(STAGEDIR)/tclplug/plug-version
+	echo @NPTCL_PATCH_LEVEL@ > $(STAGEDIR)/tclplug/plug-patchlevel
+	echo @TCL_VERSION@ > $(STAGEDIR)/tclplug/tcl-version
+	echo $(TCLSHP) > $(STAGEDIR)/tclplug/tclshp-name
+	echo $(DISTRIB) > $(STAGEDIR)/tclplug/plug-distrib
+	@echo "### Staging area $(STAGEDIR)/ built; making archive"
+	tar cf -  $(STAGEDIR) | gzip -9 > $(STAGEFILE)
+	@echo "### Created $(STAGEFILE)"
+
+install: install-binaries install-libraries
+
+install-binaries: $(TARGETS)
+	-$(MKDIR) $(NSP_DESTDIR)
+	$(INSTALL_PROGRAM) $(NSP_LIB_FILE) $(NSP_DESTDIR)
+	-$(MKDIR) $(BIN_DIR)
+	$(INSTALL_PROGRAM) $(TCLSHP) $(TCLSHP_PATH)
+
+install-libraries:
+	-$(MKDIR) $(PLUG_DESTROOT)
+	-$(RM) -rf $(PLUG_TOP_DEST)
+	$(MKDIR) $(PLUG_TOP_DEST)
+	$(MKDIR) $(NPL_DESTDIR)
+	@echo "### Plugin specific .tcl files install..."
+	@for f in $(TOP_DIR)/plugin/*.tcl ; \
+	do \
+		echo "Installing $$f in $(NPL_DESTDIR)"; \
+		$(INSTALL_DATA) $$f $(NPL_DESTDIR) ; \
+	done ;
+	$(MKDIR) $(NPUTIL_DESTDIR)
+	@echo "### General utility packages install..."
+	@for f in $(TOP_DIR)/library/*.tcl ; \
+	do \
+		echo "Installing $$f in $(NPUTIL_DESTDIR)"; \
+		$(INSTALL_DATA) $$f $(NPUTIL_DESTDIR) ; \
+	done ;
+	@echo "### Creating plugin/$(NPL_ICONF) config file."
+	@ cat $(TOP_DIR)/plugin/$(NPL_ICONF) > $(NPL_DESTDIR)/$(NPL_ICONF)
+	@if test $(STAGING) -eq 1 ; then \
+		echo "  (staging so no $(NPL_ICONF) addition)" ;\
+	else \
+		echo "  (appending path infos to $(NPL_ICONF))";\
+		echo "set ::plugin(executable) {$(TCLSHP_PATH)}" >> $(NPL_DESTDIR)/$(NPL_ICONF); \
+		echo "set ::plugin(sharedLibraryDir) {$(NSP_DESTDIR)}" >> $(NPL_DESTDIR)/$(NPL_ICONF); \
+		echo "# EOF (generated by make install)" >>  $(NPL_DESTDIR)/$(NPL_ICONF)	; \
+	fi
+	@$(CHMOD) 644 $(NPL_DESTDIR)/$(NPL_ICONF)
+	@echo "### Configuration files (Trust and Policies) install..."
+	$(MKDIR) $(NPCFG_DESTDIR)
+	@for f in $(TOP_DIR)/config/*.cfg; do \
+		echo "Installing $$f in $(NPCFG_DESTDIR)"; \
+		$(INSTALL_DATA) $$f $(NPCFG_DESTDIR) ; \
+	done ;
+	@echo "### Features collection (safetcl) install..."
+	$(MKDIR) $(NPFEATURES_DESTDIR)
+	@for f in $(TOP_DIR)/safetcl/*.tcl; do \
+		echo "Installing $$f in $(NPFEATURES_DESTDIR)"; \
+		$(INSTALL_DATA) $$f $(NPFEATURES_DESTDIR) ; \
+	done ;
+	@echo "### Tcl .tcl library files install..."
+	$(MKDIR) $(NPTCL_DESTDIR)
+	@for f in $(TCL_LIBDIR)/*.tcl $(TCL_LIBDIR)/tclIndex ; do \
+		echo "Installing $$f in $(NPTCL_DESTDIR)"; \
+		$(INSTALL_DATA) $$f $(NPTCL_DESTDIR) ; \
+	done ;
+	@echo "### Tcl sub dir (packages) library files install..."
+	@for p in opt0.1 http1.0 http2.0 ; do \
+		echo "Making directory $(NPTCL_DESTDIR)/$$p" ; \
+		$(MKDIR) $(NPTCL_DESTDIR)/$$p ; \
+		for f in $(TCL_LIBDIR)/$$p/*.tcl ; \
+		do \
+			echo "Installing $$f in $(NPTCL_DESTDIR)/$$p"; \
+			$(INSTALL_DATA) $$f $(NPTCL_DESTDIR)/$$p ; \
+		done ; \
+	done ;
+	@echo "### Tk .tcl library files install..."
+	$(MKDIR) $(NPTK_DESTDIR)
+	@for f in $(TK_LIBDIR)/*.tcl $(TK_LIBDIR)/tclIndex ; do \
+		echo "Installing $$f in $(NPTK_DESTDIR)"; \
+		$(INSTALL_DATA) $$f $(NPTK_DESTDIR) ; \
+	done ;
+	@echo "### Documentation files install..."
+	$(MKDIR) $(NPDOC_DESTDIR)
+	@for f in $(TOP_DIR)/changes `/bin/ls -d $(TOP_DIR)/doc/* | grep -v SCCS | grep -v '~'`;\
+	do \
+		echo "Installing $$f in $(NPDOC_DESTDIR)"; \
+		$(INSTALL_DATA) $$f $(NPDOC_DESTDIR) ; \
+	done ;
+
+
+clean:
+	-$(RM) $(TARGETS) *.o *~ #*
+
+distclean: clean
+	-$(RM) npconfig.h npconfig.post Makefile $(TCLBINDIR) $(TKBINDIR) config.*
+	-$(RM) -rf $(TSTROOT)
+
+
+
+depend:
+	makedepend $(INCLPATH) *.c
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+
+# non implicit dependencies (because some 'make' are so dumb...)
+
+npunix.o: $(UNIX_DIR)/npunix.c
+	$(CC) $(CNSFLAGS) -c $(UNIX_DIR)/npunix.c
+
+npunixspec.o: $(UNIX_DIR)/npunixspec.c
+	$(CC) $(CFLAGS) -c $(UNIX_DIR)/npunixspec.c
+
+npunixplatf.o: $(UNIX_DIR)/npunixplatf.c
+	$(CC) $(CFLAGS) -c $(UNIX_DIR)/npunixplatf.c
+
+nptcl.o: $(GENERIC_DIR)/nptcl.c
+	$(CC) $(CFLAGS) -c $(GENERIC_DIR)/nptcl.c
+
+nplog.o: $(GENERIC_DIR)/nplog.c
+	$(CC) $(CFLAGS) -c $(GENERIC_DIR)/nplog.c
+
+npstream.o: $(GENERIC_DIR)/npstream.c
+	$(CC) $(CFLAGS) -c $(GENERIC_DIR)/npstream.c
+
+npcmd.o: $(GENERIC_DIR)/npcmd.c
+	$(CC) $(CFLAGS) -c $(GENERIC_DIR)/npcmd.c
+
+npinterp.o: $(GENERIC_DIR)/npinterp.c
+	$(CC) $(CFLAGS) -c $(GENERIC_DIR)/npinterp.c
+
+nptoken.o: $(GENERIC_DIR)/nptoken.c
+	$(CC) $(CFLAGS) -c $(GENERIC_DIR)/nptoken.c
+
+tclAppInit.o: $(UNIX_DIR)/tclAppInit.c
+	$(CC) $(CFLAGS) -c $(UNIX_DIR)/tclAppInit.c
+
+# temporary targets untill they move to tcl and tk core (if they ever do)
+
+tclMiscUtils.o: $(GENERIC_DIR)/tclMiscUtils.c
+	$(CC) $(CFLAGS) -c $(GENERIC_DIR)/tclMiscUtils.c
+
+npxtnotify.o: $(UNIX_DIR)/npxtnotify.c
+	$(CC) $(CFLAGS) -c $(UNIX_DIR)/npxtnotify.c
+
+# moved to the tcl/tk special plugin version/distribution
+
+#tkCanvPs.o: $(GENERIC_DIR)/tkCanvPs.c
+#	$(CC) $(CTCLFLAGS) -c $(GENERIC_DIR)/tkCanvPs.c
+
+
+# The targets below are probably not portable and are meant for
+# inside Sunscript use:
+
+# A real autoconf:
+AUTOCONF = /home/demailly/bin/autoconf
+# A Real gtar
+GTAR = /home/demailly/bin/gtar
+
+# distclean is going to remove the Makefile and everything
+# we save config.status to re-create it
+# Nb: we would not need to do distclean before dist
+#     if everybody was using a sub directory to build...
+distsave:
+	-mkdir save
+	cp -f config.status save/
+
+dist: distsave distclean sdist
+	cp save/config.status .
+	sh ./config.status
+
+# the "sdist" target does the real job and can be used
+# when your build dir is outside the tree
+sdist:
+	@echo "### Reminder: you must have done make alldist"
+	@echo "### in Tcl and Tk before doing distributions on the plugin"
+	@echo "ignore 'cp: xxx: is a directory' errors"
+	rm -rf $(DISTDIR1)
+	( cd $(TOP_DIR)/unix ; $(AUTOCONF) )
+	-@for i in "" generic unix win win/res mac plugin library safetcl \
+		config doc tests installer ; \
+	do \
+	  echo "making $(DISTDIR2)/$$i"; \
+	  mkdir -p $(DISTDIR2)/$$i;\
+	  cp `ls -d1 $(TOP_DIR)/$$i/*|egrep -v "(SCCS|TAGS|~|,|#|%|core|\.l?o)"` $(DISTDIR2)/$$i;\
+	done;
+	cp $(DISTDIR2)/README $(DISTDIR1)
+	cp $(DISTDIR2)/changes $(DISTDIR2)/doc/
+	chmod -R ug+rw,o+r $(DISTDIR1)
+	chmod 775 $(DISTDIR2)/unix/configure
+	chmod 775 $(DISTDIR2)/unix/install-sh
+	(cd $(DISTDIR1) ; $(GTAR) xvfz ../tcl@TCLTK_EXPECTED_VERSION@.tar.gz ; mv tcl@TCLTK_EXPECTED_VERSION@ tcl@TCL_VERSION@)
+	(cd $(DISTDIR1) ; $(GTAR) xvfz ../tk@TCLTK_EXPECTED_VERSION@.tar.gz ; mv tk@TCLTK_EXPECTED_VERSION@ tk@TCL_VERSION@)
+
+
+alldist: dist dgz
+
+salldist: sdist dgz
+
+dgz:
+	(cd $(DISTDIRTOP) ;$(RM) $(DISTRIB_SRC).tar.gz ; GZIP="-9 -v"; export GZIP; $(GTAR) cvfz $(DISTRIB_SRC).tar.gz $(DISTDIRNAME))
+	(cd $(DISTDIRTOP) ;$(RM) $(DISTRIB_SRC).zip; zip -r9 $(DISTRIB_SRC).zip $(DISTDIRNAME))
+	@echo "### $(DISTRIB_SRC).tar.gz and .zip created."
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -1,0 +1,2688 @@
+# SCCS: @(#) Tcl_Plugin.exp 1.1 97/12/03 14:57:50
+##gOldPortPtr
+##gDialogRecord
+##gPluginList
+##gSavedPortList
+##npMacEndDraw
+##npMacStartDraw
+##NpMacUpdateWindows
+##NpPlatformSetWindow
+##NpPlatformDestroy
+##NpPlatformInit
+##NpPlatformMsg
+##PnSafeInit
+##PnInit
+##NpDestroyMainInterp
+##NpGetMainInterp
+##NpCreateMainInterp
+NPP_URLNotify
+NPP_StreamAsFile
+NPP_DestroyStream
+NPP_Write
+NPP_WriteReady
+NPP_NewStream
+#streams
+NPP_Print
+NPP_SetWindow
+NPP_Destroy
+NPP_New
+NPP_Shutdown
+NPP_Initialize
+NPP_GetJavaClass
+##NpShutdown
+##NpInit
+##Plug_Init
+##NpPanic
+##NpLeave
+##NpEnter
+##NpDeleteTokenTables
+##NpGetAndCheckToken
+##NpGetTokenName
+#NpUnregisterToken
+#NpRegisterToken
+#NpInitTokenTables
+#Tcl_WaitForEvent
+#NpPlatformShutdown
+#NpPlatformNew
+#npRunThread
+NPP_HandleEvent
+mainRD
+#gQDPtr
+#gResFile
+#gNetscapeFuncs
+main
+#SetUpQD
+#Private_GetJavaClass
+#Private_URLNotify
+#Private_Print
+#Private_HandleEvent
+#Private_DestroyStream
+#Private_StreamAsFile
+#Private_Write
+#Private_WriteReady
+#Private_NewStream
+#Private_SetWindow
+#Private_Destroy
+#Private_New
+#Private_Shutdown
+#Private_Initialize
+#NPN_GetJavaPeer
+#NPN_GetJavaEnv
+#NPN_ReloadPlugins
+#NPN_MemFlush
+#NPN_MemFree
+#NPN_MemAlloc
+#NPN_UserAgent
+#NPN_Status
+#NPN_DestroyStream
+#NPN_Write
+#NPN_NewStream
+#NPN_RequestRead
+#NPN_PostURL
+#NPN_PostURLNotify
+#NPN_GetURL
+#NPN_GetURLNotify
+#NPN_Version
+#__ttyname
+#ReadCharsFromConsole
+#WriteCharsToConsole
+#RemoveConsole
+#InstallConsole
+#TkGetNativeProlog
+#TkpGetNativeAppBitmap
+#TkpCreateNativeBitmap
+#TkpDefineNativeBitmaps
+#tkpButtonProcs
+#TkpDestroyButton
+#TkpComputeButtonGeometry
+#TkpDisplayButton
+#TkpCreateButton
+#TkpGetColorByValue
+#TkpGetColor
+#XFreeColors
+#XFreeColormap
+#XCreateColormap
+#XAllocColor
+#TkSetMacColor
+#TkSuspendClipboard
+#TkSelPropProc
+#TkSelEventProc
+#TkSelUpdateClipboard
+#XSetSelectionOwner
+#TkSelGetSelection
+#TkpSetCursor
+#TkMacInstallCursor
+#TkFreeCursor
+#TkCreateCursorFromData
+#TkGetCursorByName
+#Tk_MessageBoxCmd
+#Tk_GetSaveFileCmd
+#Tk_GetOpenFileCmd
+#Tk_ChooseColorCmd
+#TkMacMakeStippleMap
+#TkMacSetUpClippingRgn
+#TkMacSetUpGraphicsPort
+#TkScrollWindow
+#XFillArc
+#XDrawArc
+#XDrawRectangle
+#XFillPolygon
+#XDrawSegments
+#XDrawLines
+#XFillRectangles
+#TkPutImage
+#XCopyPlane
+#XCopyArea
+#gMacEmbedHandler
+#TkpGetOtherWindow
+#TkpRedirectKeyEvent
+#TkpTestembedCmd
+#TkpClaimFocus
+#TkMacGetHostToplevel
+#TkMacContainerId
+#TkpMakeContainer
+#TkpUseWindow
+#TkpMakeWindow
+#Tk_MacSetEmbedHandler
+#Tk_DrawChars
+#Tk_MeasureChars
+#TkMacIsCharacterMissing
+#TkpGetFontFamilies
+#TkpDeleteFont
+#TkpGetFontFromAttributes
+#TkpGetNativeFont
+#TkMacDoHLEvent
+#TkMacInitAppleEvents
+#tcl_macQdPtr
+#TkpDisplayWarning
+#TkpGetAppName
+#TkpInit
+#XKeysymToKeycode
+#XStringToKeysym
+#XKeysymToString
+#XFreeModifiermap
+#XGetModifierMapping
+#XLookupString
+#XKeycodeToKeysym
+#tkUseMenuCascadeRgn
+#tkMenuCascadeRgn
+#TkpMenuInit
+#TkpMenuNotifyToplevelCreate
+#TkMacClearMenubarActive
+#TkpComputeStandardMenuGeometry
+#TkpDrawMenuEntry
+#TkMacMenuClick
+#TkMacSetHelpMenuItemCount
+#TkpComputeMenubarGeometry
+#TkpInitializeMenuBindings
+#TkMacHandleTearoffMenu
+#TkMacDispatchMenuEvent
+#TkpSetWindowMenuBar
+#TkpSetMainMenubar
+#TkpMenuNewEntry
+#TkpPostMenu
+#TkpConfigureMenuEntry
+#TkpDestroyMenuEntry
+#TkpDestroyMenu
+#TkpNewMenu
+#TkMacUseMenuID
+#tkpMenubuttonClass
+#TkpComputeMenuButtonGeometry
+#TkpDestroyMenuButton
+#TkpDisplayMenuButton
+#TkpCreateMenuButton
+#tkAppleMenu
+#tkFileMenu
+#tkEditMenu
+#TkMacInitMenus
+#TkMacHandleMenuSelect
+#TkClipBox
+#TkRectInRegion
+#TkUnionRectWithRegion
+#TkIntersectRegion
+#TkDestroyRegion
+#TkCreateRegion
+#tkpScrollbarProcs
+#TkpScrollbarPosition
+#TkpDestroyScrollbar
+#TkpComputeScrollbarGeometry
+#TkpConfigureScrollbar
+#TkpDisplayScrollbar
+#TkpCreateScrollbar
+#tkSendSerial
+#TkGetInterpNames
+#Tk_SendCmd
+#Tk_SetAppName
+#Tk_FreePixmap
+#Tk_GetPixmap
+#MacMoveWindow
+#TkMacWinBounds
+#TkMacInvalClipRgns
+#TkMacGetDrawablePort
+#TkMacInvalidateWindow
+#TkMacVisableClipRgn
+#TkMacUpdateClipRgn
+#XConfigureWindow
+#XRaiseWindow
+#XMoveWindow
+#XMoveResizeWindow
+#XResizeWindow
+#XUnmapWindow
+#XMapWindow
+#XDestroyWindow
+#tkMacAppInFront
+#TkpGetMS
+#TkMacWindowOffset
+#TkpSetCapture
+#TkMacConvertTkEvent
+#TkMacConvertEvent
+#TkMacGenerateTime
+#XQueryPointer
+#XUngrabKeyboard
+#XGrabKeyboard
+#TkMacButtonKeyState
+#TkpChangeFocus
+#XSetInputFocus
+#TkGenerateButtonEvent
+#TkAboutDlg
+#tkMacWindowListPtr
+#TkpWmSetState
+#TkpGetWrapperWindow
+#TkWmFocusToplevel
+#TkMacGetScrollbarGrowWindow
+#TkMacSetScrollbarGrow
+#TkMacUnregisterMacWindow
+#TkMacRegisterOffScreenWindow
+#TkMacMakeRealWindowExist
+#TkpMakeMenuWindow
+#TkUnsupported1Cmd
+#TkMacZoomToplevel
+#TkMacGetXWindow
+#TkGetTransientMaster
+#TkGenWMConfigureEvent
+#TkGenWMDestroyEvent
+#TkSetWMName
+#TkMacGrowToplevel
+#TkMacResizable
+#TkGetPointerCoords
+#TkWmRemoveFromColormapWindows
+#TkWmAddToColormapWindows
+#TkWmRestackToplevel
+#TkWmProtocolEventProc
+#Tk_MoveToplevelWindow
+#Tk_GetVRootGeometry
+#Tk_TopCoordsToWindow
+#Tk_CoordsToWindow
+#Tk_GetRootCoords
+#Tk_UnsetGrid
+#Tk_SetGrid
+#Tk_WmCmd
+#TkWmSetClass
+#TkWmDeadWindow
+#TkWmUnmapWindow
+#TkWmMapWindow
+#TkWmNewWindow
+#TkGetDefaultScreenName
+#XSetWindowColormap
+#XSetWindowBorderWidth
+#XSetWindowBorderPixmap
+#XSetWindowBorder
+#XSetWindowBackgroundPixmap
+#XSetWindowBackground
+#XChangeWindowAttributes
+#TkGetServerInfo
+#XForceScreenSaver
+#XSetIconName
+#XRefreshKeyboardMapping
+#XGetWindowProperty
+#XSendEvent
+#XGContextFromGC
+#XCreateImage
+#TkMacXAddPixel
+#TkMacXSubImage
+#TkMacXPutPixel
+#TkMacXGetPixel
+#TkMacXDestroyImage
+#XAllocSizeHints
+#XSetWMNormalHints
+#XBell
+#XSelectInput
+#XChangeProperty
+#XGetGeometry
+#XGetImage
+#XRootWindow
+#XSetErrorHandler
+#_XInitImageFuncPtrs
+#XGetAtomName
+#TkpWindowWasRecentlyDeleted
+#TkpCloseDisplay
+#TkpOpenDisplay
+#Tk_Fill3DPolygon
+#Tk_Fill3DRectangle
+#Tk_Draw3DPolygon
+#Tk_NameOfRelief
+#Tk_GetRelief
+#Tk_SetBackgroundFromBorder
+#Tk_Free3DBorder
+#Tk_3DBorderGC
+#Tk_3DBorderColor
+#Tk_NameOf3DBorder
+#Tk_Draw3DRectangle
+#Tk_Get3DBorder
+#Tk_ParseArgv
+#Tk_GetAtomName
+#Tk_InternAtom
+#TkCopyAndGlobalEval
+#TkKeysymToString
+#TkStringToKeysym
+#Tk_EventCmd
+#TkBindDeadWindow
+#Tk_BindEvent
+#Tk_DeleteAllBindings
+#Tk_GetAllBindings
+#Tk_GetBinding
+#Tk_DeleteBinding
+#TkCreateBindingProcedure
+#Tk_CreateBinding
+#Tk_DeleteBindingTable
+#Tk_CreateBindingTable
+#TkBindFree
+#TkBindInit
+#tkPredefBitmapTable
+#Tk_GetBitmapFromData
+#Tk_FreeBitmap
+#Tk_SizeOfBitmap
+#Tk_NameOfBitmap
+#Tk_DefineBitmap
+#Tk_GetBitmap
+#tkpButtonConfigSpecs
+#TkInvokeButton
+#TkButtonWorldChanged
+#Tk_RadiobuttonCmd
+#Tk_LabelCmd
+#Tk_CheckbuttonCmd
+#Tk_ButtonCmd
+#tkArcType
+#Tk_GetItemTypes
+#Tk_CreateItemType
+#Tk_CanvasEventuallyRedraw
+#Tk_CanvasCmd
+#tkBitmapType
+#tkImageType
+#tkLineType
+#tkPolygonType
+#TkFillPolygon
+#TkGetProlog
+#Tk_CanvasPsPath
+#Tk_CanvasPsY
+#Tk_CanvasPsStipple
+#Tk_CanvasPsBitmap
+#Tk_CanvasPsFont
+#Tk_CanvasPsColor
+#TkCanvPostscriptCmd
+#tkTextType
+#Tk_CanvasTagsPrintProc
+#Tk_CanvasTagsParseProc
+#Tk_CanvasGetTextInfo
+#Tk_CanvasSetStippleOrigin
+#Tk_CanvasGetCoord
+#Tk_CanvasWindowCoords
+#Tk_CanvasDrawableCoords
+#Tk_CanvasTkwin
+#tkWindowType
+#TkClipInit
+#Tk_ClipboardCmd
+#Tk_ClipboardAppend
+#Tk_ClipboardClear
+#TkDeadAppCmd
+#TkGetDisplayOf
+#Tk_WinfoObjCmd
+#Tk_UpdateCmd
+#Tk_TkwaitCmd
+#Tk_TkObjCmd
+#Tk_RaiseCmd
+#Tk_LowerCmd
+#Tk_DestroyCmd
+#TkFreeBindingTags
+#Tk_BindtagsCmd
+#TkBindEventProc
+#Tk_BindCmd
+#Tk_BellCmd
+#Tk_FreeColor
+#Tk_GCForColor
+#Tk_NameOfColor
+#Tk_GetColorByValue
+#Tk_GetColor
+#Tk_FreeOptions
+#Tk_ConfigureValue
+#Tk_ConfigureInfo
+#Tk_ConfigureWidget
+#Tk_FreeCursor
+#Tk_NameOfCursor
+#Tk_GetCursorFromData
+#Tk_GetCursor
+#Tk_EntryCmd
+#Tk_DeleteErrorHandler
+#Tk_CreateErrorHandler
+#Tk_MainLoop
+#TkQueueEventForAllChildren
+#Tk_QueueWindowEvent
+#Tk_RestrictEvents
+#TkCurrentTime
+#TkEventDeadWindow
+#Tk_HandleEvent
+#Tk_DeleteGenericHandler
+#Tk_CreateGenericHandler
+#Tk_DeleteEventHandler
+#Tk_CreateEventHandler
+#TkFreeFileFilters
+#TkGetFileFilters
+#TkInitFileFilters
+#TkParseXLFD
+#TkInitFontAttributes
+#Tk_TextLayoutToPostscript
+#Tk_IntersectTextLayout
+#Tk_DistanceToTextLayout
+#Tk_CharBbox
+#Tk_PointToChar
+#Tk_UnderlineTextLayout
+#Tk_DrawTextLayout
+#Tk_FreeTextLayout
+#Tk_ComputeTextLayout
+#Tk_UnderlineChars
+#Tk_TextWidth
+#Tk_PostscriptFontName
+#Tk_GetFontMetrics
+#Tk_FontId
+#Tk_FreeFont
+#Tk_NameOfFont
+#Tk_GetFontFromObj
+#Tk_GetFont
+#TkCreateNamedFont
+#Tk_FontObjCmd
+#TkFontPkgFree
+#TkFontPkgInit
+#TkInstallFrameMenu
+#TkCreateFrame
+#Tk_ToplevelCmd
+#Tk_FrameCmd
+#tclFocusDebug
+#TkFocusDeadWindow
+#TkFocusKeyEvent
+#TkGetFocusWin
+#TkFocusFilterEvent
+#Tk_FocusCmd
+#Tk_FreeGC
+#Tk_GetGC
+#Tk_UnmaintainGeometry
+#Tk_MaintainGeometry
+#Tk_SetInternalBorder
+#Tk_GeometryRequest
+#Tk_ManageGeometry
+#Tk_GetPixels
+#Tk_GetScreenMM
+#Tk_GetUid
+#Tk_NameOfJustify
+#Tk_GetJustify
+#Tk_NameOfCapStyle
+#Tk_GetCapStyle
+#Tk_NameOfJoinStyle
+#Tk_GetJoinStyle
+#Tk_NameOfAnchor
+#Tk_GetAnchor
+#TkGrabState
+#TkPositionInTree
+#TkGrabDeadWindow
+#TkInOutEvents
+#TkChangeEventWindow
+#TkPointerEvent
+#Tk_Ungrab
+#Tk_Grab
+#Tk_GrabCmd
+#Tk_GridCmd
+#Tk_GetImageMasterData
+#TkDeleteAllImages
+#Tk_DeleteImage
+#Tk_SizeOfImage
+#Tk_RedrawImage
+#Tk_FreeImage
+#Tk_GetImage
+#Tk_NameOfImage
+#Tk_ImageChanged
+#Tk_ImageCmd
+#Tk_CreateImageType
+#tkBitmapImageType
+#TkGetBitmapData
+#tkImgFmtGIF
+#tkImgFmtPPM
+#tkPhotoImageType
+#Tk_PhotoGetImage
+#Tk_PhotoSetSize
+#Tk_PhotoGetSize
+#Tk_PhotoExpand
+#Tk_PhotoBlank
+#Tk_PhotoPutZoomedBlock
+#Tk_PhotoPutBlock
+#Tk_FindPhoto
+#Tk_CreatePhotoImageFormat
+#Tk_ListboxCmd
+#TkPreprocessMenu
+#Tk_Main
+#tkMenuEntryConfigSpecs
+#tkMenuConfigSpecs
+#TkMenuInit
+#TkFreeMenuReferences
+#TkFindMenuReferences
+#TkCreateMenuReferences
+#TkGetMenuHashTable
+#TkSetWindowMenuBar
+#TkNewMenuName
+#TkPostCommand
+#TkActivateMenuEntry
+#TkGetMenuIndex
+#TkDestroyMenu
+#TkInvokeMenu
+#Tk_MenuCmd
+#TkPostSubmenu
+#TkPostTearoffMenu
+#TkMenuImageProc
+#TkMenuEventProc
+#TkMenuSelectImageProc
+#TkEventuallyRedrawMenu
+#TkRecomputeMenu
+#TkEventuallyRecomputeMenu
+#TkMenuConfigureEntryDrawOptions
+#TkMenuConfigureDrawOptions
+#TkMenuEntryFreeDrawOptions
+#TkMenuFreeDrawOptions
+#TkMenuInitializeEntryDrawingFields
+#TkMenuInitializeDrawingFields
+#TkMenuButtonWorldChanged
+#Tk_MenubuttonCmd
+#Tk_MessageCmd
+#TkOptionClassChanged
+#TkOptionDeadWindow
+#Tk_OptionCmd
+#Tk_GetOption
+#Tk_AddOption
+#Tk_PackCmd
+#Tk_PlaceCmd
+#TkGenerateActivateEvents
+#XDefineCursor
+#TkPointerDeadWindow
+#XUngrabPointer
+#XGrabPointer
+#Tk_UpdatePointer
+#tkRectangleType
+#tkOvalType
+#TkRoundToResolution
+#TkEventuallyRedrawScale
+#Tk_ScaleCmd
+#tkpScrollbarConfigSpecs
+#TkScrollbarEventuallyRedraw
+#TkScrollbarEventProc
+#Tk_ScrollbarCmd
+#pendingPtr
+#TkSelDefaultSelection
+#TkSelClearSelection
+#TkSelInit
+#TkSelDeadWindow
+#Tk_SelectionCmd
+#Tk_GetSelection
+#Tk_ClearSelection
+#Tk_OwnSelection
+#Tk_DeleteSelHandler
+#Tk_CreateSelHandler
+#tkTextDebug
+#tkTextWordUid
+#tkTextNormalUid
+#tkTextNoneUid
+#tkTextDisabledUid
+#tkTextCharUid
+#TkTextGetTabs
+#TkTextLostSelection
+#Tk_TextCmd
+#tkTextCharType
+#tkTextToggleOnType
+#tkTextToggleOffType
+#tkBTreeDebug
+#TkBTreeCharsInLine
+#TkBTreeNumLines
+#TkBTreeCheck
+#TkBTreeGetTags
+#TkBTreeCharTagged
+#TkBTreePrevTag
+#TkBTreeNextTag
+#TkBTreeStartSearchBack
+#TkBTreeStartSearch
+#TkBTreeTag
+#TkBTreeUnlinkSegment
+#TkBTreeLinkSegment
+#TkBTreeLineIndex
+#TkBTreePreviousLine
+#TkBTreeNextLine
+#TkBTreeFindLine
+#TkBTreeDeleteChars
+#TkBTreeInsertChars
+#TkBTreeDestroy
+#TkBTreeCreate
+#TkTextCharLayoutProc
+#TkTextDLineInfo
+#TkTextCharBbox
+#TkTextPixelIndex
+#TkTextScanCmd
+#TkTextYviewCmd
+#TkTextXviewCmd
+#TkTextSeeCmd
+#TkTextSetYView
+#TkTextRelayoutWindow
+#TkTextRedrawTag
+#TkTextChanged
+#TkTextRedrawRegion
+#TkTextEventuallyRepick
+#TkTextFreeDInfo
+#TkTextCreateDInfo
+#TkTextImageIndex
+#TkTextImageCmd
+#TkTextIndexBackChars
+#TkTextIndexForwChars
+#TkTextIndexCmp
+#TkTextPrintIndex
+#TkTextGetIndex
+#TkTextSegToOffset
+#TkTextIndexToSeg
+#TkTextMakeIndex
+#tkTextRightMarkType
+#tkTextLeftMarkType
+#TkTextInsertDisplayProc
+#TkTextMarkNameToIndex
+#TkTextMarkSegToIndex
+#TkTextSetMark
+#TkTextMarkCmd
+#TkTextPickCurrent
+#TkTextBindProc
+#TkTextFreeTag
+#TkTextCreateTag
+#TkTextTagCmd
+#TkTextWindowIndex
+#TkTextWindowCmd
+#TkGetButtPoints
+#TkGetMiterPoints
+#TkMakeBezierPostscript
+#TkMakeBezierCurve
+#TkBezierPoints
+#TkBezierScreenPoints
+#TkIncludePoint
+#TkOvalToArea
+#TkOvalToPoint
+#TkPolygonToArea
+#TkPolygonToPoint
+#TkThickPolyLineToArea
+#TkLineToArea
+#TkLineToPoint
+#TkFindStateNum
+#TkFindStateString
+#TkComputeAnchor
+#Tk_GetScrollInfo
+#Tk_DrawFocusHighlight
+#TkDrawInsetFocusHighlight
+#Tk_PreserveColormap
+#Tk_FreeColormap
+#Tk_GetColormap
+#Tk_GetVisual
+#tkNormalUid
+#tkActiveUid
+#tkDisabledUid
+#tkDisplayList
+#tkMainWindowList
+#Tk_SafeInit
+#Tk_Init
+#Tk_GetNumMainWindows
+#Tk_StrictMotif
+#Tk_MainWindow
+#Tk_RestackWindow
+#Tk_DisplayName
+#Tk_IdToWindow
+#Tk_NameToWindow
+#TkSetClassProcs
+#Tk_SetClass
+#TkDoConfigureNotify
+#Tk_SetWindowVisual
+#Tk_SetWindowColormap
+#Tk_UndefineCursor
+#Tk_DefineCursor
+#Tk_SetWindowBorderPixmap
+#Tk_SetWindowBorder
+#Tk_SetWindowBackgroundPixmap
+#Tk_SetWindowBackground
+#Tk_ChangeWindowAttributes
+#Tk_SetWindowBorderWidth
+#Tk_MoveResizeWindow
+#Tk_ResizeWindow
+#Tk_MoveWindow
+#Tk_ConfigureWindow
+#Tk_UnmapWindow
+#Tk_MakeWindowExist
+#Tk_MapWindow
+#Tk_DestroyWindow
+#Tk_CreateWindowFromPath
+#Tk_CreateWindow
+#TkCreateMainWindow
+#TkAllocWindow
+#TkGetDisplay
+#TkpGetShadows
+#Tk_3DHorizontalBevel
+#Tk_3DVerticalBevel
+#TkpFreeBorder
+#TkpGetBorder
+#TkpValueToPixel
+#TkpPixelToValue
+#TkpSetScaleValue
+#TkpScaleElement
+#TkpDisplayScale
+#TkpDestroyScale
+#TkpCreateScale
+#XParseColor
+#XFillRectangle
+#XDrawLine
+#XSetClipMask
+#TkSetRegion
+#XSetClipOrigin
+#XSetLineAttributes
+#XSetStipple
+#XSetArcMode
+#XSetFont
+#XSetTSOrigin
+#XSetFillStyle
+#XSetFillRule
+#XSetFunction
+#XSetBackground
+#XSetForeground
+#XFreeGC
+#XChangeGC
+#XCreateGC
+#XReadBitmapFile
+#XCreateBitmapFromData
+#XGetVisualInfo
+#XInternAtom
+#appMemory
+#systemMemory
+#ConfigureMemory
+#FreeAllMemory
+#TclpSysFree
+#TclpSysAlloc
+#TclpSysRealloc
+#getStdChannelsProc
+#Tcl_OpenFileChannel
+#TclGetDefaultStdChannel
+#Tcl_PidObjCmd
+#environ
+#TclMacCreateEnv
+#MXInfo
+#HInfo
+#AddrToName
+#EnumCache
+#AddrToStr
+#StrToAddr
+#CloseResolver
+#OpenResolver
+#OpenOurRF
+#SearchFolderForDNRP
+#GetCPanelFolder
+#GetSystemFolder
+#TrapExists
+#GetTrapType
+#NumToolboxTraps
+#tclpFileAttrStrings
+#tclpFileAttrProcs
+#TclpListVolumes
+#FSpGetFLockCompat
+#TclpRemoveDirectory
+#TclpCopyDirectory
+#TclpCreateDirectory
+#TclpDeleteFile
+#TclpCopyFile
+#TclpRenameFile
+#TclMacOSErrorToPosixError
+#TclMacFOpenHack
+#TclMacAccess
+#TclMacReadlink
+#TclMacStat
+#TclMatchFiles
+#TclGetUserHome
+#Tcl_FindExecutable
+#Tcl_WaitPid
+#TclGetCwd
+#TclChdir
+#TclMacTimerExpired
+#TclMacRemoveTimer
+#TclMacStartTimer
+#Tcl_SourceRCFile
+#Tcl_Init
+#TclpCheckStackSpace
+#TclPlatformInit
+#TclMacInitExitToShell
+#TclMacInstallExitToShellPatch
+#TclMacExitHandler
+#TclPlatformExit
+#Tcl_MacSetEventProc
+#Tcl_Sleep
+#Tcl_SetTimer
+#panicProc
+#panic
+#Tcl_SetPanicProc
+#TclMacUnRegisterResourceFork
+#TclMacRegisterResourceFork
+#Tcl_GetOSTypeFromObj
+#Tcl_SetOSTypeObj
+#Tcl_NewOSTypeObj
+#Tcl_MacFindResource
+#Tcl_MacConvertTextResource
+#Tcl_MacEvalResource
+#Tcl_BeepObjCmd
+#Tcl_MacSourceObjCmd
+#Tcl_ResourceObjCmd
+#closeUPP
+#completeUPP
+#resultUPP
+#TclSockGetPort
+#Tcl_GetHostName
+#Tcl_OpenTcpServer
+#Tcl_OpenTcpClient
+#Tcl_MakeTcpClientChannel
+#TclHasSockets
+#TclpGetDate
+#TclpGetTime
+#TclpGetTimeZone
+#TclpGetClicks
+#TclpGetSeconds
+#Tcl_LsCmd
+#Tcl_EchoCmd
+#GetGlobalMouse
+#FSpPathFromLocation
+#FSpLocationFromPath
+#FSpFindFolder
+#FSpSetDefaultDir
+#FSpGetDefaultDir
+#hypotd
+#TclGuessPackageName
+#TclLoadFile
+#TclGetRegError
+#TclRegError
+#TclRegExec
+#TclRegComp
+#Tcl_AsyncReady
+#Tcl_AsyncDelete
+#Tcl_AsyncInvoke
+#Tcl_AsyncMark
+#Tcl_AsyncCreate
+#Tcl_AllowExceptions
+#Tcl_SetRecursionLimit
+#Tcl_GlobalEvalObj
+#Tcl_GlobalEval
+#Tcl_VarEval
+#Tcl_AddObjErrorInfo
+#Tcl_AddErrorInfo
+#Tcl_DeleteTrace
+#Tcl_CreateTrace
+#Tcl_ExprObj
+#Tcl_ExprString
+#TclObjInvoke
+#TclObjInvokeGlobal
+#TclGlobalInvoke
+#TclInvoke
+#Tcl_ExprBooleanObj
+#Tcl_ExprDoubleObj
+#Tcl_ExprLongObj
+#Tcl_ExprBoolean
+#Tcl_ExprDouble
+#Tcl_ExprLong
+#Tcl_EvalObj
+#Tcl_Eval
+#TclCleanupCommand
+#Tcl_DeleteCommandFromToken
+#Tcl_DeleteCommand
+#Tcl_GetCommandFullName
+#Tcl_GetCommandName
+#Tcl_GetCommandInfo
+#Tcl_SetCommandInfo
+#TclRenameCommand
+#Tcl_CreateObjCommand
+#Tcl_CreateCommand
+#Tcl_ExposeCommand
+#Tcl_HideCommand
+#Tcl_DeleteInterp
+#Tcl_InterpDeleted
+#Tcl_GetAssocData
+#Tcl_DeleteAssocData
+#Tcl_SetAssocData
+#Tcl_DontCallWhenDeleted
+#Tcl_CallWhenDeleted
+#TclHideUnsafeCommands
+#Tcl_CreateInterp
+#TclInvokeStringCommand
+#TclInvokeObjectCommand
+#Tcl_BinaryObjCmd
+#Tcl_InitMemory
+#Tcl_Realloc
+#Tcl_Free
+#Tcl_Alloc
+#Tcl_DbCkrealloc
+#Tcl_DbCkfree
+#Tcl_DbCkalloc
+#Tcl_DumpActiveMemory
+#Tcl_ValidateAllMemory
+#TclDumpMemoryInfo
+#Tcl_ClockObjCmd
+#Tcl_FormatObjCmd
+#Tcl_ForeachObjCmd
+#Tcl_ForCmd
+#Tcl_FileObjCmd
+#Tcl_ExprObjCmd
+#Tcl_ExitObjCmd
+#Tcl_EvalObjCmd
+#Tcl_ErrorObjCmd
+#Tcl_ContinueCmd
+#Tcl_ConcatObjCmd
+#Tcl_CdObjCmd
+#Tcl_CatchObjCmd
+#Tcl_CaseObjCmd
+#Tcl_BreakCmd
+#tclExecutableName
+#Tcl_LsortObjCmd
+#Tcl_LsearchObjCmd
+#Tcl_LreplaceObjCmd
+#Tcl_LrangeObjCmd
+#Tcl_LlengthObjCmd
+#Tcl_ListObjCmd
+#Tcl_LinsertObjCmd
+#Tcl_LindexObjCmd
+#Tcl_JoinObjCmd
+#Tcl_InfoObjCmd
+#Tcl_IncrCmd
+#Tcl_IfCmd
+#Tcl_WhileCmd
+#Tcl_TraceCmd
+#Tcl_TimeObjCmd
+#Tcl_SwitchObjCmd
+#Tcl_SubstCmd
+#Tcl_StringObjCmd
+#Tcl_SplitObjCmd
+#Tcl_SourceObjCmd
+#Tcl_ScanCmd
+#Tcl_ReturnObjCmd
+#Tcl_RenameObjCmd
+#Tcl_RegsubCmd
+#Tcl_RegexpCmd
+#Tcl_PwdCmd
+#instructionTable
+#tclTypeTable
+#tclByteCodeType
+#tclTraceCompile
+#TclFixupForwardJump
+#TclEmitForwardJump
+#TclFreeJumpFixupArray
+#TclExpandJumpFixupArray
+#TclInitJumpFixupArray
+#TclCreateAuxData
+#TclExpandCodeArray
+#TclObjIndexForString
+#Tcl_Backslash
+#TclCompileWhileCmd
+#TclCompileSetCmd
+#TclCompileIncrCmd
+#TclCompileIfCmd
+#TclCompileForeachCmd
+#TclCompileForCmd
+#TclCompileExprCmd
+#TclCompileContinueCmd
+#TclCompileCatchCmd
+#TclCompileBreakCmd
+#TclCompileDollarVar
+#TclCompileQuotes
+#TclCompileString
+#TclInitByteCodeObj
+#TclFreeCompileEnv
+#TclInitCompileEnv
+#TclCleanupByteCode
+#TclPrintSource
+#TclPrintInstruction
+#TclPrintByteCodeObj
+#Tcl_CreateMathFunc
+#TclCompileExpr
+#TclDates
+#TclDatev
+#TclDateexca
+#TclDateact
+#TclDatepact
+#TclDatepgo
+#TclDater1
+#TclDater2
+#TclDatechk
+#TclDatedef
+#TclDatelval
+#TclDateval
+#TclDate_TclDates
+#TclDate_TclDatev
+#TclDatedebug
+#TclDatepv
+#TclDateps
+#TclDatestate
+#TclDatetmp
+#TclDatenerrs
+#TclDateerrflag
+#TclDatechar
+#TclDateparse
+#TclGetDate
+#TclFinalizeEnvironment
+#TclGetEnv
+#TclUnsetEnv
+#Tcl_PutEnv
+#TclSetEnv
+#TclSetupEnv
+#tclMemDumpFileName
+#Tcl_UpdateCmd
+#Tcl_VwaitCmd
+#TclInExit
+#Tcl_Finalize
+#Tcl_Exit
+#Tcl_DeleteExitHandler
+#Tcl_CreateExitHandler
+#Tcl_BackgroundError
+#builtinFuncTable
+#tclCmdNameType
+#tcl_MathInProgress
+#tclTraceExec
+#Tcl_GetCommandFromObj
+#TclExprFloatError
+#TclGetExceptionRangeForPc
+#TclExecuteByteCode
+#TclFinalizeExecEnv
+#TclDeleteExecEnv
+#TclCreateExecEnv
+#TclFileAttrsCmd
+#TclFileDeleteCmd
+#TclFileMakeDirsCmd
+#TclFileCopyCmd
+#TclFileRenameCmd
+#tclPlatform
+#TclDoGlob
+#Tcl_GlobCmd
+#TclGetExtension
+#Tcl_TranslateFileName
+#Tcl_JoinPath
+#Tcl_SplitPath
+#Tcl_GetPathType
+#Tcl_GetBoolean
+#Tcl_GetDouble
+#TclGetLong
+#Tcl_GetInt
+#Tcl_HashStats
+#Tcl_NextHashEntry
+#Tcl_FirstHashEntry
+#Tcl_DeleteHashTable
+#Tcl_DeleteHashEntry
+#Tcl_InitHashTable
+#Tcl_RecordAndEvalObj
+#Tcl_RecordAndEval
+#tclIndexType
+#Tcl_WrongNumArgs
+#Tcl_GetIndexFromObj
+#Tcl_GetAliasObj
+#Tcl_GetAlias
+#Tcl_CreateAliasObj
+#Tcl_CreateAlias
+#Tcl_GetMaster
+#Tcl_GetSlave
+#Tcl_CreateSlave
+#Tcl_IsSafe
+#TclInterpInit
+#Tcl_InterpObjCmd
+#Tcl_GetInterpPath
+#Tcl_MakeSafe
+#TclPreventAliasLoop
+#TclCopyChannel
+#TclTestChannelEventCmd
+#TclTestChannelCmd
+#Tcl_FileEventCmd
+#Tcl_DeleteChannelHandler
+#Tcl_CreateChannelHandler
+#Tcl_NotifyChannel
+#Tcl_SetChannelOption
+#Tcl_GetChannelOption
+#Tcl_BadChannelOption
+#Tcl_GetChannelBufferSize
+#Tcl_SetChannelBufferSize
+#Tcl_InputBuffered
+#Tcl_InputBlocked
+#Tcl_Eof
+#Tcl_Tell
+#Tcl_Seek
+#Tcl_Ungets
+#Tcl_GetsObj
+#Tcl_Gets
+#Tcl_Read
+#Tcl_Flush
+#Tcl_Write
+#Tcl_Close
+#Tcl_GetChannelInstanceData
+#Tcl_GetChannelHandle
+#Tcl_GetChannelType
+#Tcl_GetChannelName
+#Tcl_GetChannelMode
+#Tcl_CreateChannel
+#Tcl_GetChannel
+#Tcl_RegisterChannel
+#Tcl_UnregisterChannel
+#Tcl_DeleteCloseHandler
+#Tcl_CreateCloseHandler
+#Tcl_GetStdChannel
+#Tcl_SetStdChannel
+#Tcl_PosixError
+#Tcl_SetErrno
+#Tcl_GetErrno
+#Tcl_EvalFile
+#TclGetOpenMode
+#Tcl_FcopyObjCmd
+#Tcl_SocketCmd
+#Tcl_OpenCmd
+#Tcl_FblockedObjCmd
+#Tcl_ExecCmd
+#Tcl_EofObjCmd
+#Tcl_FconfigureCmd
+#Tcl_CloseObjCmd
+#Tcl_TellCmd
+#Tcl_SeekCmd
+#Tcl_ReadObjCmd
+#Tcl_GetsObjCmd
+#Tcl_FlushObjCmd
+#Tcl_PutsObjCmd
+#Tcl_UpdateLinkedVar
+#Tcl_UnlinkVar
+#Tcl_LinkVar
+#tclListType
+#Tcl_ListObjReplace
+#Tcl_ListObjLength
+#Tcl_ListObjIndex
+#Tcl_ListObjAppendElement
+#Tcl_ListObjAppendList
+#Tcl_ListObjGetElements
+#Tcl_SetListObj
+#Tcl_DbNewListObj
+#Tcl_NewListObj
+#TclGetLoadedPackages
+#Tcl_StaticPackage
+#Tcl_LoadCmd
+#tclDummyLinkVarPtr
+#Tcl_Main
+#tclNsNameType
+#Tcl_NamespaceObjCmd
+#TclResetShadowedCmdRefs
+#Tcl_FindNamespaceVar
+#Tcl_FindCommand
+#Tcl_FindNamespace
+#TclGetNamespaceForQualName
+#TclGetOriginalCommand
+#Tcl_ForgetImport
+#Tcl_Import
+#Tcl_AppendExportList
+#Tcl_Export
+#TclTeardownNamespace
+#Tcl_DeleteNamespace
+#Tcl_CreateNamespace
+#Tcl_PopCallFrame
+#Tcl_PushCallFrame
+#Tcl_GetGlobalNamespace
+#Tcl_GetCurrentNamespace
+#TclInitNamespaces
+#Tcl_ServiceAll
+#Tcl_DoOneEvent
+#Tcl_SetMaxBlockTime
+#Tcl_SetServiceMode
+#Tcl_GetServiceMode
+#Tcl_ServiceEvent
+#Tcl_DeleteEvents
+#Tcl_QueueEvent
+#Tcl_DeleteEventSource
+#Tcl_CreateEventSource
+#tclBooleanType
+#tclDoubleType
+#tclIntType
+#tclEmptyStringRep
+#tclFreeObjList
+#Tcl_DbIsShared
+#Tcl_DbDecrRefCount
+#Tcl_DbIncrRefCount
+#Tcl_GetLongFromObj
+#Tcl_SetLongObj
+#Tcl_DbNewLongObj
+#Tcl_NewLongObj
+#Tcl_GetIntFromObj
+#Tcl_SetIntObj
+#Tcl_NewIntObj
+#Tcl_GetDoubleFromObj
+#Tcl_SetDoubleObj
+#Tcl_DbNewDoubleObj
+#Tcl_NewDoubleObj
+#Tcl_GetBooleanFromObj
+#Tcl_SetBooleanObj
+#Tcl_DbNewBooleanObj
+#Tcl_NewBooleanObj
+#Tcl_InvalidateStringRep
+#Tcl_GetStringFromObj
+#Tcl_DuplicateObj
+#TclFreeObj
+#TclAllocateFreeObjects
+#Tcl_DbNewObj
+#Tcl_NewObj
+#Tcl_ConvertToType
+#Tcl_GetObjType
+#Tcl_AppendAllObjTypes
+#Tcl_RegisterObjType
+#TclFinalizeCompExecEnv
+#TclObjCommandComplete
+#Tcl_CommandComplete
+#Tcl_ParseVar
+#TclWordEnd
+#TclExpandParseValue
+#TclParseBraces
+#TclParseNestedCmd
+#TclParseQuotes
+#TclFreePackageInfo
+#Tcl_PackageCmd
+#Tcl_PkgRequire
+#Tcl_PkgProvide
+#Tcl_EventuallyFree
+#Tcl_Release
+#Tcl_Preserve
+#TclUpdateReturnInfo
+#TclIsProc
+#TclFindProc
+#Tcl_UplevelObjCmd
+#TclGetFrame
+#Tcl_ProcObjCmd
+#TclObjInterpProc
+#Tcl_SignalMsg
+#Tcl_SignalId
+#Tcl_ErrnoMsg
+#Tcl_ErrnoId
+#tclStringType
+#Tcl_AppendStringsToObj
+#Tcl_AppendToObj
+#Tcl_SetObjLength
+#Tcl_SetStringObj
+#Tcl_DbNewStringObj
+#Tcl_NewStringObj
+#Tcl_AfterObjCmd
+#TclServiceIdle
+#Tcl_CancelIdleCall
+#Tcl_DoWhenIdle
+#Tcl_DeleteTimerHandler
+#Tcl_CreateTimerHandler
+#TclGetIntForIndex
+#TclLooksLikeInt
+#TclFormatInt
+#TclNeedSpace
+#TclPrecTraceProc
+#Tcl_PrintDouble
+#Tcl_DStringEndSublist
+#Tcl_DStringStartSublist
+#Tcl_DStringGetResult
+#Tcl_DStringResult
+#Tcl_DStringFree
+#Tcl_DStringSetLength
+#Tcl_DStringAppendElement
+#Tcl_DStringAppend
+#Tcl_DStringInit
+#Tcl_RegExpMatch
+#Tcl_RegExpRange
+#Tcl_RegExpExec
+#Tcl_RegExpCompile
+#Tcl_SetObjErrorCode
+#Tcl_SetErrorCode
+#Tcl_ResetResult
+#Tcl_FreeResult
+#Tcl_AppendElement
+#Tcl_AppendResult
+#Tcl_GetObjResult
+#Tcl_SetObjResult
+#Tcl_GetStringResult
+#Tcl_SetResult
+#Tcl_StringMatch
+#Tcl_ConcatObj
+#Tcl_Concat
+#Tcl_Merge
+#Tcl_ConvertCountedElement
+#Tcl_ConvertElement
+#Tcl_ScanCountedElement
+#Tcl_ScanElement
+#Tcl_SplitList
+#TclCopyAndCollapse
+#TclFindElement
+#TclDeleteCompiledLocalVars
+#TclDeleteVars
+#Tcl_UpvarObjCmd
+#Tcl_VariableObjCmd
+#Tcl_GlobalObjCmd
+#Tcl_GetVariableFullName
+#Tcl_UpVar2
+#Tcl_UpVar
+#Tcl_ArrayObjCmd
+#Tcl_LappendObjCmd
+#Tcl_AppendObjCmd
+#Tcl_UnsetObjCmd
+#Tcl_VarTraceInfo2
+#Tcl_VarTraceInfo
+#Tcl_UntraceVar2
+#Tcl_UntraceVar
+#Tcl_TraceVar2
+#Tcl_TraceVar
+#Tcl_UnsetVar2
+#Tcl_UnsetVar
+#TclIncrElementOfIndexedArray
+#TclIncrIndexedScalar
+#TclIncrVar2
+#TclSetElementOfIndexedArray
+#TclSetIndexedScalar
+#Tcl_ObjSetVar2
+#Tcl_SetVar2
+#Tcl_SetVar
+#Tcl_SetCmd
+#TclGetElementOfIndexedArray
+#TclGetIndexedScalar
+#Tcl_ObjGetVar2
+#Tcl_GetVar2
+#Tcl_GetVar
+#TclLookupVar
+##FSpDirectoryCopy
+##FSpFilteredDirectoryCopy
+##DirectoryCopy
+##FilteredDirectoryCopy
+##FSpFileCopy
+##FileCopy
+##FSpCreateResFileCompat
+##FSpOpenResFileCompat
+##FSpExchangeFilesCompat
+##FSpCatMoveCompat
+##FSpRenameCompat
+##FSpRstFLockCompat
+##FSpSetFLockCompat
+##FSpSetFInfoCompat
+##FSpGetFInfoCompat
+##FSpDeleteCompat
+##FSpDirCreateCompat
+##FSpCreateCompat
+##FSpOpenRFCompat
+##FSpOpenDFCompat
+##FSMakeFSSpecCompat
+##LocationFromFullPath
+##FSpLocationFromFullPath
+##FSpGetFullPath
+##GetFullPath
+##GetUGEntry
+##FSpUnshare
+##Unshare
+##FSpShare
+##Share
+##VolumeMount
+##GetVolMountInfo
+##GetVolMountInfoSize
+##FSpMoveRename
+##HMoveRename
+##FSpCopyFile
+##HCopyFile
+##HMapName
+##HMapID
+##FSpSetDirAccess
+##HSetDirAccess
+##FSpGetDirAccess
+##HGetDirAccess
+##HGetLogInInfo
+##FSpSetForeignPrivs
+##SetForeignPrivs
+##FSpGetForeignPrivs
+##GetForeignPrivs
+##UnlockRange
+##LockRange
+##FlushFile
+##DeleteFileIDRef
+##FSpCreateFileIDRef
+##CreateFileIDRef
+##FSpResolveFileIDRef
+##ResolveFileIDRef
+##ExchangeFiles
+##FSpCreateMinimum
+##HCreateMinimum
+##HGetVolParms
+##FSpDTCopyComment
+##DTCopyComment
+##FSpDTGetComment
+##DTGetComment
+##FSpDTSetComment
+##DTSetComment
+##DTGetIcon
+##FSpDTGetAPPL
+##DTGetAPPL
+##DTOpen
+##GetUGEntries
+##RetrieveAFPVolMountInfo
+##BuildAFPVolMountInfo
+##FSpMoveRenameCompat
+##HMoveRenameCompat
+##FSpCopyDirectoryAccess
+##CopyDirectoryAccess
+##FSpGetFileLocation
+##GetFileLocation
+##CopyFork
+##FSWriteVerify
+##FSWriteNoCache
+##FSReadNoCache
+##FSpOpenRFAware
+##HOpenRFAware
+##FSpOpenAware
+##HOpenAware
+##FSpCopyFileMgrAttributes
+##CopyFileMgrAttributes
+##FSpClearHasBeenInited
+##ClearHasBeenInited
+##FSpClearHasCustomIcon
+##ClearHasCustomIcon
+##FSpSetHasCustomIcon
+##SetHasCustomIcon
+##FSpClearIsStationery
+##ClearIsStationery
+##FSpSetIsStationery
+##SetIsStationery
+##FSpClearNameLocked
+##ClearNameLocked
+##FSpSetNameLocked
+##SetNameLocked
+##FSpClearIsInvisible
+##ClearIsInvisible
+##FSpSetIsInvisible
+##SetIsInvisible
+##FSpChangeFDFlags
+##ChangeFDFlags
+##FSpChangeCreatorType
+##ChangeCreatorType
+##FSpBumpDate
+##BumpDate
+##FSpGetFileSize
+##GetFileSize
+##FSpCheckObjectLock
+##CheckObjectLock
+##DeleteDirectory
+##DeleteDirectoryContents
+##GetDirItems
+##GetObjectLocation
+##GetFilenameFromPathname
+##GetParentID
+##FSpGetIOACUser
+##GetIOACUser
+##GetDirName
+##FSpGetDirectoryID
+##GetDirectoryID
+##FSpSetDInfo
+##SetDInfo
+##FSpGetDInfo
+##GetDInfo
+##RestoreDefault
+##SetDefault
+##OnLine
+##UnmountAndEject
+##GetDiskBlocks
+##FindDrive
+##GetDriverName
+##CheckVolLock
+##XGetVInfo
+##PBXGetVolInfoSync
+##HGetVInfo
+##DetermineVRefNum
+##GetCatInfoNoName
+##GetVolumeInfoNoName
+##GetTempBuffer
+##TruncPString
+#strncasecmp
+#strcasecmp
+#TclpRealloc
+#TclpFree
+#TclpAlloc
+#TclStrftime
+#atan
+#atan2
+#memmove
+#memcpy
+#pow
+#exp
+#log
+#log10
+#sqrt
+#strcmp
+#strlen
+#strncmp
+#sin
+#cos
+#atan_d_d
+#atan2_d_dd
+#atan_d_pd
+#atan2_d_pdpd
+#atan_r_r
+#atan2_r_rr
+#atan_r_pr
+#atan2_r_prpr
+#power_d_dd
+#exp_d_d
+#exp_d_pd
+#exp_r_r
+#exp_r_pr
+#log_d_d
+#log_d_pd
+#log10_d_d
+#log10_d_pd
+#sqrt_d_d
+#sqrt_d_pd
+#sqrt_r_r
+#sqrt_r_pr
+#sin_d_d
+#sin_d_pd
+#sin_r_r
+#sin_r_pr
+#cos_d_d
+#cos_d_pd
+#cos_r_r
+#cos_r_pr
+##__aborting
+##__console_exit
+##__stdio_exit
+##__exit
+#exit
+##__atexit
+#atexit
+#abort
+##__malloc_pool
+#free
+#realloc
+#calloc
+#malloc
+##__files
+##__num_to_file
+##__file_to_num
+##__flush_line_buffered_output_files
+##__flush_all
+##__close_all
+##__init_file
+##__find_unopened_file
+##__lmod
+##__mod
+##__ldiv
+##__div
+##__lmul
+##__mul
+##__ladd
+##__add
+#ldiv
+#div
+#labs
+#abs
+##__assertion_failed
+#bsearch
+#setbuf
+#setvbuf
+##__flush_buffer
+##__load_buffer
+##__prep_buffer
+##__convert_to_newlines
+##__convert_from_newlines
+#ccommand
+#puts
+#fputs
+#putchar
+#putc
+#fputc
+##__put_char
+##__ungotten
+#ungetc
+#gets
+#fgets
+#getchar
+#getc
+#fgetc
+##__get_char
+##__close_console
+##__write_console
+##__read_console
+##__end_critical_region
+##__begin_critical_region
+##__kill_critical_regions
+##__init_critical_regions
+##__ctype_map
+##__lower_map
+##__upper_map
+#toupper
+#tolower
+#isxdigit
+#isupper
+#isspace
+#ispunct
+#isprint
+#islower
+#isgraph
+#isdigit
+#iscntrl
+#isalpha
+#isalnum
+#fwrite
+#fread
+#errno
+##__temp_file_mode
+##__set_idle_proc
+##__get_file_modes
+##__handle_reopen
+##__handle_open
+#freopen
+#fopen
+#fflush
+#fclose
+#tmpfile
+#tmpnam
+#rename
+#remove
+##__rename_file
+##__delete_file
+##__temp_file_name
+##__close_file
+##__position_file
+##__write_file
+##__read_file
+##__open_temp_file
+##__open_file
+#rewind
+#fsetpos
+#fseek
+##_fseek
+#fgetpos
+#ftell
+##_ftell
+#fmodf
+#floorf
+#ceilf
+#sqrtf
+#powf
+#fabsf
+#log10f
+#logf
+#ldexpf
+#frexpf
+#expf
+#tanhf
+#sinhf
+#coshf
+#atan2f
+#atanf
+#asinf
+#acosf
+#tanf
+#sinf
+#cosf
+##__lconv
+#localeconv
+#setlocale
+#wcstombs
+#mbstowcs
+#wctomb
+#mbtowc
+#mblen
+#memcmp
+##__memrchr
+#memchr
+#memset
+##__fill_mem
+##__copy_longs_rev_unaligned
+##__copy_longs_unaligned
+##__copy_longs_rev_aligned
+##__copy_longs_aligned
+##__move_mem
+##__copy_mem
+##__stdio_atexit
+#perror
+#ferror
+#feof
+#clearerr
+##__path2fss
+##__pool_free_all
+##__pool_free
+##__pool_realloc
+##__pool_alloc_clear
+##__pool_alloc
+##__pool_preassign
+##__pool_preallocate
+##__init_pool_obj
+##__sys_free
+##__sys_alloc
+#sprintf
+#vsprintf
+#printf
+#vprintf
+#fprintf
+#vfprintf
+#qsort
+#srand
+#rand
+#sscanf
+##__vsscanf
+#scanf
+#fscanf
+##__vfscanf
+#raise
+#signal
+##__strerror
+#strerror
+#strstr
+#strtok
+#strcspn
+#strspn
+#strpbrk
+#strrchr
+#strxfrm
+#strcoll
+#strchr
+#strncat
+#strcat
+#strncpy
+#strcpy
+##__close_string
+##__write_string
+##__read_string
+##__open_string_file
+#atof
+#strtod
+##__strtold
+#atol
+#atoi
+#strtoll
+#strtol
+#strtoull
+#strtoul
+##__strtoull
+##__strtoul
+#system
+#getenv
+#strftime
+#localtime
+#gmtime
+#ctime
+#asctime
+#time
+#mktime
+#difftime
+#clock
+##__to_gm_time
+##__get_time
+##__get_clock
+#fcntl
+#creat
+#open
+#mkdir
+#fstat
+#stat
+#write
+#unlink
+#ttyname
+#sleep
+#rmdir
+#read
+#lseek
+#isatty
+#getlogin
+#getcwd
+#exec
+#cuserid
+#close
+#chdir
+##_ftype
+##_fcreator
+#tell
+#fdopen
+#fileno
+##__gettype
+##__getcreator
+##__ctopstring
+##__system7present
+##__myraise
+#utimes
+#utime
+#uname
+##__float_min
+##__float_max
+##__float_epsilon
+##__float_tiny
+##__float_nan
+##__float_huge
+##__double_min
+##__double_max
+##__double_epsilon
+##__double_tiny
+##__double_huge
+##__double_nan
+##__extended_min
+##__extended_max
+##__extended_epsilon
+##__extended_tiny
+##__extended_huge
+##__extended_nan
+##__msipl_rd
+##__dt__18__random_generatorFv		# __random_generator::~__random_generator()
+#seed__18__random_generatorFUl		# __random_generator::seed(unsigned long)
+#npos__47basic_string<c,14char_traits<c>,12allocator<c>>		# basic_string<char, char_traits<char>, allocator<char>>::npos
+##__adv__10complex<r>FRC10complex<r>		# complex<long double>::operator /=(const complex<long double>&)
+##__amu__10complex<r>FRC10complex<r>		# complex<long double>::operator *=(const complex<long double>&)
+##__ami__10complex<r>FRC10complex<r>		# complex<long double>::operator -=(const complex<long double>&)
+##__apl__10complex<r>FRC10complex<r>		# complex<long double>::operator +=(const complex<long double>&)
+##__as__10complex<r>FRC10complex<r>		# complex<long double>::operator =(const complex<long double>&)
+##__adv__10complex<r>FRC10complex<d>		# complex<long double>::operator /=(const complex<double>&)
+##__amu__10complex<r>FRC10complex<d>		# complex<long double>::operator *=(const complex<double>&)
+##__ami__10complex<r>FRC10complex<d>		# complex<long double>::operator -=(const complex<double>&)
+##__apl__10complex<r>FRC10complex<d>		# complex<long double>::operator +=(const complex<double>&)
+##__as__10complex<r>FRC10complex<d>		# complex<long double>::operator =(const complex<double>&)
+##__adv__10complex<r>FRC10complex<f>		# complex<long double>::operator /=(const complex<float>&)
+##__amu__10complex<r>FRC10complex<f>		# complex<long double>::operator *=(const complex<float>&)
+##__ami__10complex<r>FRC10complex<f>		# complex<long double>::operator -=(const complex<float>&)
+##__apl__10complex<r>FRC10complex<f>		# complex<long double>::operator +=(const complex<float>&)
+##__as__10complex<r>FRC10complex<f>		# complex<long double>::operator =(const complex<float>&)
+##__adv__10complex<d>FRC10complex<r>		# complex<double>::operator /=(const complex<long double>&)
+##__amu__10complex<d>FRC10complex<r>		# complex<double>::operator *=(const complex<long double>&)
+##__ami__10complex<d>FRC10complex<r>		# complex<double>::operator -=(const complex<long double>&)
+##__apl__10complex<d>FRC10complex<r>		# complex<double>::operator +=(const complex<long double>&)
+##__as__10complex<d>FRC10complex<r>		# complex<double>::operator =(const complex<long double>&)
+##__adv__10complex<d>FRC10complex<d>		# complex<double>::operator /=(const complex<double>&)
+##__amu__10complex<d>FRC10complex<d>		# complex<double>::operator *=(const complex<double>&)
+##__ami__10complex<d>FRC10complex<d>		# complex<double>::operator -=(const complex<double>&)
+##__apl__10complex<d>FRC10complex<d>		# complex<double>::operator +=(const complex<double>&)
+##__as__10complex<d>FRC10complex<d>		# complex<double>::operator =(const complex<double>&)
+##__adv__10complex<d>FRC10complex<f>		# complex<double>::operator /=(const complex<float>&)
+##__amu__10complex<d>FRC10complex<f>		# complex<double>::operator *=(const complex<float>&)
+##__ami__10complex<d>FRC10complex<f>		# complex<double>::operator -=(const complex<float>&)
+##__apl__10complex<d>FRC10complex<f>		# complex<double>::operator +=(const complex<float>&)
+##__as__10complex<d>FRC10complex<f>		# complex<double>::operator =(const complex<float>&)
+##__adv__10complex<f>FRC10complex<r>		# complex<float>::operator /=(const complex<long double>&)
+##__amu__10complex<f>FRC10complex<r>		# complex<float>::operator *=(const complex<long double>&)
+##__ami__10complex<f>FRC10complex<r>		# complex<float>::operator -=(const complex<long double>&)
+##__apl__10complex<f>FRC10complex<r>		# complex<float>::operator +=(const complex<long double>&)
+##__as__10complex<f>FRC10complex<r>		# complex<float>::operator =(const complex<long double>&)
+##__adv__10complex<f>FRC10complex<d>		# complex<float>::operator /=(const complex<double>&)
+##__amu__10complex<f>FRC10complex<d>		# complex<float>::operator *=(const complex<double>&)
+##__ami__10complex<f>FRC10complex<d>		# complex<float>::operator -=(const complex<double>&)
+##__apl__10complex<f>FRC10complex<d>		# complex<float>::operator +=(const complex<double>&)
+##__as__10complex<f>FRC10complex<d>		# complex<float>::operator =(const complex<double>&)
+##__adv__10complex<f>FRC10complex<f>		# complex<float>::operator /=(const complex<float>&)
+##__amu__10complex<f>FRC10complex<f>		# complex<float>::operator *=(const complex<float>&)
+##__ami__10complex<f>FRC10complex<f>		# complex<float>::operator -=(const complex<float>&)
+##__apl__10complex<f>FRC10complex<f>		# complex<float>::operator +=(const complex<float>&)
+##__as__10complex<f>FRC10complex<f>		# complex<float>::operator =(const complex<float>&)
+##__ct__10complex<f>FRC10complex<r>		# complex<float>::complex(const complex<long double>&)
+##__ct__10complex<f>FRC10complex<d>		# complex<float>::complex(const complex<double>&)
+##__ct__10complex<d>FRC10complex<r>		# complex<double>::complex(const complex<long double>&)
+##__stl_temp_buffer
+#tolower_tab__8ctype<c>		# ctype<char>::tolower_tab
+#toupper_tab__8ctype<c>		# ctype<char>::toupper_tab
+#classic_table___8ctype<c>		# ctype<char>::classic_table_
+#table_size__8ctype<c>		# ctype<char>::table_size
+##__vt__10collate<c>		# collate<char>::__vt
+##__vt__14codecvt<c,c,i>		# codecvt<char, char, int>::__vt
+##__vt__8ctype<c>		# ctype<char>::__vt
+##__vt__Q26locale5facet		# locale::facet::__vt
+#cleanup__51basic_string_ref<c,14char_traits<c>,12allocator<c>>Fv		# basic_string_ref<char, char_traits<char>, allocator<char>>::cleanup()
+#__dt__51basic_string_ref<c,14char_traits<c>,12allocator<c>>Fv		# basic_string_ref<char, char_traits<char>, allocator<char>>::~basic_string_ref()
+#size__47basic_string<c,14char_traits<c>,12allocator<c>>CFv		# basic_string<char, char_traits<char>, allocator<char>>::size() const
+#cleanup__47basic_string<c,14char_traits<c>,12allocator<c>>Fv		# basic_string<char, char_traits<char>, allocator<char>>::cleanup()
+##__ct__51basic_string_ref<c,14char_traits<c>,12allocator<c>>FPCcRC12allocator<c>		# basic_string_ref<char, char_traits<char>, allocator<char>>::basic_string_ref(const char*,const allocator<char>&)
+##__ct__51basic_string_ref<c,14char_traits<c>,12allocator<c>>FRC47basic_string<c,14char_traits<c>,12allocator<c>>UlUlRC12allocator<c>		# basic_string_ref<char, char_traits<char>, allocator<char>>::basic_string_ref(const basic_string<char, char_traits<char>, allocator<char>>&,unsigned long,unsigned long,const allocator<char>&)
+#throwrange__51basic_string_ref<c,14char_traits<c>,12allocator<c>>Fv		# basic_string_ref<char, char_traits<char>, allocator<char>>::throwrange()
+##__dt__Q26locale5facetFv		# locale::facet::~facet()
+#get_id__Q26locale5facetFv		# locale::facet::get_id()
+##__ct__47basic_string<c,14char_traits<c>,12allocator<c>>FPCcRC12allocator<c>		# basic_string<char, char_traits<char>, allocator<char>>::basic_string(const char*,const allocator<char>&)
+##__dt__64allocator<51basic_string_ref<c,14char_traits<c>,12allocator<c>>>Fv		# allocator<basic_string_ref<char, char_traits<char>, allocator<char>>>::~allocator()
+##__ct__47basic_string<c,14char_traits<c>,12allocator<c>>FRC47basic_string<c,14char_traits<c>,12allocator<c>>UlUl		# basic_string<char, char_traits<char>, allocator<char>>::basic_string(const basic_string<char, char_traits<char>, allocator<char>>&,unsigned long,unsigned long)
+#get_id__8ctype<c>Fv		# ctype<char>::get_id()
+##__dt__8ctype<c>Fv		# ctype<char>::~ctype()
+#do_always_noconv__14codecvt<c,c,i>CFv		# codecvt<char, char, int>::do_always_noconv() const
+#do_length__14codecvt<c,c,i>CFRCiPCcPCcUl		# codecvt<char, char, int>::do_length(const int&,const char*,const char*,unsigned long) const
+#do_max_length__14codecvt<c,c,i>CFv		# codecvt<char, char, int>::do_max_length() const
+#get_id__14codecvt<c,c,i>Fv		# codecvt<char, char, int>::get_id()
+##__dt__14codecvt<c,c,i>Fv		# codecvt<char, char, int>::~codecvt()
+#get_id__10collate<c>Fv		# collate<char>::get_id()
+##__dt__10collate<c>Fv		# collate<char>::~collate()
+#add_ref__Q26locale5facetFv		# locale::facet::add_ref()
+#do_hash__10collate<c>CFPCcPCc		# collate<char>::do_hash(const char*,const char*) const
+##__dt__47basic_string<c,14char_traits<c>,12allocator<c>>Fv		# basic_string<char, char_traits<char>, allocator<char>>::~basic_string()
+##__dt__12allocator<c>Fv		# allocator<char>::~allocator()
+#do_transform__10collate<c>CFPCcPCc		# collate<char>::do_transform(const char*,const char*) const
+#do_compare__10collate<c>CFPCcPCcPCcPCc		# collate<char>::do_compare(const char*,const char*,const char*,const char*) const
+#do_convert__14codecvt<c,c,i>CFRiPCcPCcRPCcPcPcRPc		# codecvt<char, char, int>::do_convert(int&,const char*,const char*,const char*&,char*,char*,char*&) const
+#do_tolower__8ctype<c>CFPcPCc		# ctype<char>::do_tolower(char*,const char*) const
+#do_toupper__8ctype<c>CFPcPCc		# ctype<char>::do_toupper(char*,const char*) const
+#do_tolower__8ctype<c>CFc		# ctype<char>::do_tolower(char) const
+#do_toupper__8ctype<c>CFc		# ctype<char>::do_toupper(char) const
+#narrow__8ctype<c>CFPCcPCccPc		# ctype<char>::narrow(const char*,const char*,char,char*) const
+#widen__8ctype<c>CFPCcPCcPc		# ctype<char>::widen(const char*,const char*,char*) const
+#scan_not__8ctype<c>CFQ210ctype_base4maskPCcPCc		# ctype<char>::scan_not(ctype_base::mask,const char*,const char*) const
+#scan_is__8ctype<c>CFQ210ctype_base4maskPCcPCc		# ctype<char>::scan_is(ctype_base::mask,const char*,const char*) const
+#is__8ctype<c>CFPCcPCcPQ210ctype_base4mask		# ctype<char>::is(const char*,const char*,ctype_base::mask*) const
+#is__8ctype<c>CFQ210ctype_base4maskc		# ctype<char>::is(ctype_base::mask,char) const
+#init_cnt__Q28ios_base4Init		# ios_base::Init::init_cnt
+##__vt__33basic_istream<c,14char_traits<c>>		# basic_istream<char, char_traits<char>>::__vt
+##__vt__29basic_ios<c,14char_traits<c>>		# basic_ios<char, char_traits<char>>::__vt
+##__vt__33basic_ostream<c,14char_traits<c>>		# basic_ostream<char, char_traits<char>>::__vt
+##__vt__Q26locale3imp		# locale::imp::__vt
+##__vt__Q28ios_base7failure		# ios_base::failure::__vt
+##__vt__35basic_streambuf<c,14char_traits<c>>		# basic_streambuf<char, char_traits<char>>::__vt
+##__vt__33basic_filebuf<c,14char_traits<c>>		# basic_filebuf<char, char_traits<char>>::__vt
+#cerr
+#clog
+#cout
+#cin
+#index__8ios_base		# ios_base::index
+#destroy<PQ26locale5facet>__FPPQ26locale5facet		# destroy<PQ26locale5facet>(locale::facet**)
+#destroy<PPQ26locale5facet>__FPPQ26locale5facetPPQ26locale5facet		# destroy<PPQ26locale5facet>(locale::facet**,locale::facet**)
+#copy<Pl,Pl>__FPlPlPl		# copy<Pl,Pl>(long*,long*,long*)
+#uninitialized_copy<Pl,Pl>__FPlPlPl		# uninitialized_copy<Pl,Pl>(long*,long*,long*)
+#copy_backward<Pl,Pl>__FPlPlPl		# copy_backward<Pl,Pl>(long*,long*,long*)
+#fill<Pl,l>__FPlPlRCl		# fill<Pl,l>(long*,long*,const long&)
+#copy<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>,P40pair<PFQ28ios_base5eventR8ios_basei_v,i>>__FP40pair<PFQ28ios_base5eventR8ios_basei_v,i>P40pair<PFQ28ios_base5eventR8ios_basei_v,i>P40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# copy<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>,P40pair<PFQ28ios_base5eventR8ios_basei_v,i>>(pair<void (*)(ios_base::event, ios_base&, int), int>*,pair<void (*)(ios_base::event, ios_base&, int), int>*,pair<void (*)(ios_base::event, ios_base&, int), int>*
+#uninitialized_copy<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>,P40pair<PFQ28ios_base5eventR8ios_basei_v,i>>__FP40pair<PFQ28ios_base5eventR8ios_basei_v,i>P40pair<PFQ28ios_base5eventR8ios_basei_v,i>P40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# uninitialized_copy<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>,P40pair<PFQ28ios_base5eventR8ios_basei_v,i>>(pair<void (*)(ios_base::event, ios_base&, int), int>*,pair<void (*)(ios_base::event, ios_base&, int), int>*,pair<void (*)(ios_base::event, ios_base
+#copy_backward<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>,P40pair<PFQ28ios_base5eventR8ios_basei_v,i>>__FP40pair<PFQ28ios_base5eventR8ios_basei_v,i>P40pair<PFQ28ios_base5eventR8ios_basei_v,i>P40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# copy_backward<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>,P40pair<PFQ28ios_base5eventR8ios_basei_v,i>>(pair<void (*)(ios_base::event, ios_base&, int), int>*,pair<void (*)(ios_base::event, ios_base&, int), int>*,pair<void (*)(ios_base::event, ios_base&, in
+#fill<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>,40pair<PFQ28ios_base5eventR8ios_basei_v,i>>__FP40pair<PFQ28ios_base5eventR8ios_basei_v,i>P40pair<PFQ28ios_base5eventR8ios_basei_v,i>RC40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# fill<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>,40pair<PFQ28ios_base5eventR8ios_basei_v,i>>(pair<void (*)(ios_base::event, ios_base&, int), int>*,pair<void (*)(ios_base::event, ios_base&, int), int>*,const pair<void (*)(ios_base::event, ios_base&, int), 
+#insert__106vector<40pair<PFQ28ios_base5eventR8ios_basei_v,i>,53allocator<40pair<PFQ28ios_base5eventR8ios_basei_v,i>>>FP40pair<PFQ28ios_base5eventR8ios_basei_v,i>UlRC40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# vector<pair<void (*)(ios_base::event, ios_base&, int), int>, allocator<pair<void (*)(ios_base::event, ios_base&, int), int>>>::insert(pair<void (*)(ios_base::event, ios_base&, int), int>*,unsigned long,const pair<void (*)(ios_base::event, ios_base&, int),
+#erase__106vector<40pair<PFQ28ios_base5eventR8ios_basei_v,i>,53allocator<40pair<PFQ28ios_base5eventR8ios_basei_v,i>>>FP40pair<PFQ28ios_base5eventR8ios_basei_v,i>P40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# vector<pair<void (*)(ios_base::event, ios_base&, int), int>, allocator<pair<void (*)(ios_base::event, ios_base&, int), int>>>::erase(pair<void (*)(ios_base::event, ios_base&, int), int>*,pair<void (*)(ios_base::event, ios_base&, int), int>*)
+#insert__24vector<l,12allocator<l>>FPlUlRCl		# vector<long, allocator<long>>::insert(long*,unsigned long,const long&)
+#erase__24vector<l,12allocator<l>>FPlPl		# vector<long, allocator<long>>::erase(long*,long*)
+##__dt__54vector<PQ26locale5facet,27allocator<PQ26locale5facet>>Fv		# vector<locale::facet*, allocator<locale::facet*>>::~vector()
+#has_facet<14codecvt<c,c,i>>__FRC6localeP14codecvt<c,c,i>		# has_facet<14codecvt<c,c,i>>(const locale&,codecvt<char, char, int>*)
+#close__33basic_filebuf<c,14char_traits<c>>Fv		# basic_filebuf<char, char_traits<char>>::close()
+#overflow__33basic_filebuf<c,14char_traits<c>>Fi		# basic_filebuf<char, char_traits<char>>::overflow(int)
+#pbackfail__33basic_filebuf<c,14char_traits<c>>Fi		# basic_filebuf<char, char_traits<char>>::pbackfail(int)
+##__pbfile__33basic_filebuf<c,14char_traits<c>>Fi		# basic_filebuf<char, char_traits<char>>::__pbfile(int)
+#underflow__33basic_filebuf<c,14char_traits<c>>Fv		# basic_filebuf<char, char_traits<char>>::underflow()
+#seekoff__33basic_filebuf<c,14char_traits<c>>FlQ28ios_base7seekdirs		# basic_filebuf<char, char_traits<char>>::seekoff(long,ios_base::seekdir,short)
+#seekpos__33basic_filebuf<c,14char_traits<c>>F9streamposs		# basic_filebuf<char, char_traits<char>>::seekpos(streampos,short)
+#setbuf__33basic_filebuf<c,14char_traits<c>>FPcUl		# basic_filebuf<char, char_traits<char>>::setbuf(char*,unsigned long)
+#sync__33basic_filebuf<c,14char_traits<c>>Fv		# basic_filebuf<char, char_traits<char>>::sync()
+#uflow__33basic_filebuf<c,14char_traits<c>>Fv		# basic_filebuf<char, char_traits<char>>::uflow()
+#imbue__33basic_filebuf<c,14char_traits<c>>FRC6locale		# basic_filebuf<char, char_traits<char>>::imbue(const locale&)
+#showmanyc__33basic_filebuf<c,14char_traits<c>>Fv		# basic_filebuf<char, char_traits<char>>::showmanyc()
+#xsgetn__33basic_filebuf<c,14char_traits<c>>FPcUl		# basic_filebuf<char, char_traits<char>>::xsgetn(char*,unsigned long)
+#xsputn__33basic_filebuf<c,14char_traits<c>>FPCcUl		# basic_filebuf<char, char_traits<char>>::xsputn(const char*,unsigned long)
+#imbue__35basic_streambuf<c,14char_traits<c>>FRC6locale		# basic_streambuf<char, char_traits<char>>::imbue(const locale&)
+#overflow__35basic_streambuf<c,14char_traits<c>>Fi		# basic_streambuf<char, char_traits<char>>::overflow(int)
+##__pbfile__35basic_streambuf<c,14char_traits<c>>Fi		# basic_streambuf<char, char_traits<char>>::__pbfile(int)
+#pbackfail__35basic_streambuf<c,14char_traits<c>>Fi		# basic_streambuf<char, char_traits<char>>::pbackfail(int)
+#showmanyc__35basic_streambuf<c,14char_traits<c>>Fv		# basic_streambuf<char, char_traits<char>>::showmanyc()
+#underflow__35basic_streambuf<c,14char_traits<c>>Fv		# basic_streambuf<char, char_traits<char>>::underflow()
+#uflow__35basic_streambuf<c,14char_traits<c>>Fv		# basic_streambuf<char, char_traits<char>>::uflow()
+#xsgetn__35basic_streambuf<c,14char_traits<c>>FPcUl		# basic_streambuf<char, char_traits<char>>::xsgetn(char*,unsigned long)
+#xsputn__35basic_streambuf<c,14char_traits<c>>FPCcUl		# basic_streambuf<char, char_traits<char>>::xsputn(const char*,unsigned long)
+#seekoff__35basic_streambuf<c,14char_traits<c>>FlQ28ios_base7seekdirs		# basic_streambuf<char, char_traits<char>>::seekoff(long,ios_base::seekdir,short)
+#seekpos__35basic_streambuf<c,14char_traits<c>>F9streamposs		# basic_streambuf<char, char_traits<char>>::seekpos(streampos,short)
+#setbuf__35basic_streambuf<c,14char_traits<c>>FPcUl		# basic_streambuf<char, char_traits<char>>::setbuf(char*,unsigned long)
+#sync__35basic_streambuf<c,14char_traits<c>>Fv		# basic_streambuf<char, char_traits<char>>::sync()
+#add_ref__Q26locale3impFv		# locale::imp::add_ref()
+##__dt__Q26locale3impFv		# locale::imp::~imp()
+##__dt__33basic_ostream<c,14char_traits<c>>Fv		# basic_ostream<char, char_traits<char>>::~basic_ostream()
+#@8@92@__dt__33basic_ostream<c,14char_traits<c>>Fv
+##__dt__29basic_ios<c,14char_traits<c>>Fv		# basic_ios<char, char_traits<char>>::~basic_ios()
+##__dt__33basic_istream<c,14char_traits<c>>Fv		# basic_istream<char, char_traits<char>>::~basic_istream()
+#@12@92@__dt__33basic_istream<c,14char_traits<c>>Fv
+##__dt__Q28ios_base7failureFv		# ios_base::failure::~failure()
+#make_pair<PFQ28ios_base5eventR8ios_basei_v,i>__FRCPFQ28ios_base5eventR8ios_basei_vRCi		# make_pair<PFQ28ios_base5eventR8ios_basei_v,i>(void (*const&)(ios_base::event, ios_base&, int),const int&)
+#construct<Pv,Pv>__FPPvRCPv		# construct<Pv,Pv>(void**,void*const&)
+#destroy<Pv>__FPPv		# destroy<Pv>(void**)
+#destroy<PPv>__FPPvPPv		# destroy<PPv>(void**,void**)
+#uninitialized_copy<PCPv,PPv>__FPCPvPCPvPPv		# uninitialized_copy<PCPv,PPv>(void*const*,void*const*,void**)
+#copy<PCPv,PPv>__FPCPvPCPvPPv		# copy<PCPv,PPv>(void*const*,void*const*,void**)
+#uninitialized_fill_n<PPv,Ul,Pv>__FPPvUlRCPv		# uninitialized_fill_n<PPv,Ul,Pv>(void**,unsigned long,void*const&)
+#copy_backward<PPv,PPv>__FPPvPPvPPv		# copy_backward<PPv,PPv>(void**,void**,void**)
+#max<Ul>__FRCUlRCUl		# max<Ul>(const unsigned long&,const unsigned long&)
+#uninitialized_copy<PPv,PPv>__FPPvPPvPPv		# uninitialized_copy<PPv,PPv>(void**,void**,void**)
+#uninitialized_copy<PCl,Pl>__FPClPClPl		# uninitialized_copy<PCl,Pl>(const long*,const long*,long*)
+#copy<PCl,Pl>__FPClPClPl		# copy<PCl,Pl>(const long*,const long*,long*)
+#construct<l,l>__FPlRCl		# construct<l,l>(long*,const long&)
+#uninitialized_fill_n<Pl,Ul,l>__FPlUlRCl		# uninitialized_fill_n<Pl,Ul,l>(long*,unsigned long,const long&)
+#destroy<40pair<PFQ28ios_base5eventR8ios_basei_v,i>>__FP40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# destroy<40pair<PFQ28ios_base5eventR8ios_basei_v,i>>(pair<void (*)(ios_base::event, ios_base&, int), int>*)
+#destroy<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>>__FP40pair<PFQ28ios_base5eventR8ios_basei_v,i>P40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# destroy<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>>(pair<void (*)(ios_base::event, ios_base&, int), int>*,pair<void (*)(ios_base::event, ios_base&, int), int>*)
+#uninitialized_fill_n<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>,Ul,40pair<PFQ28ios_base5eventR8ios_basei_v,i>>__FP40pair<PFQ28ios_base5eventR8ios_basei_v,i>UlRC40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# uninitialized_fill_n<P40pair<PFQ28ios_base5eventR8ios_basei_v,i>,Ul,40pair<PFQ28ios_base5eventR8ios_basei_v,i>>(pair<void (*)(ios_base::event, ios_base&, int), int>*,unsigned long,const pair<void (*)(ios_base::event, ios_base&, int), int>&)
+#construct<40pair<PFQ28ios_base5eventR8ios_basei_v,i>,40pair<PFQ28ios_base5eventR8ios_basei_v,i>>__FP40pair<PFQ28ios_base5eventR8ios_basei_v,i>RC40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# construct<40pair<PFQ28ios_base5eventR8ios_basei_v,i>,40pair<PFQ28ios_base5eventR8ios_basei_v,i>>(pair<void (*)(ios_base::event, ios_base&, int), int>*,const pair<void (*)(ios_base::event, ios_base&, int), int>&)
+#uninitialized_copy<PC40pair<PFQ28ios_base5eventR8ios_basei_v,i>,P40pair<PFQ28ios_base5eventR8ios_basei_v,i>>__FPC40pair<PFQ28ios_base5eventR8ios_basei_v,i>PC40pair<PFQ28ios_base5eventR8ios_basei_v,i>P40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# uninitialized_copy<PC40pair<PFQ28ios_base5eventR8ios_basei_v,i>,P40pair<PFQ28ios_base5eventR8ios_basei_v,i>>(const pair<void (*)(ios_base::event, ios_base&, int), int>*,const pair<void (*)(ios_base::event, ios_base&, int), int>*,pair<void (*)(ios_base::ev
+#flush__33basic_ostream<c,14char_traits<c>>Fv		# basic_ostream<char, char_traits<char>>::flush()
+##__ct__106vector<40pair<PFQ28ios_base5eventR8ios_basei_v,i>,53allocator<40pair<PFQ28ios_base5eventR8ios_basei_v,i>>>FRC106vector<40pair<PFQ28ios_base5eventR8ios_basei_v,i>,53allocator<40pair<PFQ28ios_base5eventR8ios_basei_v,i>>>		# vector<pair<void (*)(ios_base::event, ios_base&, int), int>, allocator<pair<void (*)(ios_base::event, ios_base&, int), int>>>::vector(const vector<pair<void (*)(ios_base::event, ios_base&, int), int>, allocator<pair<void (*)(ios_base::event, ios_base&, in
+##__ct__106vector<40pair<PFQ28ios_base5eventR8ios_basei_v,i>,53allocator<40pair<PFQ28ios_base5eventR8ios_basei_v,i>>>FUlRC40pair<PFQ28ios_base5eventR8ios_basei_v,i>RC53allocator<40pair<PFQ28ios_base5eventR8ios_basei_v,i>>		# vector<pair<void (*)(ios_base::event, ios_base&, int), int>, allocator<pair<void (*)(ios_base::event, ios_base&, int), int>>>::vector(unsigned long,const pair<void (*)(ios_base::event, ios_base&, int), int>&,const allocator<pair<void (*)(ios_base::event, 
+#resize__106vector<40pair<PFQ28ios_base5eventR8ios_basei_v,i>,53allocator<40pair<PFQ28ios_base5eventR8ios_basei_v,i>>>FUl40pair<PFQ28ios_base5eventR8ios_basei_v,i>		# vector<pair<void (*)(ios_base::event, ios_base&, int), int>, allocator<pair<void (*)(ios_base::event, ios_base&, int), int>>>::resize(unsigned long,pair<void (*)(ios_base::event, ios_base&, int), int>)
+##__ct__24vector<l,12allocator<l>>FRC24vector<l,12allocator<l>>		# vector<long, allocator<long>>::vector(const vector<long, allocator<long>>&)
+##__ct__24vector<l,12allocator<l>>FUlRClRC12allocator<l>		# vector<long, allocator<long>>::vector(unsigned long,const long&,const allocator<long>&)
+##__as__24vector<l,12allocator<l>>FRC24vector<l,12allocator<l>>		# vector<long, allocator<long>>::operator =(const vector<long, allocator<long>>&)
+#resize__24vector<l,12allocator<l>>FUll		# vector<long, allocator<long>>::resize(unsigned long,long)
+#insert_aux__26vector<Pv,13allocator<Pv>>FPPvRCPv		# vector<void*, allocator<void*>>::insert_aux(void**,void*const&)
+##__ct__26vector<Pv,13allocator<Pv>>FRC26vector<Pv,13allocator<Pv>>		# vector<void*, allocator<void*>>::vector(const vector<void*, allocator<void*>>&)
+##__ct__26vector<Pv,13allocator<Pv>>FUlRCPvRC13allocator<Pv>		# vector<void*, allocator<void*>>::vector(unsigned long,void*const&,const allocator<void*>&)
+##__as__26vector<Pv,13allocator<Pv>>FRC26vector<Pv,13allocator<Pv>>		# vector<void*, allocator<void*>>::operator =(const vector<void*, allocator<void*>>&)
+#insert__26vector<Pv,13allocator<Pv>>FPPvRCPv		# vector<void*, allocator<void*>>::insert(void**,void*const&)
+#use_facet<14codecvt<c,c,i>>__FRC6localeP14codecvt<c,c,i>		# use_facet<14codecvt<c,c,i>>(const locale&,codecvt<char, char, int>*)
+#set_facet__33basic_filebuf<c,14char_traits<c>>Fv		# basic_filebuf<char, char_traits<char>>::set_facet()
+##__dt__35basic_streambuf<c,14char_traits<c>>Fv		# basic_streambuf<char, char_traits<char>>::~basic_streambuf()
+##__ct__33basic_filebuf<c,14char_traits<c>>FP5_FILE		# basic_filebuf<char, char_traits<char>>::basic_filebuf(_FILE*)
+#getloc__8ios_baseCFv		# ios_base::getloc() const
+##__dt__6localeFv		# locale::~locale()
+#imbue__8ios_baseFRC6locale		# ios_base::imbue(const locale&)
+#register_callback__8ios_baseFPFQ28ios_base5eventR8ios_basei_vi		# ios_base::register_callback(void (*)(ios_base::event, ios_base&, int),int)
+#copyfmt__8ios_baseFRC8ios_base		# ios_base::copyfmt(const ios_base&)
+#call_regpair__8ios_baseFR8ios_baseQ28ios_base5event		# ios_base::call_regpair(ios_base&,ios_base::event)
+#setstate__8ios_baseFs		# ios_base::setstate(short)
+#clear__8ios_baseFs		# ios_base::clear(short)
+#pword__8ios_baseFi		# ios_base::pword(int)
+#iword__8ios_baseFi		# ios_base::iword(int)
+#exceptions__8ios_baseFs		# ios_base::exceptions(short)
+##__dt__8ios_baseFv		# ios_base::~ios_base()
+##__dt__13allocator<Pv>Fv		# allocator<void*>::~allocator()
+##__dt__26vector<Pv,13allocator<Pv>>Fv		# vector<void*, allocator<void*>>::~vector()
+##__dt__12allocator<l>Fv		# allocator<long>::~allocator()
+##__dt__24vector<l,12allocator<l>>Fv		# vector<long, allocator<long>>::~vector()
+##__dt__53allocator<40pair<PFQ28ios_base5eventR8ios_basei_v,i>>Fv		# allocator<pair<void (*)(ios_base::event, ios_base&, int), int>>::~allocator()
+##__dt__106vector<40pair<PFQ28ios_base5eventR8ios_basei_v,i>,53allocator<40pair<PFQ28ios_base5eventR8ios_basei_v,i>>>Fv		# vector<pair<void (*)(ios_base::event, ios_base&, int), int>, allocator<pair<void (*)(ios_base::event, ios_base&, int), int>>>::~vector()
+##__ct__8ios_baseFv		# ios_base::ios_base()
+##__dt__Q28ios_base4InitFv		# ios_base::Init::~Init()
+##__ct__Q28ios_base4InitFv		# ios_base::Init::Init()
+##__dt__33basic_filebuf<c,14char_traits<c>>Fv		# basic_filebuf<char, char_traits<char>>::~basic_filebuf()
+#collate__6locale		# locale::collate
+#ctype__6locale		# locale::ctype
+#none__6locale		# locale::none
+#monetary__6locale		# locale::monetary
+#numeric__6locale		# locale::numeric
+#time__6locale		# locale::time
+#messages__6locale		# locale::messages
+#all__6locale		# locale::all
+#pat_arr
+#t_conv_spec_width__12timepunct<c>		# timepunct<char>::t_conv_spec_width
+#intl__58money_get<c,0,41istreambuf_iterator<c,14char_traits<c>,l>>
+#intl__58money_get<c,1,41istreambuf_iterator<c,14char_traits<c>,l>>
+#intl__56money_put<c,0,39ostreambuf_iterator<c,14char_traits<c>>>
+#intl__56money_put<c,1,39ostreambuf_iterator<c,14char_traits<c>>>
+#intl__15moneypunct<c,0>
+#intl__15moneypunct<c,1>
+##__vt__11numpunct<c>		# numpunct<char>::__vt
+##__vt__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::__vt
+##__vt__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::__vt
+##__vt__53time_put<c,39ostreambuf_iterator<c,14char_traits<c>>>		# time_put<char, ostreambuf_iterator<char, char_traits<char>>>::__vt
+##__vt__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::__vt
+##__vt__15moneypunct<c,1>
+##__vt__22moneypunct_byname<c,1>
+##__vt__15moneypunct<c,0>
+##__vt__22moneypunct_byname<c,0>
+##__vt__56money_put<c,1,39ostreambuf_iterator<c,14char_traits<c>>>
+##__vt__56money_put<c,0,39ostreambuf_iterator<c,14char_traits<c>>>
+##__vt__58money_get<c,1,41istreambuf_iterator<c,14char_traits<c>,l>>
+##__vt__58money_get<c,0,41istreambuf_iterator<c,14char_traits<c>,l>>
+##__vt__12timepunct<c>		# timepunct<char>::__vt
+#id___54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::id_
+#id___52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::id_
+#id___11numpunct<c>		# numpunct<char>::id_
+#id___15moneypunct<c,1>
+#id___15moneypunct<c,0>
+#id___56money_put<c,1,39ostreambuf_iterator<c,14char_traits<c>>>
+#id___56money_put<c,0,39ostreambuf_iterator<c,14char_traits<c>>>
+#id___58money_get<c,1,41istreambuf_iterator<c,14char_traits<c>,l>>
+#id___58money_get<c,0,41istreambuf_iterator<c,14char_traits<c>,l>>
+#id___55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::id_
+#id___53time_put<c,39ostreambuf_iterator<c,14char_traits<c>>>		# time_put<char, ostreambuf_iterator<char, char_traits<char>>>::id_
+#id___10collate<c>		# collate<char>::id_
+#id___14codecvt<c,c,i>		# codecvt<char, char, int>::id_
+#id___8ctype<c>		# ctype<char>::id_
+#master_id___Q26locale2id		# locale::id::master_id_
+#global___6locale		# locale::global_
+##__dt__Q26locale2idFv		# locale::id::~id()
+#replace__47basic_string<c,14char_traits<c>,12allocator<c>>FUlUlRC47basic_string<c,14char_traits<c>,12allocator<c>>UlUl		# basic_string<char, char_traits<char>, allocator<char>>::replace(unsigned long,unsigned long,const basic_string<char, char_traits<char>, allocator<char>>&,unsigned long,unsigned long)
+#replace__47basic_string<c,14char_traits<c>,12allocator<c>>FUlUlRC47basic_string<c,14char_traits<c>,12allocator<c>>		# basic_string<char, char_traits<char>, allocator<char>>::replace(unsigned long,unsigned long,const basic_string<char, char_traits<char>, allocator<char>>&)
+#replace__47basic_string<c,14char_traits<c>,12allocator<c>>FUlUlUlc		# basic_string<char, char_traits<char>, allocator<char>>::replace(unsigned long,unsigned long,unsigned long,char)
+#rfind__47basic_string<c,14char_traits<c>,12allocator<c>>CFRC47basic_string<c,14char_traits<c>,12allocator<c>>Ul		# basic_string<char, char_traits<char>, allocator<char>>::rfind(const basic_string<char, char_traits<char>, allocator<char>>&,unsigned long) const
+##__ct__51basic_string_ref<c,14char_traits<c>,12allocator<c>>FPCcUlRC12allocator<c>		# basic_string_ref<char, char_traits<char>, allocator<char>>::basic_string_ref(const char*,unsigned long,const allocator<char>&)
+##__msipl_sprintf<c,i>__FPcUlPCci		# __msipl_sprintf<c,i>(char*,unsigned long,const char*,int)
+##__msipl_strftime<c>__FPcUlPCcPC2tm		# __msipl_strftime<c>(char*,unsigned long,const char*,const tm*)
+##__msipl_sprintf<c,Ul>__FPcUlPCcUl		# __msipl_sprintf<c,Ul>(char*,unsigned long,const char*,unsigned long)
+##__msipl_fmt<c>__FRC8ios_basePci		# __msipl_fmt<c>(const ios_base&,char*,int)
+##__msipl_sprintf<c,r>__FPcUlPCcr		# __msipl_sprintf<c,r>(char*,unsigned long,const char*,long double)
+##__msipl_insert_thsep<c>__F47basic_string<c,14char_traits<c>,12allocator<c>>RC47basic_string<c,14char_traits<c>,12allocator<c>>cc		# __msipl_insert_thsep<c>(basic_string<char, char_traits<char>, allocator<char>>,const basic_string<char, char_traits<char>, allocator<char>>&,char,char)
+#uninitialized_copy<PCc,Pc>__FPCcPCcPc		# uninitialized_copy<PCc,Pc>(const char*,const char*,char*)
+##__ct__47basic_string<c,14char_traits<c>,12allocator<c>>FPCcUlRC12allocator<c>		# basic_string<char, char_traits<char>, allocator<char>>::basic_string(const char*,unsigned long,const allocator<char>&)
+#at__47basic_string<c,14char_traits<c>,12allocator<c>>FUl		# basic_string<char, char_traits<char>, allocator<char>>::at(unsigned long)
+#append__47basic_string<c,14char_traits<c>,12allocator<c>>FPCcUl		# basic_string<char, char_traits<char>, allocator<char>>::append(const char*,unsigned long)
+#insert__47basic_string<c,14char_traits<c>,12allocator<c>>FUlRC47basic_string<c,14char_traits<c>,12allocator<c>>UlUl		# basic_string<char, char_traits<char>, allocator<char>>::insert(unsigned long,const basic_string<char, char_traits<char>, allocator<char>>&,unsigned long,unsigned long)
+#insert__47basic_string<c,14char_traits<c>,12allocator<c>>FUlRC47basic_string<c,14char_traits<c>,12allocator<c>>		# basic_string<char, char_traits<char>, allocator<char>>::insert(unsigned long,const basic_string<char, char_traits<char>, allocator<char>>&)
+#compare__47basic_string<c,14char_traits<c>,12allocator<c>>CFRC47basic_string<c,14char_traits<c>,12allocator<c>>		# basic_string<char, char_traits<char>, allocator<char>>::compare(const basic_string<char, char_traits<char>, allocator<char>>&) const
+##__ct__51basic_string_ref<c,14char_traits<c>,12allocator<c>>FPCcUlUlRC12allocator<c>		# basic_string_ref<char, char_traits<char>, allocator<char>>::basic_string_ref(const char*,unsigned long,unsigned long,const allocator<char>&)
+##__ct__51basic_string_ref<c,14char_traits<c>,12allocator<c>>FRC12allocator<c>		# basic_string_ref<char, char_traits<char>, allocator<char>>::basic_string_ref(const allocator<char>&)
+#throwlength__51basic_string_ref<c,14char_traits<c>,12allocator<c>>Fv		# basic_string_ref<char, char_traits<char>, allocator<char>>::throwlength()
+#has_facet<11numpunct<c>>__FRC6localeP11numpunct<c>		# has_facet<11numpunct<c>>(const locale&,numpunct<char>*)
+#has_facet<15moneypunct<c,1>>__FRC6localeP15moneypunct<c,1>
+#has_facet<15moneypunct<c,0>>__FRC6localeP15moneypunct<c,0>
+#has_facet<8ctype<c>>__FRC6localeP8ctype<c>		# has_facet<8ctype<c>>(const locale&,ctype<char>*)
+#scan_integral_type__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>FR41istreambuf_iterator<c,14char_traits<c>,l>R41istreambuf_iterator<c,14char_traits<c>,l>R8ios_basePc		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::scan_integral_type(istreambuf_iterator<char, char_traits<char>, long>&,istreambuf_iterator<char, char_traits<char>, long>&,ios_base&,char*)
+#scan_float_type__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>FR41istreambuf_iterator<c,14char_traits<c>,l>R41istreambuf_iterator<c,14char_traits<c>,l>R8ios_basePc		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::scan_float_type(istreambuf_iterator<char, char_traits<char>, long>&,istreambuf_iterator<char, char_traits<char>, long>&,ios_base&,char*)
+#print_integral_type__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>F39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecPcUl		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::print_integral_type(ostreambuf_iterator<char, char_traits<char>>,ios_base&,char,char*,unsigned long)
+#int_fmt__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>FPccl		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::int_fmt(char*,char,long)
+#int_fmt_ll__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>FPccl		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::int_fmt_ll(char*,char,long)
+#print_float_type__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>F39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecPcUlUl		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::print_float_type(ostreambuf_iterator<char, char_traits<char>>,ios_base&,char,char*,unsigned long,unsigned long)
+#float_fmt__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>FPccR8ios_base		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::float_fmt(char*,char,ios_base&)
+#money_fmt__56money_put<c,1,39ostreambuf_iterator<c,14char_traits<c>>>FR8ios_basecRC15moneypunct<c,1>r
+#money_fmt__56money_put<c,0,39ostreambuf_iterator<c,14char_traits<c>>>FR8ios_basecRC15moneypunct<c,0>r
+#extract_value__58money_get<c,1,41istreambuf_iterator<c,14char_traits<c>,l>>F41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsPcRib
+#extract_value__58money_get<c,0,41istreambuf_iterator<c,14char_traits<c>,l>>F41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsPcRib
+##__ct__12timepunct<c>FPCc		# timepunct<char>::timepunct(const char*)
+##__ct__47basic_string<c,14char_traits<c>,12allocator<c>>Fv		# basic_string<char, char_traits<char>, allocator<char>>::basic_string()
+#get_week_day__12timepunct<c>CFRC6localeci		# timepunct<char>::get_week_day(const locale&,char,int) const
+#get_month_name__12timepunct<c>CFRC6localeci		# timepunct<char>::get_month_name(const locale&,char,int) const
+#get_ampm_string__12timepunct<c>CFi		# timepunct<char>::get_ampm_string(int) const
+#get_week_day_list__12timepunct<c>CFv		# timepunct<char>::get_week_day_list() const
+#get_month_name_list__12timepunct<c>CFv		# timepunct<char>::get_month_name_list() const
+#get_spec_conv_width__12timepunct<c>Fc		# timepunct<char>::get_spec_conv_width(char)
+#get_date_time_format__12timepunct<c>CFv		# timepunct<char>::get_date_time_format() const
+#get_date_format__12timepunct<c>CFv		# timepunct<char>::get_date_format() const
+#get_time_format__12timepunct<c>CFv		# timepunct<char>::get_time_format() const
+##__print_format__12timepunct<c>CFcPC2tm		# timepunct<char>::__print_format(char,const tm*) const
+##__ne<41istreambuf_iterator<c,14char_traits<c>,l>>__FRC41istreambuf_iterator<c,14char_traits<c>,l>RC41istreambuf_iterator<c,14char_traits<c>,l>		# __ne<41istreambuf_iterator<c,14char_traits<c>,l>>(const istreambuf_iterator<char, char_traits<char>, long>&,const istreambuf_iterator<char, char_traits<char>, long>&)
+#is_space<c>__FcRC6locale		# is_space<c>(char,const locale&)
+#is_digit<c>__FcRC6locale		# is_digit<c>(char,const locale&)
+##__eq<c,14char_traits<c>,12allocator<c>>__FRC47basic_string<c,14char_traits<c>,12allocator<c>>RC47basic_string<c,14char_traits<c>,12allocator<c>>		# __eq<c,14char_traits<c>,12allocator<c>>(const basic_string<char, char_traits<char>, allocator<char>>&,const basic_string<char, char_traits<char>, allocator<char>>&)
+#is_upper<c>__FcRC6locale		# is_upper<c>(char,const locale&)
+##__msipl_sscanf<c,Pr>__FPcPCcPr		# __msipl_sscanf<c,Pr>(char*,const char*,long double*)
+##__eq<c,14char_traits<c>,l>__FRC41istreambuf_iterator<c,14char_traits<c>,l>RC41istreambuf_iterator<c,14char_traits<c>,l>		# __eq<c,14char_traits<c>,l>(const istreambuf_iterator<char, char_traits<char>, long>&,const istreambuf_iterator<char, char_traits<char>, long>&)
+#copy<PPQ26locale5facet,PPQ26locale5facet>__FPPQ26locale5facetPPQ26locale5facetPPQ26locale5facet		# copy<PPQ26locale5facet,PPQ26locale5facet>(locale::facet**,locale::facet**,locale::facet**)
+#uninitialized_copy<PPQ26locale5facet,PPQ26locale5facet>__FPPQ26locale5facetPPQ26locale5facetPPQ26locale5facet		# uninitialized_copy<PPQ26locale5facet,PPQ26locale5facet>(locale::facet**,locale::facet**,locale::facet**)
+#copy_backward<PPQ26locale5facet,PPQ26locale5facet>__FPPQ26locale5facetPPQ26locale5facetPPQ26locale5facet		# copy_backward<PPQ26locale5facet,PPQ26locale5facet>(locale::facet**,locale::facet**,locale::facet**)
+#fill<PPQ26locale5facet,PQ26locale5facet>__FPPQ26locale5facetPPQ26locale5facetRCPQ26locale5facet		# fill<PPQ26locale5facet,PQ26locale5facet>(locale::facet**,locale::facet**,locale::facet*const&)
+#construct<c,c>__FPcRCc		# construct<c,c>(char*,const char&)
+#uninitialized_fill_n<Pc,Ul,c>__FPcUlRCc		# uninitialized_fill_n<Pc,Ul,c>(char*,unsigned long,const char&)
+##__ct__47basic_string<c,14char_traits<c>,12allocator<c>>FRC12allocator<c>		# basic_string<char, char_traits<char>, allocator<char>>::basic_string(const allocator<char>&)
+##__as__47basic_string<c,14char_traits<c>,12allocator<c>>FPCc		# basic_string<char, char_traits<char>, allocator<char>>::operator =(const char*)
+#capacity__47basic_string<c,14char_traits<c>,12allocator<c>>CFv		# basic_string<char, char_traits<char>, allocator<char>>::capacity() const
+#reserve__47basic_string<c,14char_traits<c>,12allocator<c>>FUl		# basic_string<char, char_traits<char>, allocator<char>>::reserve(unsigned long)
+##__vc__47basic_string<c,14char_traits<c>,12allocator<c>>FUl		# basic_string<char, char_traits<char>, allocator<char>>::operator [](unsigned long)
+#append__47basic_string<c,14char_traits<c>,12allocator<c>>FUlc		# basic_string<char, char_traits<char>, allocator<char>>::append(unsigned long,char)
+#append__47basic_string<c,14char_traits<c>,12allocator<c>>FPCc		# basic_string<char, char_traits<char>, allocator<char>>::append(const char*)
+#append__47basic_string<c,14char_traits<c>,12allocator<c>>FRC47basic_string<c,14char_traits<c>,12allocator<c>>UlUl		# basic_string<char, char_traits<char>, allocator<char>>::append(const basic_string<char, char_traits<char>, allocator<char>>&,unsigned long,unsigned long)
+#append__47basic_string<c,14char_traits<c>,12allocator<c>>FRC47basic_string<c,14char_traits<c>,12allocator<c>>		# basic_string<char, char_traits<char>, allocator<char>>::append(const basic_string<char, char_traits<char>, allocator<char>>&)
+#insert__47basic_string<c,14char_traits<c>,12allocator<c>>FUlUlc		# basic_string<char, char_traits<char>, allocator<char>>::insert(unsigned long,unsigned long,char)
+#c_str__47basic_string<c,14char_traits<c>,12allocator<c>>CFv		# basic_string<char, char_traits<char>, allocator<char>>::c_str() const
+#find__47basic_string<c,14char_traits<c>,12allocator<c>>CFRC47basic_string<c,14char_traits<c>,12allocator<c>>Ul		# basic_string<char, char_traits<char>, allocator<char>>::find(const basic_string<char, char_traits<char>, allocator<char>>&,unsigned long) const
+#compare__47basic_string<c,14char_traits<c>,12allocator<c>>CFUlUlRC47basic_string<c,14char_traits<c>,12allocator<c>>UlUl		# basic_string<char, char_traits<char>, allocator<char>>::compare(unsigned long,unsigned long,const basic_string<char, char_traits<char>, allocator<char>>&,unsigned long,unsigned long) const
+##__ct__51basic_string_ref<c,14char_traits<c>,12allocator<c>>FUlcRC12allocator<c>		# basic_string_ref<char, char_traits<char>, allocator<char>>::basic_string_ref(unsigned long,char,const allocator<char>&)
+#insert__54vector<PQ26locale5facet,27allocator<PQ26locale5facet>>FPPQ26locale5facetUlRCPQ26locale5facet		# vector<locale::facet*, allocator<locale::facet*>>::insert(locale::facet**,unsigned long,locale::facet*const&)
+#erase__54vector<PQ26locale5facet,27allocator<PQ26locale5facet>>FPPQ26locale5facetPPQ26locale5facet		# vector<locale::facet*, allocator<locale::facet*>>::erase(locale::facet**,locale::facet**)
+#use_facet<8ctype<c>>__FRC6localeP8ctype<c>		# use_facet<8ctype<c>>(const locale&,ctype<char>*)
+#use_facet<15moneypunct<c,0>>__FRC6localeP15moneypunct<c,0>
+#use_facet<15moneypunct<c,1>>__FRC6localeP15moneypunct<c,1>
+#use_facet<11numpunct<c>>__FRC6localeP11numpunct<c>		# use_facet<11numpunct<c>>(const locale&,numpunct<char>*)
+#print_format__12timepunct<c>CFRC6localecPC2tm		# timepunct<char>::print_format(const locale&,char,const tm*) const
+#put__53time_put<c,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecPC2tmPCcPCc		# time_put<char, ostreambuf_iterator<char, char_traits<char>>>::put(ostreambuf_iterator<char, char_traits<char>>,ios_base&,char,const tm*,const char*,const char*) const
+##__dt__12timepunct<c>Fv		# timepunct<char>::~timepunct()
+#do_get__58money_get<c,0,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsR47basic_string<c,14char_traits<c>,12allocator<c>>
+#do_get__58money_get<c,0,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRr
+#get_id__58money_get<c,0,41istreambuf_iterator<c,14char_traits<c>,l>>Fv
+##__dt__58money_get<c,0,41istreambuf_iterator<c,14char_traits<c>,l>>Fv
+#do_get__58money_get<c,1,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsR47basic_string<c,14char_traits<c>,12allocator<c>>
+#do_get__58money_get<c,1,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRr
+#get_id__58money_get<c,1,41istreambuf_iterator<c,14char_traits<c>,l>>Fv
+##__dt__58money_get<c,1,41istreambuf_iterator<c,14char_traits<c>,l>>Fv
+#do_put__56money_put<c,0,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecRC47basic_string<c,14char_traits<c>,12allocator<c>>
+#do_put__56money_put<c,0,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecr
+#get_id__56money_put<c,0,39ostreambuf_iterator<c,14char_traits<c>>>Fv
+##__dt__56money_put<c,0,39ostreambuf_iterator<c,14char_traits<c>>>Fv
+#do_put__56money_put<c,1,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecRC47basic_string<c,14char_traits<c>,12allocator<c>>
+#do_put__56money_put<c,1,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecr
+#get_id__56money_put<c,1,39ostreambuf_iterator<c,14char_traits<c>>>Fv
+##__dt__56money_put<c,1,39ostreambuf_iterator<c,14char_traits<c>>>Fv
+##__dt__22moneypunct_byname<c,0>Fv
+#do_decimal_point__15moneypunct<c,0>CFv
+#do_thousands_sep__15moneypunct<c,0>CFv
+#do_grouping__15moneypunct<c,0>CFv
+#do_curr_symbol__15moneypunct<c,0>CFv
+#do_positive_sign__15moneypunct<c,0>CFv
+#do_negative_sign__15moneypunct<c,0>CFv
+#do_frac_digits__15moneypunct<c,0>CFv
+#do_pos_format__15moneypunct<c,0>CFv
+#do_neg_format__15moneypunct<c,0>CFv
+#get_id__15moneypunct<c,0>Fv
+##__dt__15moneypunct<c,0>Fv
+##__dt__22moneypunct_byname<c,1>Fv
+#do_decimal_point__15moneypunct<c,1>CFv
+#do_thousands_sep__15moneypunct<c,1>CFv
+#do_grouping__15moneypunct<c,1>CFv
+#do_curr_symbol__15moneypunct<c,1>CFv
+#do_positive_sign__15moneypunct<c,1>CFv
+#do_negative_sign__15moneypunct<c,1>CFv
+#do_frac_digits__15moneypunct<c,1>CFv
+#do_pos_format__15moneypunct<c,1>CFv
+#do_neg_format__15moneypunct<c,1>CFv
+#get_id__15moneypunct<c,1>Fv
+##__dt__15moneypunct<c,1>Fv
+#get_id__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>Fv		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::get_id()
+##__dt__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>Fv		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::~time_get()
+#do_date_order__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CFv		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_date_order() const
+#do_get_time__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsP2tm		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get_time(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,tm*) const
+#do_get_date__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsP2tm		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get_date(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,tm*) const
+#do_get_weekday__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsP2tm		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get_weekday(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,tm*) const
+#do_get_monthname__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsP2tm		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get_monthname(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,tm*) const
+#do_get_year__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsP2tm		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get_year(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,tm*) const
+#which_matches__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsPC47basic_string<c,14char_traits<c>,12allocator<c>>iRi		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::which_matches(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,const basic_string<char, char_traits<char>, allocator<
+#get_integral_data__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRscRi		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::get_integral_data(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,char,int&) const
+#do_time_scanf__55time_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsP2tmPCcPCc		# time_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_time_scanf(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,tm*,const char*,const char*) const
+#get_id__53time_put<c,39ostreambuf_iterator<c,14char_traits<c>>>Fv		# time_put<char, ostreambuf_iterator<char, char_traits<char>>>::get_id()
+#do_put__53time_put<c,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecPC2tmcc		# time_put<char, ostreambuf_iterator<char, char_traits<char>>>::do_put(ostreambuf_iterator<char, char_traits<char>>,ios_base&,char,const tm*,char,char) const
+##__dt__53time_put<c,39ostreambuf_iterator<c,14char_traits<c>>>Fv		# time_put<char, ostreambuf_iterator<char, char_traits<char>>>::~time_put()
+#do_put__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecr		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::do_put(ostreambuf_iterator<char, char_traits<char>>,ios_base&,char,long double) const
+#do_put__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecd		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::do_put(ostreambuf_iterator<char, char_traits<char>>,ios_base&,char,double) const
+#do_put__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecUx		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::do_put(ostreambuf_iterator<char, char_traits<char>>,ios_base&,char,unsigned long long) const
+#do_put__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecx		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::do_put(ostreambuf_iterator<char, char_traits<char>>,ios_base&,char,long long) const
+#do_put__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecUl		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::do_put(ostreambuf_iterator<char, char_traits<char>>,ios_base&,char,unsigned long) const
+#do_put__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecl		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::do_put(ostreambuf_iterator<char, char_traits<char>>,ios_base&,char,long) const
+#do_put__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>CF39ostreambuf_iterator<c,14char_traits<c>>R8ios_basecb		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::do_put(ostreambuf_iterator<char, char_traits<char>>,ios_base&,char,bool) const
+#get_id__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>Fv		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::get_id()
+##__dt__52num_put<c,39ostreambuf_iterator<c,14char_traits<c>>>Fv		# num_put<char, ostreambuf_iterator<char, char_traits<char>>>::~num_put()
+#do_get__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRr		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,long double&) const
+#do_get__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRd		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,double&) const
+#do_get__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRf		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,float&) const
+#do_get__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRUx		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,unsigned long long&) const
+#do_get__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRx		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,long long&) const
+#do_get__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRUl		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,unsigned long&) const
+#do_get__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRl		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,long&) const
+#do_get__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRUi		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,unsigned int&) const
+#do_get__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRUs		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,unsigned short&) const
+#do_get__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>CF41istreambuf_iterator<c,14char_traits<c>,l>41istreambuf_iterator<c,14char_traits<c>,l>R8ios_baseRsRb		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::do_get(istreambuf_iterator<char, char_traits<char>, long>,istreambuf_iterator<char, char_traits<char>, long>,ios_base&,short&,bool&) const
+#get_id__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>Fv		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::get_id()
+##__dt__54num_get<c,41istreambuf_iterator<c,14char_traits<c>,l>>Fv		# num_get<char, istreambuf_iterator<char, char_traits<char>, long>>::~num_get()
+#do_decimal_point__11numpunct<c>CFv		# numpunct<char>::do_decimal_point() const
+#do_thousands_sep__11numpunct<c>CFv		# numpunct<char>::do_thousands_sep() const
+#do_grouping__11numpunct<c>CFv		# numpunct<char>::do_grouping() const
+#do_truename__11numpunct<c>CFv		# numpunct<char>::do_truename() const
+#do_falsename__11numpunct<c>CFv		# numpunct<char>::do_falsename() const
+#get_id__11numpunct<c>Fv		# numpunct<char>::get_id()
+##__dt__11numpunct<c>Fv		# numpunct<char>::~numpunct()
+#uninitialized_fill_n<PPQ26locale5facet,Ul,PQ26locale5facet>__FPPQ26locale5facetUlRCPQ26locale5facet		# uninitialized_fill_n<PPQ26locale5facet,Ul,PQ26locale5facet>(locale::facet**,unsigned long,locale::facet*const&)
+#construct<PQ26locale5facet,PQ26locale5facet>__FPPQ26locale5facetRCPQ26locale5facet		# construct<PQ26locale5facet,PQ26locale5facet>(locale::facet**,locale::facet*const&)
+#uninitialized_copy<PCPQ26locale5facet,PPQ26locale5facet>__FPCPQ26locale5facetPCPQ26locale5facetPPQ26locale5facet		# uninitialized_copy<PCPQ26locale5facet,PPQ26locale5facet>(locale::facet*const*,locale::facet*const*,locale::facet**)
+##__ct__47basic_string<c,14char_traits<c>,12allocator<c>>FUlcRC12allocator<c>		# basic_string<char, char_traits<char>, allocator<char>>::basic_string(unsigned long,char,const allocator<char>&)
+##__as__47basic_string<c,14char_traits<c>,12allocator<c>>FRC47basic_string<c,14char_traits<c>,12allocator<c>>		# basic_string<char, char_traits<char>, allocator<char>>::operator =(const basic_string<char, char_traits<char>, allocator<char>>&)
+##__vc__47basic_string<c,14char_traits<c>,12allocator<c>>CFUl		# basic_string<char, char_traits<char>, allocator<char>>::operator [](unsigned long) const
+#find__47basic_string<c,14char_traits<c>,12allocator<c>>CFcUl		# basic_string<char, char_traits<char>, allocator<char>>::find(char,unsigned long) const
+##__ct__54vector<PQ26locale5facet,27allocator<PQ26locale5facet>>FRC54vector<PQ26locale5facet,27allocator<PQ26locale5facet>>		# vector<locale::facet*, allocator<locale::facet*>>::vector(const vector<locale::facet*, allocator<locale::facet*>>&)
+##__ct__54vector<PQ26locale5facet,27allocator<PQ26locale5facet>>FUlRCPQ26locale5facetRC27allocator<PQ26locale5facet>		# vector<locale::facet*, allocator<locale::facet*>>::vector(unsigned long,locale::facet*const&,const allocator<locale::facet*>&)
+#resize__54vector<PQ26locale5facet,27allocator<PQ26locale5facet>>FUlPQ26locale5facet		# vector<locale::facet*, allocator<locale::facet*>>::resize(unsigned long,locale::facet*)
+##__msipl_check_grouping__FiiPCiRC47basic_string<c,14char_traits<c>,12allocator<c>>		# __msipl_check_grouping(int,int,const int*,const basic_string<char, char_traits<char>, allocator<char>>&)
+#oct_value__19__numeric_digits<c>Fc		# __numeric_digits<char>::oct_value(char)
+#hex_value__19__numeric_digits<c>Fc		# __numeric_digits<char>::hex_value(char)
+#dec_value__19__numeric_digits<c>Fc		# __numeric_digits<char>::dec_value(char)
+#is_hex_digit__19__numeric_digits<c>Fc		# __numeric_digits<char>::is_hex_digit(char)
+#is_oct_digit__19__numeric_digits<c>Fc		# __numeric_digits<char>::is_oct_digit(char)
+#is_dec_digit__19__numeric_digits<c>Fc		# __numeric_digits<char>::is_dec_digit(char)
+#value__19__numeric_digits<c>Fci		# __numeric_digits<char>::value(char,int)
+#is_digit__19__numeric_digits<c>Fci		# __numeric_digits<char>::is_digit(char,int)
+##__dt__27allocator<PQ26locale5facet>Fv		# allocator<locale::facet*>::~allocator()
+##__ct__Q26locale3impFPCci		# locale::imp::imp(const char*,int)
+#set_cat__6localeFPQ26locale3impPQ26locale3impi		# locale::set_cat(locale::imp*,locale::imp*,int)
+#set_imp__6localeFPQ26locale3impPQ26locale3impRCQ26locale2id		# locale::set_imp(locale::imp*,locale::imp*,const locale::id&)
+#delegate__6localeCFRCQ26locale2id		# locale::delegate(const locale::id&) const
+#install__6localeFPQ26locale5facetRQ26locale2idRC47basic_string<c,14char_traits<c>,12allocator<c>>		# locale::install(locale::facet*,locale::id&,const basic_string<char, char_traits<char>, allocator<char>>&)
+#init__6localeFv		# locale::init()
+#classic__6localeFv		# locale::classic()
+#global__6localeFRC6locale		# locale::global(const locale&)
+##__as__6localeFRC6locale		# locale::operator =(const locale&)
+##__ct__6localeFRC6localeRC6localePQ26locale5facet		# locale::locale(const locale&,const locale&,locale::facet*)
+##__ct__6localeFRC6localePQ26locale5facet		# locale::locale(const locale&,locale::facet*)
+##__ct__6localeFRC6localeRC6localei		# locale::locale(const locale&,const locale&,int)
+##__ct__6localeFRC6localePCci		# locale::locale(const locale&,const char*,int)
+##__ct__6localeFPCc		# locale::locale(const char*)
+#is_specialized__17numeric_limits<f>		# numeric_limits<float>::is_specialized
+#radix__17numeric_limits<f>		# numeric_limits<float>::radix
+#digits__17numeric_limits<f>		# numeric_limits<float>::digits
+#digits10__17numeric_limits<f>		# numeric_limits<float>::digits10
+#min_exponent__17numeric_limits<f>		# numeric_limits<float>::min_exponent
+#max_exponent__17numeric_limits<f>		# numeric_limits<float>::max_exponent
+#min_exponent10__17numeric_limits<f>		# numeric_limits<float>::min_exponent10
+#max_exponent10__17numeric_limits<f>		# numeric_limits<float>::max_exponent10
+#is_signed__17numeric_limits<f>		# numeric_limits<float>::is_signed
+#is_integer__17numeric_limits<f>		# numeric_limits<float>::is_integer
+#is_exact__17numeric_limits<f>		# numeric_limits<float>::is_exact
+#has_infinity__17numeric_limits<f>		# numeric_limits<float>::has_infinity
+#has_quiet_NaN__17numeric_limits<f>		# numeric_limits<float>::has_quiet_NaN
+#has_signaling_NaN__17numeric_limits<f>		# numeric_limits<float>::has_signaling_NaN
+#has_denorm__17numeric_limits<f>		# numeric_limits<float>::has_denorm
+#has_denorm_loss__17numeric_limits<f>		# numeric_limits<float>::has_denorm_loss
+#is_iec559__17numeric_limits<f>		# numeric_limits<float>::is_iec559
+#is_bounded__17numeric_limits<f>		# numeric_limits<float>::is_bounded
+#is_modulo__17numeric_limits<f>		# numeric_limits<float>::is_modulo
+#traps__17numeric_limits<f>		# numeric_limits<float>::traps
+#tinyness_before__17numeric_limits<f>		# numeric_limits<float>::tinyness_before
+#round_style__17numeric_limits<f>		# numeric_limits<float>::round_style
+#is_specialized__17numeric_limits<d>		# numeric_limits<double>::is_specialized
+#radix__17numeric_limits<d>		# numeric_limits<double>::radix
+#digits__17numeric_limits<d>		# numeric_limits<double>::digits
+#digits10__17numeric_limits<d>		# numeric_limits<double>::digits10
+#min_exponent__17numeric_limits<d>		# numeric_limits<double>::min_exponent
+#max_exponent__17numeric_limits<d>		# numeric_limits<double>::max_exponent
+#min_exponent10__17numeric_limits<d>		# numeric_limits<double>::min_exponent10
+#max_exponent10__17numeric_limits<d>		# numeric_limits<double>::max_exponent10
+#is_signed__17numeric_limits<d>		# numeric_limits<double>::is_signed
+#is_integer__17numeric_limits<d>		# numeric_limits<double>::is_integer
+#is_exact__17numeric_limits<d>		# numeric_limits<double>::is_exact
+#has_infinity__17numeric_limits<d>		# numeric_limits<double>::has_infinity
+#has_quiet_NaN__17numeric_limits<d>		# numeric_limits<double>::has_quiet_NaN
+#has_signaling_NaN__17numeric_limits<d>		# numeric_limits<double>::has_signaling_NaN
+#has_denorm__17numeric_limits<d>		# numeric_limits<double>::has_denorm
+#has_denorm_loss__17numeric_limits<d>		# numeric_limits<double>::has_denorm_loss
+#is_iec559__17numeric_limits<d>		# numeric_limits<double>::is_iec559
+#is_bounded__17numeric_limits<d>		# numeric_limits<double>::is_bounded
+#is_modulo__17numeric_limits<d>		# numeric_limits<double>::is_modulo
+#traps__17numeric_limits<d>		# numeric_limits<double>::traps
+#tinyness_before__17numeric_limits<d>		# numeric_limits<double>::tinyness_before
+#round_style__17numeric_limits<d>		# numeric_limits<double>::round_style
+#is_specialized__17numeric_limits<r>		# numeric_limits<long double>::is_specialized
+#radix__17numeric_limits<r>		# numeric_limits<long double>::radix
+#digits__17numeric_limits<r>		# numeric_limits<long double>::digits
+#digits10__17numeric_limits<r>		# numeric_limits<long double>::digits10
+#min_exponent__17numeric_limits<r>		# numeric_limits<long double>::min_exponent
+#max_exponent__17numeric_limits<r>		# numeric_limits<long double>::max_exponent
+#min_exponent10__17numeric_limits<r>		# numeric_limits<long double>::min_exponent10
+#max_exponent10__17numeric_limits<r>		# numeric_limits<long double>::max_exponent10
+#is_signed__17numeric_limits<r>		# numeric_limits<long double>::is_signed
+#is_integer__17numeric_limits<r>		# numeric_limits<long double>::is_integer
+#is_exact__17numeric_limits<r>		# numeric_limits<long double>::is_exact
+#has_infinity__17numeric_limits<r>		# numeric_limits<long double>::has_infinity
+#has_quiet_NaN__17numeric_limits<r>		# numeric_limits<long double>::has_quiet_NaN
+#has_signaling_NaN__17numeric_limits<r>		# numeric_limits<long double>::has_signaling_NaN
+#has_denorm__17numeric_limits<r>		# numeric_limits<long double>::has_denorm
+#has_denorm_loss__17numeric_limits<r>		# numeric_limits<long double>::has_denorm_loss
+#is_iec559__17numeric_limits<r>		# numeric_limits<long double>::is_iec559
+#is_bounded__17numeric_limits<r>		# numeric_limits<long double>::is_bounded
+#is_modulo__17numeric_limits<r>		# numeric_limits<long double>::is_modulo
+#traps__17numeric_limits<r>		# numeric_limits<long double>::traps
+#tinyness_before__17numeric_limits<r>		# numeric_limits<long double>::tinyness_before
+#round_style__17numeric_limits<r>		# numeric_limits<long double>::round_style
+#is_specialized__17numeric_limits<i>		# numeric_limits<int>::is_specialized
+#radix__17numeric_limits<i>		# numeric_limits<int>::radix
+#digits__17numeric_limits<i>		# numeric_limits<int>::digits
+#digits10__17numeric_limits<i>		# numeric_limits<int>::digits10
+#min_exponent__17numeric_limits<i>		# numeric_limits<int>::min_exponent
+#max_exponent__17numeric_limits<i>		# numeric_limits<int>::max_exponent
+#min_exponent10__17numeric_limits<i>		# numeric_limits<int>::min_exponent10
+#max_exponent10__17numeric_limits<i>		# numeric_limits<int>::max_exponent10
+#is_signed__17numeric_limits<i>		# numeric_limits<int>::is_signed
+#is_integer__17numeric_limits<i>		# numeric_limits<int>::is_integer
+#is_exact__17numeric_limits<i>		# numeric_limits<int>::is_exact
+#has_infinity__17numeric_limits<i>		# numeric_limits<int>::has_infinity
+#has_quiet_NaN__17numeric_limits<i>		# numeric_limits<int>::has_quiet_NaN
+#has_signaling_NaN__17numeric_limits<i>		# numeric_limits<int>::has_signaling_NaN
+#has_denorm__17numeric_limits<i>		# numeric_limits<int>::has_denorm
+#has_denorm_loss__17numeric_limits<i>		# numeric_limits<int>::has_denorm_loss
+#is_iec559__17numeric_limits<i>		# numeric_limits<int>::is_iec559
+#is_bounded__17numeric_limits<i>		# numeric_limits<int>::is_bounded
+#is_modulo__17numeric_limits<i>		# numeric_limits<int>::is_modulo
+#traps__17numeric_limits<i>		# numeric_limits<int>::traps
+#tinyness_before__17numeric_limits<i>		# numeric_limits<int>::tinyness_before
+#round_style__17numeric_limits<i>		# numeric_limits<int>::round_style
+#is_specialized__18numeric_limits<Ui>		# numeric_limits<unsigned int>::is_specialized
+#radix__18numeric_limits<Ui>		# numeric_limits<unsigned int>::radix
+#digits__18numeric_limits<Ui>		# numeric_limits<unsigned int>::digits
+#digits10__18numeric_limits<Ui>		# numeric_limits<unsigned int>::digits10
+#min_exponent__18numeric_limits<Ui>		# numeric_limits<unsigned int>::min_exponent
+#max_exponent__18numeric_limits<Ui>		# numeric_limits<unsigned int>::max_exponent
+#min_exponent10__18numeric_limits<Ui>		# numeric_limits<unsigned int>::min_exponent10
+#max_exponent10__18numeric_limits<Ui>		# numeric_limits<unsigned int>::max_exponent10
+#is_signed__18numeric_limits<Ui>		# numeric_limits<unsigned int>::is_signed
+#is_integer__18numeric_limits<Ui>		# numeric_limits<unsigned int>::is_integer
+#is_exact__18numeric_limits<Ui>		# numeric_limits<unsigned int>::is_exact
+#has_infinity__18numeric_limits<Ui>		# numeric_limits<unsigned int>::has_infinity
+#has_quiet_NaN__18numeric_limits<Ui>		# numeric_limits<unsigned int>::has_quiet_NaN
+#has_signaling_NaN__18numeric_limits<Ui>		# numeric_limits<unsigned int>::has_signaling_NaN
+#has_denorm__18numeric_limits<Ui>		# numeric_limits<unsigned int>::has_denorm
+#has_denorm_loss__18numeric_limits<Ui>		# numeric_limits<unsigned int>::has_denorm_loss
+#is_iec559__18numeric_limits<Ui>		# numeric_limits<unsigned int>::is_iec559
+#is_bounded__18numeric_limits<Ui>		# numeric_limits<unsigned int>::is_bounded
+#is_modulo__18numeric_limits<Ui>		# numeric_limits<unsigned int>::is_modulo
+#traps__18numeric_limits<Ui>		# numeric_limits<unsigned int>::traps
+#tinyness_before__18numeric_limits<Ui>		# numeric_limits<unsigned int>::tinyness_before
+#round_style__18numeric_limits<Ui>		# numeric_limits<unsigned int>::round_style
+#is_specialized__17numeric_limits<l>		# numeric_limits<long>::is_specialized
+#radix__17numeric_limits<l>		# numeric_limits<long>::radix
+#digits__17numeric_limits<l>		# numeric_limits<long>::digits
+#digits10__17numeric_limits<l>		# numeric_limits<long>::digits10
+#min_exponent__17numeric_limits<l>		# numeric_limits<long>::min_exponent
+#max_exponent__17numeric_limits<l>		# numeric_limits<long>::max_exponent
+#min_exponent10__17numeric_limits<l>		# numeric_limits<long>::min_exponent10
+#max_exponent10__17numeric_limits<l>		# numeric_limits<long>::max_exponent10
+#is_signed__17numeric_limits<l>		# numeric_limits<long>::is_signed
+#is_integer__17numeric_limits<l>		# numeric_limits<long>::is_integer
+#is_exact__17numeric_limits<l>		# numeric_limits<long>::is_exact
+#has_infinity__17numeric_limits<l>		# numeric_limits<long>::has_infinity
+#has_quiet_NaN__17numeric_limits<l>		# numeric_limits<long>::has_quiet_NaN
+#has_signaling_NaN__17numeric_limits<l>		# numeric_limits<long>::has_signaling_NaN
+#has_denorm__17numeric_limits<l>		# numeric_limits<long>::has_denorm
+#has_denorm_loss__17numeric_limits<l>		# numeric_limits<long>::has_denorm_loss
+#is_iec559__17numeric_limits<l>		# numeric_limits<long>::is_iec559
+#is_bounded__17numeric_limits<l>		# numeric_limits<long>::is_bounded
+#is_modulo__17numeric_limits<l>		# numeric_limits<long>::is_modulo
+#traps__17numeric_limits<l>		# numeric_limits<long>::traps
+#tinyness_before__17numeric_limits<l>		# numeric_limits<long>::tinyness_before
+#round_style__17numeric_limits<l>		# numeric_limits<long>::round_style
+#is_specialized__18numeric_limits<Ul>		# numeric_limits<unsigned long>::is_specialized
+#radix__18numeric_limits<Ul>		# numeric_limits<unsigned long>::radix
+#digits__18numeric_limits<Ul>		# numeric_limits<unsigned long>::digits
+#digits10__18numeric_limits<Ul>		# numeric_limits<unsigned long>::digits10
+#min_exponent__18numeric_limits<Ul>		# numeric_limits<unsigned long>::min_exponent
+#max_exponent__18numeric_limits<Ul>		# numeric_limits<unsigned long>::max_exponent
+#min_exponent10__18numeric_limits<Ul>		# numeric_limits<unsigned long>::min_exponent10
+#max_exponent10__18numeric_limits<Ul>		# numeric_limits<unsigned long>::max_exponent10
+#is_signed__18numeric_limits<Ul>		# numeric_limits<unsigned long>::is_signed
+#is_integer__18numeric_limits<Ul>		# numeric_limits<unsigned long>::is_integer
+#is_exact__18numeric_limits<Ul>		# numeric_limits<unsigned long>::is_exact
+#has_infinity__18numeric_limits<Ul>		# numeric_limits<unsigned long>::has_infinity
+#has_quiet_NaN__18numeric_limits<Ul>		# numeric_limits<unsigned long>::has_quiet_NaN
+#has_signaling_NaN__18numeric_limits<Ul>		# numeric_limits<unsigned long>::has_signaling_NaN
+#has_denorm__18numeric_limits<Ul>		# numeric_limits<unsigned long>::has_denorm
+#has_denorm_loss__18numeric_limits<Ul>		# numeric_limits<unsigned long>::has_denorm_loss
+#is_iec559__18numeric_limits<Ul>		# numeric_limits<unsigned long>::is_iec559
+#is_bounded__18numeric_limits<Ul>		# numeric_limits<unsigned long>::is_bounded
+#is_modulo__18numeric_limits<Ul>		# numeric_limits<unsigned long>::is_modulo
+#traps__18numeric_limits<Ul>		# numeric_limits<unsigned long>::traps
+#tinyness_before__18numeric_limits<Ul>		# numeric_limits<unsigned long>::tinyness_before
+#round_style__18numeric_limits<Ul>		# numeric_limits<unsigned long>::round_style
+#is_specialized__17numeric_limits<s>		# numeric_limits<short>::is_specialized
+#radix__17numeric_limits<s>		# numeric_limits<short>::radix
+#digits__17numeric_limits<s>		# numeric_limits<short>::digits
+#digits10__17numeric_limits<s>		# numeric_limits<short>::digits10
+#min_exponent__17numeric_limits<s>		# numeric_limits<short>::min_exponent
+#max_exponent__17numeric_limits<s>		# numeric_limits<short>::max_exponent
+#min_exponent10__17numeric_limits<s>		# numeric_limits<short>::min_exponent10
+#max_exponent10__17numeric_limits<s>		# numeric_limits<short>::max_exponent10
+#is_signed__17numeric_limits<s>		# numeric_limits<short>::is_signed
+#is_integer__17numeric_limits<s>		# numeric_limits<short>::is_integer
+#is_exact__17numeric_limits<s>		# numeric_limits<short>::is_exact
+#has_infinity__17numeric_limits<s>		# numeric_limits<short>::has_infinity
+#has_quiet_NaN__17numeric_limits<s>		# numeric_limits<short>::has_quiet_NaN
+#has_signaling_NaN__17numeric_limits<s>		# numeric_limits<short>::has_signaling_NaN
+#has_denorm__17numeric_limits<s>		# numeric_limits<short>::has_denorm
+#has_denorm_loss__17numeric_limits<s>		# numeric_limits<short>::has_denorm_loss
+#is_iec559__17numeric_limits<s>		# numeric_limits<short>::is_iec559
+#is_bounded__17numeric_limits<s>		# numeric_limits<short>::is_bounded
+#is_modulo__17numeric_limits<s>		# numeric_limits<short>::is_modulo
+#traps__17numeric_limits<s>		# numeric_limits<short>::traps
+#tinyness_before__17numeric_limits<s>		# numeric_limits<short>::tinyness_before
+#round_style__17numeric_limits<s>		# numeric_limits<short>::round_style
+#is_specialized__18numeric_limits<Us>		# numeric_limits<unsigned short>::is_specialized
+#radix__18numeric_limits<Us>		# numeric_limits<unsigned short>::radix
+#digits__18numeric_limits<Us>		# numeric_limits<unsigned short>::digits
+#digits10__18numeric_limits<Us>		# numeric_limits<unsigned short>::digits10
+#min_exponent__18numeric_limits<Us>		# numeric_limits<unsigned short>::min_exponent
+#max_exponent__18numeric_limits<Us>		# numeric_limits<unsigned short>::max_exponent
+#min_exponent10__18numeric_limits<Us>		# numeric_limits<unsigned short>::min_exponent10
+#max_exponent10__18numeric_limits<Us>		# numeric_limits<unsigned short>::max_exponent10
+#is_signed__18numeric_limits<Us>		# numeric_limits<unsigned short>::is_signed
+#is_integer__18numeric_limits<Us>		# numeric_limits<unsigned short>::is_integer
+#is_exact__18numeric_limits<Us>		# numeric_limits<unsigned short>::is_exact
+#has_infinity__18numeric_limits<Us>		# numeric_limits<unsigned short>::has_infinity
+#has_quiet_NaN__18numeric_limits<Us>		# numeric_limits<unsigned short>::has_quiet_NaN
+#has_signaling_NaN__18numeric_limits<Us>		# numeric_limits<unsigned short>::has_signaling_NaN
+#has_denorm__18numeric_limits<Us>		# numeric_limits<unsigned short>::has_denorm
+#has_denorm_loss__18numeric_limits<Us>		# numeric_limits<unsigned short>::has_denorm_loss
+#is_iec559__18numeric_limits<Us>		# numeric_limits<unsigned short>::is_iec559
+#is_bounded__18numeric_limits<Us>		# numeric_limits<unsigned short>::is_bounded
+#is_modulo__18numeric_limits<Us>		# numeric_limits<unsigned short>::is_modulo
+#traps__18numeric_limits<Us>		# numeric_limits<unsigned short>::traps
+#tinyness_before__18numeric_limits<Us>		# numeric_limits<unsigned short>::tinyness_before
+#round_style__18numeric_limits<Us>		# numeric_limits<unsigned short>::round_style
+#is_specialized__17numeric_limits<c>		# numeric_limits<char>::is_specialized
+#radix__17numeric_limits<c>		# numeric_limits<char>::radix
+#digits__17numeric_limits<c>		# numeric_limits<char>::digits
+#digits10__17numeric_limits<c>		# numeric_limits<char>::digits10
+#min_exponent__17numeric_limits<c>		# numeric_limits<char>::min_exponent
+#max_exponent__17numeric_limits<c>		# numeric_limits<char>::max_exponent
+#min_exponent10__17numeric_limits<c>		# numeric_limits<char>::min_exponent10
+#max_exponent10__17numeric_limits<c>		# numeric_limits<char>::max_exponent10
+#is_signed__17numeric_limits<c>		# numeric_limits<char>::is_signed
+#is_integer__17numeric_limits<c>		# numeric_limits<char>::is_integer
+#is_exact__17numeric_limits<c>		# numeric_limits<char>::is_exact
+#has_infinity__17numeric_limits<c>		# numeric_limits<char>::has_infinity
+#has_quiet_NaN__17numeric_limits<c>		# numeric_limits<char>::has_quiet_NaN
+#has_signaling_NaN__17numeric_limits<c>		# numeric_limits<char>::has_signaling_NaN
+#has_denorm__17numeric_limits<c>		# numeric_limits<char>::has_denorm
+#has_denorm_loss__17numeric_limits<c>		# numeric_limits<char>::has_denorm_loss
+#is_iec559__17numeric_limits<c>		# numeric_limits<char>::is_iec559
+#is_bounded__17numeric_limits<c>		# numeric_limits<char>::is_bounded
+#is_modulo__17numeric_limits<c>		# numeric_limits<char>::is_modulo
+#traps__17numeric_limits<c>		# numeric_limits<char>::traps
+#tinyness_before__17numeric_limits<c>		# numeric_limits<char>::tinyness_before
+#round_style__17numeric_limits<c>		# numeric_limits<char>::round_style
+#is_specialized__18numeric_limits<Sc>		# numeric_limits<signed char>::is_specialized
+#radix__18numeric_limits<Sc>		# numeric_limits<signed char>::radix
+#digits__18numeric_limits<Sc>		# numeric_limits<signed char>::digits
+#digits10__18numeric_limits<Sc>		# numeric_limits<signed char>::digits10
+#min_exponent__18numeric_limits<Sc>		# numeric_limits<signed char>::min_exponent
+#max_exponent__18numeric_limits<Sc>		# numeric_limits<signed char>::max_exponent
+#min_exponent10__18numeric_limits<Sc>		# numeric_limits<signed char>::min_exponent10
+#max_exponent10__18numeric_limits<Sc>		# numeric_limits<signed char>::max_exponent10
+#is_signed__18numeric_limits<Sc>		# numeric_limits<signed char>::is_signed
+#is_integer__18numeric_limits<Sc>		# numeric_limits<signed char>::is_integer
+#is_exact__18numeric_limits<Sc>		# numeric_limits<signed char>::is_exact
+#has_infinity__18numeric_limits<Sc>		# numeric_limits<signed char>::has_infinity
+#has_quiet_NaN__18numeric_limits<Sc>		# numeric_limits<signed char>::has_quiet_NaN
+#has_signaling_NaN__18numeric_limits<Sc>		# numeric_limits<signed char>::has_signaling_NaN
+#has_denorm__18numeric_limits<Sc>		# numeric_limits<signed char>::has_denorm
+#has_denorm_loss__18numeric_limits<Sc>		# numeric_limits<signed char>::has_denorm_loss
+#is_iec559__18numeric_limits<Sc>		# numeric_limits<signed char>::is_iec559
+#is_bounded__18numeric_limits<Sc>		# numeric_limits<signed char>::is_bounded
+#is_modulo__18numeric_limits<Sc>		# numeric_limits<signed char>::is_modulo
+#traps__18numeric_limits<Sc>		# numeric_limits<signed char>::traps
+#tinyness_before__18numeric_limits<Sc>		# numeric_limits<signed char>::tinyness_before
+#round_style__18numeric_limits<Sc>		# numeric_limits<signed char>::round_style
+#is_specialized__18numeric_limits<Uc>		# numeric_limits<unsigned char>::is_specialized
+#radix__18numeric_limits<Uc>		# numeric_limits<unsigned char>::radix
+#digits__18numeric_limits<Uc>		# numeric_limits<unsigned char>::digits
+#digits10__18numeric_limits<Uc>		# numeric_limits<unsigned char>::digits10
+#min_exponent__18numeric_limits<Uc>		# numeric_limits<unsigned char>::min_exponent
+#max_exponent__18numeric_limits<Uc>		# numeric_limits<unsigned char>::max_exponent
+#min_exponent10__18numeric_limits<Uc>		# numeric_limits<unsigned char>::min_exponent10
+#max_exponent10__18numeric_limits<Uc>		# numeric_limits<unsigned char>::max_exponent10
+#is_signed__18numeric_limits<Uc>		# numeric_limits<unsigned char>::is_signed
+#is_integer__18numeric_limits<Uc>		# numeric_limits<unsigned char>::is_integer
+#is_exact__18numeric_limits<Uc>		# numeric_limits<unsigned char>::is_exact
+#has_infinity__18numeric_limits<Uc>		# numeric_limits<unsigned char>::has_infinity
+#has_quiet_NaN__18numeric_limits<Uc>		# numeric_limits<unsigned char>::has_quiet_NaN
+#has_signaling_NaN__18numeric_limits<Uc>		# numeric_limits<unsigned char>::has_signaling_NaN
+#has_denorm__18numeric_limits<Uc>		# numeric_limits<unsigned char>::has_denorm
+#has_denorm_loss__18numeric_limits<Uc>		# numeric_limits<unsigned char>::has_denorm_loss
+#is_iec559__18numeric_limits<Uc>		# numeric_limits<unsigned char>::is_iec559
+#is_bounded__18numeric_limits<Uc>		# numeric_limits<unsigned char>::is_bounded
+#is_modulo__18numeric_limits<Uc>		# numeric_limits<unsigned char>::is_modulo
+#traps__18numeric_limits<Uc>		# numeric_limits<unsigned char>::traps
+#tinyness_before__18numeric_limits<Uc>		# numeric_limits<unsigned char>::tinyness_before
+#round_style__18numeric_limits<Uc>		# numeric_limits<unsigned char>::round_style
+#is_specialized__17numeric_limits<b>		# numeric_limits<bool>::is_specialized
+#radix__17numeric_limits<b>		# numeric_limits<bool>::radix
+#digits__17numeric_limits<b>		# numeric_limits<bool>::digits
+#digits10__17numeric_limits<b>		# numeric_limits<bool>::digits10
+#min_exponent__17numeric_limits<b>		# numeric_limits<bool>::min_exponent
+#max_exponent__17numeric_limits<b>		# numeric_limits<bool>::max_exponent
+#min_exponent10__17numeric_limits<b>		# numeric_limits<bool>::min_exponent10
+#max_exponent10__17numeric_limits<b>		# numeric_limits<bool>::max_exponent10
+#is_signed__17numeric_limits<b>		# numeric_limits<bool>::is_signed
+#is_integer__17numeric_limits<b>		# numeric_limits<bool>::is_integer
+#is_exact__17numeric_limits<b>		# numeric_limits<bool>::is_exact
+#has_infinity__17numeric_limits<b>		# numeric_limits<bool>::has_infinity
+#has_quiet_NaN__17numeric_limits<b>		# numeric_limits<bool>::has_quiet_NaN
+#has_signaling_NaN__17numeric_limits<b>		# numeric_limits<bool>::has_signaling_NaN
+#has_denorm__17numeric_limits<b>		# numeric_limits<bool>::has_denorm
+#has_denorm_loss__17numeric_limits<b>		# numeric_limits<bool>::has_denorm_loss
+#is_iec559__17numeric_limits<b>		# numeric_limits<bool>::is_iec559
+#is_bounded__17numeric_limits<b>		# numeric_limits<bool>::is_bounded
+#is_modulo__17numeric_limits<b>		# numeric_limits<bool>::is_modulo
+#traps__17numeric_limits<b>		# numeric_limits<bool>::traps
+#tinyness_before__17numeric_limits<b>		# numeric_limits<bool>::tinyness_before
+#round_style__17numeric_limits<b>		# numeric_limits<bool>::round_style
+#setfill__Fi		# setfill(int)
+#setbase__Fi		# setbase(int)
+#fsetbase<c,14char_traits<c>>__FR29basic_ios<c,14char_traits<c>>i		# fsetbase<c,14char_traits<c>>(basic_ios<char, char_traits<char>>&,int)
+#setiosflags__Fl		# setiosflags(long)
+#fset<c,14char_traits<c>>__FR29basic_ios<c,14char_traits<c>>l		# fset<c,14char_traits<c>>(basic_ios<char, char_traits<char>>&,long)
+#resetiosflags__Fl		# resetiosflags(long)
+#freset<c,14char_traits<c>>__FR29basic_ios<c,14char_traits<c>>l		# freset<c,14char_traits<c>>(basic_ios<char, char_traits<char>>&,long)
+#ffill__FR29basic_ios<c,14char_traits<c>>i		# ffill(basic_ios<char, char_traits<char>>&,int)
+#setw__FUl		# setw(unsigned long)
+#fwidth<c,14char_traits<c>>__FR29basic_ios<c,14char_traits<c>>Ul		# fwidth<c,14char_traits<c>>(basic_ios<char, char_traits<char>>&,unsigned long)
+#setprecision__FUl		# setprecision(unsigned long)
+#fprecise<c,14char_traits<c>>__FR29basic_ios<c,14char_traits<c>>Ul		# fprecise<c,14char_traits<c>>(basic_ios<char, char_traits<char>>&,unsigned long)
+#__dc_arr
+#__del_arr
+#__new_arr
+#__init_arr
+#__copy
+#__som_check_ev
+#__som_check_new
+#__vt__13bad_exception		# bad_exception::__vt
+#what__13bad_exceptionCFv		# bad_exception::what() const
+#__end__catch
+#__throw
+#__unexpected
+#__dt__13bad_exceptionFv		# bad_exception::~bad_exception()
+#__unregister_fragment
+#__register_fragment
+#__global_destructor_chain
+#__destroy_global_chain
+#__register_global_object
+#__destroy_new_array
+#__destroy_arr
+#__construct_array
+#__dt__26__partial_array_destructorFv		# __partial_array_destructor::~__partial_array_destructor()
+#__construct_new_array
+#__throw_catch_compare
+#unexpected__Fv		# unexpected()
+#set_unexpected__FPFv_v		# set_unexpected(void (*)(void))
+#terminate__Fv		# terminate()
+#set_terminate__FPFv_v		# set_terminate(void (*)(void))
+#__vt__10bad_typeid		# bad_typeid::__vt
+#__vt__9type_info		# type_info::__vt
+#__dt__9type_infoFv		# type_info::~type_info()
+#__dynamic_cast
+#__get_typeid
+#__dt__10bad_typeidFv		# bad_typeid::~bad_typeid()
+#__as__9type_infoFRC9type_info		# type_info::operator =(const type_info&)
+#__ct__9type_infoFRC9type_info		# type_info::type_info(const type_info&)
+#name__9type_infoCFv		# type_info::name() const
+#before__9type_infoCFRC9type_info		# type_info::before(const type_info&) const
+#__ne__9type_infoCFRC9type_info		# type_info::operator !=(const type_info&) const
+#__eq__9type_infoCFRC9type_info		# type_info::operator ==(const type_info&) const
+#__dl__FPv		# operator delete(void*)
+#__nw__FUlRC9nothrow_t		# operator new(unsigned long,const nothrow_t&)
+#__nw__FUl		# operator new(unsigned long)
+#_prealloc_newpool__FUl		# _prealloc_newpool(unsigned long)
+#_set_newnonptrmax__FUl		# _set_newnonptrmax(unsigned long)
+#_set_newpoolsize__FUl		# _set_newpoolsize(unsigned long)
+#__throws_bad_alloc
+#__new_handler
+#__del_hdl
+#__new_hdl
+#set_new_handler__FPFv_v		# set_new_handler(void (*)(void))
+#__throw_bad_alloc__Fv		# __throw_bad_alloc()
+#qd
+#__terminate
+#__initialize
+#__start
+#__ptmf_null
+#longjmp
+#__vt__9bad_alloc		# bad_alloc::__vt
+#__vt__14overflow_error		# overflow_error::__vt
+#__vt__11range_error		# range_error::__vt
+#__vt__13runtime_error		# runtime_error::__vt
+#__vt__12out_of_range		# out_of_range::__vt
+#__vt__12length_error		# length_error::__vt
+#__vt__16invalid_argument		# invalid_argument::__vt
+#__vt__12domain_error		# domain_error::__vt
+#__vt__11logic_error		# logic_error::__vt
+#__vt__8bad_cast		# bad_cast::__vt
+#__vt__9exception		# exception::__vt
+#alloc_msg__9bad_alloc		# bad_alloc::alloc_msg
+#__dt__9bad_allocFv		# bad_alloc::~bad_alloc()
+#__as__9bad_allocFRC9bad_alloc		# bad_alloc::operator =(const bad_alloc&)
+#__dt__14overflow_errorFv		# overflow_error::~overflow_error()
+#__dt__11range_errorFv		# range_error::~range_error()
+#__dt__13runtime_errorFv		# runtime_error::~runtime_error()
+#__dt__12out_of_rangeFv		# out_of_range::~out_of_range()
+#__dt__12length_errorFv		# length_error::~length_error()
+#__dt__16invalid_argumentFv		# invalid_argument::~invalid_argument()
+#__dt__12domain_errorFv		# domain_error::~domain_error()
+#__dt__11logic_errorFv		# logic_error::~logic_error()
+#__priv_throwbadcast__Fv		# __priv_throwbadcast()
+#__dt__8bad_castFv		# bad_cast::~bad_cast()
+#__ct__10bad_typeidFv		# bad_typeid::bad_typeid()
+#what__9bad_allocCFv		# bad_alloc::what() const
+#what__9exceptionCFv		# exception::what() const
+#__dt__9exceptionFv		# exception::~exception()
+#__as__9exceptionFRC9exception		# exception::operator =(const exception&)
+#__ct__9exceptionFPCc		# exception::exception(const char*)
+#__ct__9exceptionFRC9exception		# exception::exception(const exception&)
+#__ct__9exceptionFRC47basic_string<c,14char_traits<c>,12allocator<c>>		# exception::exception(const basic_string<char, char_traits<char>, allocator<char>>&)

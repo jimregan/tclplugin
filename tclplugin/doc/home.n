@@ -1,0 +1,98 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) home.n 1.5 97/11/13 23:44:20"
+'\" 
+.so man.macros
+.TH "home" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+home \- The home security policy.
+.SH SYNOPSIS
+.sp
+\fBpolicy home\fR
+.BE
+
+.SH DESCRIPTION
+.PP
+The \fBhome\fR security policy installs features into a Safe\-Tcl
+interpreter that allow a Tclet to connect to resources on the host from
+which it was loaded, its \fBhome host\fR.
+The intent of this policy is to restrict access only to resources on the
+host from which the Tclet was loaded, irrespective of whether this host is
+inside or outside your site's firewall.
+.PP
+The \fBFEATURES\fR section describes the features installed by the
+\fBhome\fR policy.
+The \fBCONFIGURATION\fR section discusses how to enable or disable use of
+this policy by Tclets and the resources controlled by the policy's
+configuration.
+Security issues are discussed in the manual page for each feature that is
+enabled by this policy.
+
+.SH FEATURES
+.PP
+The \fBhome\fR policy enables the \fBpersist\fR, \fBurl\fR and
+\fBnetwork\fR features.
+For a discussion of these features, see their manual pages.
+
+.SH CONFIGURATION
+.PP
+The \fBpolicies\fR section of the application's master configuration
+controls whether Tclets hosted by the application can use this policy.
+If it is not allowed by this section, Tclets are unable to use this policy
+when hosted in the application.
+For the Tcl plugin, the \fBhome\fR policy is enabled by default.
+Edit the \fBplugin.cfg\fR file in the \fB::cfg::configDir\fR directory to
+modify this setting.
+The \fBconfig\fR manual page describes configuration management and the
+syntax of configurations.
+.PP
+The \fBhome\fR policy uses a configuration stored in the \fBhome.cfg\fR
+file in the directory \fB::cfg::configDir\fR.
+The configuration has these sections:
+.TP
+\fBfeatures\fR
+This section allows the \fBnetwork\fR, \fBpersist\fR and \fBurl\fR features
+to be installed in a Tclet.
+.TP
+\fBurls\fR
+This section allows access only to URLs for resources that reside on the
+host from which the Tclet was loaded.
+It uses the Tclet \fBoriginHomeDirURL\fR attribute to restrict access only
+to URLs that reside in the same directory as the file storing the Tclet's
+source code.
+Edit this section if you want to allow access to other URLs for resources
+on the home host; the Tclet attributes \fBoriginHost\fR and \fBoriginURL\fR
+may be useful in defining exactly the access you want.
+Note that the default setting ensures privacy for Tclets that are loaded
+from a shared host, such as from web sites managed by an Internet Service
+Provicer where many users store resources on the same host accessible via
+URLs.
+.TP
+\fBframes\fR
+This section allows by default any frame for
+the \fBdisplayURL\fR command family except the empty frame (which is special).
+.TP
+\fBhosts ports\fR
+This section allows access via sockets only to services executing on the
+host from which the Tclet was loaded.
+It uses the Tclet \fBoriginSocketHost\fR attribute to restrict access.
+.TP
+\fBpersist\fR
+This section, if present, defines constants that control resource
+consumption by the \fBpersist\fR feature when used in this policy.
+If the section is absent, the default settings are used.
+
+.SH "SEE ALSO"
+.PP
+plugin(n), safe(n), policy(n), config(n), url(n), persist(n), network(n)
+
+.SH KEYWORDS
+.PP
+Safe\-Tcl, access, policy, feature, network, URL, socket, persistent local
+storage

@@ -1,0 +1,98 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) javascript.n 1.4 97/10/10 12:56:16
+'\" 
+.so man.macros
+.TH "javascript" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+javascript \- The javascript security policy.
+.SH SYNOPSIS
+.sp
+\fBpolicy javascript\fR
+.BE
+
+.SH DESCRIPTION
+.PP
+The \fBjavascript\fR security policy installs features into a Safe\-Tcl
+interpreter that allow a Tclet to connect to arbitrary resources via
+\fBHTTP\fR and using sockets.
+The installed features also enable the Tclet to generate content for frames
+managed by the hosting application, call arbitrary JavaScript code and send
+electronic mail.
+This policy enables dangerous features that, if used properly, can allow
+Tclet to be used as compelling web enabled applications.
+.PP
+The \fBFEATURES\fR section describes the features enabled by this policy.
+The section on \fBCONFIGURATION\fR discusses how to enable or disable use
+of the \fBjavascript\fR policy by Tclets and the resources that are
+controlled by the policy's configuration.
+Security issues are discussed in the manual page for each feature installed
+by this policy.
+
+.SH FEATURES
+.PP
+The \fBjavascript\fR policy enables the \fBpersist\fR, \fBnetwork\fR,
+\fBurl\fR and \fBstream\fR features.
+These are each described in their own manual page.
+
+.SH CONFIGURATION
+.PP
+The \fBpolicies\fR section of the application's master configuration
+controls whether Tclets can use the \fBjavascript\fR policy.
+If it is not allowed by this section, the policy can not be used by Tclets
+hosted in this application.
+For the Tcl plugin, by default the policy is enabled for a select set of
+Tclets loaded from well known URLs.
+Edit \fBplugin.cfg\fR in the \fB::cfg::configDir\fR directory to modify
+this set of URLs or completely disable the policy.
+The \fBconfig\fR manual page describes configuration management and the
+syntax and organization of configurations.
+.PP
+The \fBjavascript\fR policy uses a configuration stored in
+\fBjavascript.cfg\fR in the \fB::cfg::configDir\fR directory.
+The configuration has the following sections:
+.TP
+\fBfeatures\fR
+This section selects which features are installed by the policy into a
+Tclet.
+This policy allows the \fBpersist\fR, \fBnetwork\fR, \fBurl\fR and
+\fBstream\fR features to be installed.
+.TP
+\fBaliases\fR
+The aliases for these features are enabled in this section.
+.TP
+\fBurls\fR
+This section controls the set of URLs that can be accessed by aliases
+provided by the \fBurl\fR feature.
+In the Tcl plugin, this section allows any URL to be used.
+Edit this section to define a smaller set of URLs that can be used.
+.TP
+\fBhosts ports\fR
+This section defines which hosts and ports can be used in the \fBsocket\fR
+command provided by the \fBnetwork\fR feature.
+In the Tcl plugin, all hosts and ports are allowed.
+Edit this section to define a smaller set of hosts and ports that can be
+used.
+.TP
+\fBmimeTypes\fR
+This section defines which mime types are allowed as arguments to the
+\fB::browser::openStream\fR alias.
+In the Tcl plugin, all mime types are allowed.
+Edit this section to describe a smaller set of mime types.
+
+.SH "SEE ALSO"
+.PP
+plugin(n), safe(n), config(n), policy(n), url(n), stream(n), network(n),
+persist(n)
+
+.SH KEYWORDS
+.PP
+Safe\-Tcl, alias, socket, URL, persistent local storage, JavaScript,
+electronic mail
+

@@ -1,0 +1,110 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) feature.n 1.2 97/10/09 08:53:36
+'\" 
+.so man.macros
+.TH "feature" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+feature \-  Features of Safe Tcl applications.
+.SH SYNOPSYS
+.sp
+\fBpackage require ::safefeature\fR
+.BE
+
+.SH DESCRIPTION
+.PP
+This manual entry describes the \fBfeature\fR mechanism of Safe Tcl.
+It explains how features work and how to write and install new features.
+
+.SH FEATURE
+.PP
+A feature is a named collection of capabilities installed into a Safe\-Tcl
+program via command aliases.
+Features are installed into a Safe\-Tcl interpreter by a security policy
+when the feature is allowed by the policy.
+Command aliases execute code in the master interpreter when invoked in the
+slave interpreter.
+For a discussion of multiple interpreters see the \fBinterp\fR manual page
+included in the Tcl 8.0 distribution.
+.PP
+The configuration management package maintains a list of installed features
+in \fB::cfg::featureList\fR.
+When a Tclet obtains a policy, the master interpreter attempts to install
+the features mentioned in \fB::cfg::featureList\fR into the interpreter
+executing the Tclet.
+For each feature, if the feature is allowed by the policy, it invokes
+\fB::safefeature::\fIfeature\fB::install\fR with the name of the interpreter,
+to install aliases and other resources for that feature.
+If the install procedure generates an error, the interpreter executing the
+Tclet is killed, to prevent the Tclet from executing in a potentially
+unsafe undefined state.
+.PP
+The feature must declare a package named \fB::safefeature::\fIfeature\fR.
+This ensures that the feature can be dynamically loaded as needed.
+The feature's install procedure, as mentioned above, should be implemented
+in the \fB::safefeature::\fIfeature\fR namespace.
+Note that only the install procedure must be in this namespace. Other
+aspects of the implementation of the feature can be in other namespaces.
+This is a hidden internal property of the implementation of each feature.
+.PP
+To properly link up with common functionality supplied in the
+\fB::safefeature\fR namespace, the implementation of the feature should
+call \fB::safefeature::setup\fR with the name of the implementation
+namespace.
+By convention, this call is made at the same time as defining the install
+procedure, to ensure that these capabilities are available when needed.
+
+.SH "FEATURE CONTROL"
+.PP
+To disable a feature for use in all policies, remove the name of that
+feature from the value of \fB::cfg::featureList\fR.
+This variable is defined in the \fBplugin.cfg\fR file in the directory
+\fB::cfg::configDir\fR.
+If a feature is not mentioned by name in the value of this variable, it is
+not installed into any Tclet on this site.
+.PP
+Each policy individially enables or disables features in its \fBfeatures\fR
+section.
+To modify the set of available features in a Tclet using a policy, edit the
+configuration file for that policy and modify the \fBallow\fR and
+\fBdisallow\fR statements in the \fBfeatures\fR section to control exactly
+under which circumstances each feature is installed into the Tclet.
+.PP
+By convention, the feature implementation files are stored in the
+\fButils\fR directory of the plugin installation.
+See the \fBplugin\fR manual page for a discussion of the plugin runtime
+library directory tree structure.
+.PP
+To install a new feature, follow these steps:
+.IP
+Add its name to the value of \fB::cfg::featureList\fR by editing
+\fBplugin.cfg\fR in the directory \fB::cfg::configDir\fR.
+Note that the order of appearance in this list is important; features whose
+name appears later will be installed later into the Tclet, and can undo or
+modify the effects of installing features that appear earlier in the list.
+.IP
+Install the implementation file or files for the feature in the \fButils\fR
+directory.
+.IP
+Add a \fBpackage ifneeded\fR statement to the \fBpkgIndex.tcl\fR file in
+the directory \fButils\fR for the package declared by the feature.
+At present you must do this step by hand, because the Tcl code that
+generates this file does not yet properly handle namespaces.
+.PP
+These built in features (in the order in which they appear in the value of
+\fB::cfg::featureList\fR) are provided by the Tcl plugin: \fBurl\fR,
+\fBstream\fR, \fBnetwork\fR, \fBpersist\fR and \fBunsafe\fR.
+Each of these features is described in its own manual page with the same name.
+
+.SH "SEE ALSO"
+safe(n), plugin(n), policy(n), config(n)
+
+.SH KEYWORDS
+Safe Base, multiple interpreters, configuration management, policy,
+features, aliases

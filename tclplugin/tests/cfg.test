@@ -1,0 +1,500 @@
+# cfg.test --
+#
+# This file contains a collecion of tests for the configuration management
+# module, package cfg. Sourcing this file into Tcl runs the tests and
+# generates output for errors. No output means no errors were found.
+#
+# In order for these tests to run, the plugin library must be on the
+# auto_path.
+#
+# Copyright (c) 1995-1997 Sun Microsystems, Inc.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+#
+# SCCS: @(#) cfg.test 1.4 97/10/17 14:24:32
+
+# Compute where the test configuration files will be found:
+
+set configDir [pwd]
+
+# Require the needed packages.
+# We assume that the package require will succeed (ie the auto_path is
+# ok; test it using 
+#          echo "lappend auto_path ..;source cfg.test" | tclsh8.0
+# for instance)
+
+package require cfg 1.0
+
+::cfg::init "cfgTest" {} $configDir
+
+namespace import ::cfg::allowed ::cfg::getConstant ::cfg::clear
+
+# Debugging:
+# log::setup stdout
+
+# Check if we need to load the global definitions file:
+
+if {[string compare test [info procs test]] == 1} then {source defs}
+
+# Now for the tests proper:
+
+test cfg-1.1 {finding configuration files} {
+    allowed {} cfg1 section1 x
+} 0
+test cfg-1.2 {finding configuration files} {
+    list [catch {allowed {} nosuchconfig section1 x} msg] $msg
+} [list 1 "couldn't read file \"[file join $configDir nosuchconfig].cfg\": no such file or directory"]
+test cfg-1.3 {finding configuration files} {
+    list [catch {getConstant {} cfg2 section1 x} msg] $msg
+} {1 {no such constant: x}}
+test cfg-1.4 {finding configuration files} {
+    list [catch {getConstant {} nosuchconfig section1 x} msg] $msg
+} [list 1 "couldn't read file \"[file join $configDir nosuchconfig].cfg\": no such file or directory"]
+
+test cfg-2.1 {allow, finding section, section exists and allowed} {
+    allowed {} cfg1 section1 allowed
+} 1
+test cfg-2.2 {allow, finding section, section exist but disallowed} {
+    allowed {} cfg1 section2 allowed
+} 0
+test cfg-2.3 {allow, finding section, section does not exist} {
+    allowed {} cfg1 section3 allowed
+} 0
+
+test cfg-3.1 {disallow, finding section, section exists and disallowed} {
+    allowed {} cfg1 section1 disallowed
+} 0
+test cfg-3.2 {disallow, finding section, section exists and allowed} {
+    allowed {} cfg1 section2 disallowed
+} 1
+test cfg-3.3 {disallow, finding section, section does not exist} {
+    allowed {} cfg1 section3 disallowed
+} 0
+
+test cfg-4.1 {Constant, finding section, section exists and constant not} {
+    list [catch {getConstant {} cfg1 section1 constant1} msg] $msg
+} {1 {no such constant: constant1}}
+test cfg-4.2 {Constant, finding section, section and constant exist} {
+    getConstant {} cfg1 section2 constant2
+} 42
+test cfg-4.3 {Constant, finding section, section does not exist} {
+    list [catch {getConstant {} cfg1 section3 constant3} msg] $msg
+} {1 {no such constant: constant3}}
+
+test cfg-5.1 {allowed, one word} {
+    allowed {} cfg1 section1 allowed
+} 1
+test cfg-5.2 {allowed, one word} {
+    allowed {} cfg1 section4 allowed
+} 1
+
+test cfg-6.1 {logic: allowed --> allowed} {
+    allowed {} cfg1 section5 allowed
+} 1
+test cfg-6.2 {logic: allowed and disallowed --> disallowed} {
+    allowed {} cfg1 section5 logic1
+} 0
+test cfg-6.3 {logic: not allowed and disallowed --> disallowed} {
+    allowed {} cfg1 section5 logic2
+} 0
+test cfg-6.4 {logic: not allowed and not disallowed --> disallowed} {
+    allowed {} cfg1 section5 logic3
+} 0
+
+test cfg-7.1 {allow with more than one word, exact match} {
+    allowed {} cfg1 section6 word1
+} 1
+test cfg-7.2 {allow with more than one word, exact match} {
+    allowed {} cfg1 section6 word2
+} 0
+test cfg-7.3 {allow with more than one word, exact match} {
+    allowed {} cfg1 section6 word1 word2
+} 1
+test cfg-7.4 {allow with more than one word, exact match} {
+    allowed {} cfg1 section6 word1 word3
+} 0
+test cfg-7.5 {allow with more than one word, exact match} {
+    allowed {} cfg1 section6 word1 word2 word3
+} 1
+test cfg-7.6 {allow with more than one word, exact match} {
+    allowed {} cfg1 section6 word1 word2 word4
+} 0
+
+test cfg-8.1 {allow and disallow with more than one word, exact match} {
+    allowed {} cfg1 section7 word1
+} 0
+test cfg-8.2 {allow and disallow with more than one word, exact match} {
+    allowed {} cfg1 section7 word2
+} 0
+test cfg-8.3 {allow and disallow with more than one word, exact match} {
+    allowed {} cfg1 section7 word1 word2
+} 0
+test cfg-8.4 {allow and disallow with more than one word, exact match} {
+    allowed {} cfg1 section7 word1 word3
+} 0
+test cfg-8.5 {allow and disallow with more than one word, exact match} {
+    allowed {} cfg1 section7 word1 word2 word3
+} 0
+test cfg-8.6 {allow and disallow with more than one word, exact match} {
+    allowed {} cfg1 section7 word1 word2 word2
+} 0
+test cfg-8.7 {allow and disallow with more than one word, exact match} {
+    allowed {} cfg1 section7 word1 word2 word3 word4
+} 1
+
+test cfg-9.1 {allow with wildcards} {
+    allowed {} cfg1 section8 word123
+} 1
+test cfg-9.2 {allow with wildcards} {
+    allowed {} cfg1 section8 word321
+} 0
+test cfg-9.3 {allow with wildcards} {
+    allowed {} cfg1 section8 word12345
+} 1
+test cfg-9.4 {allow with wildcards} {
+    allowed {} cfg1 section8 word123abc
+} 1
+test cfg-9.5 {allow with wildcards} {
+    allowed {} cfg1 section8 word123-345
+} 1
+test cfg-9.6 {allow with wildcards} {
+    allowed {} cfg1 section8 word123<aaa>>
+} 1
+test cfg-9.7 {allow with wildcards} {
+    allowed {} cfg1 section8 word*
+} 0
+test cfg-9.8 {allow with wildcards} {
+    allowed {} cfg1 section8 word123----------
+} 1
+test cfg-9.9 {allow with wildcards} {
+    allowed {} cfg1 section8 word123321
+} 1
+test cfg-9.10 {allow with wildcards} {
+    allowed {} cfg1 section8 word123 word2
+} 0
+test cfg-9.11 {allow with wildcards} {
+    allowed {} cfg1 section8 word1
+} 0
+
+test cfg-10.1 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word123
+} 1
+test cfg-10.2 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word1234
+} 0
+test cfg-10.3 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word123*
+} 1
+test cfg-10.4 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word1235
+} 1
+test cfg-10.5 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word123----
+} 1
+test cfg-10.6 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word12-4
+} 0
+test cfg-10.7 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word123 word5
+} 0
+test cfg-10.8 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word12
+} 0
+test cfg-10.9 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word123*
+} 1
+test cfg-10.10 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word12*
+} 0
+test cfg-10.11 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word1234 foo
+} 0
+test cfg-10.12 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word1235678
+} 1
+test cfg-10.13 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word123abcd
+} 1
+test cfg-10.14 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word1234abcde
+} 0
+test cfg-10.15 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word1234-----
+} 0
+test cfg-10.16 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 wordabcdefghijklmnopqrstuvwxyz
+} 0
+test cfg-10.17 {allow, disallow with wildcards} {
+    allowed {} cfg1 section9 word123 word123
+} 0
+
+test cfg-11.1 {allow, range} {
+    allowed {} cfg1 section10 100
+} 1
+test cfg-11.2 {allow, range} {
+    allowed {} cfg1 section10 200
+} 0
+test cfg-11.3 {allow, range} {
+    allowed {} cfg1 section10 500
+} 1
+test cfg-11.4 {allow, range} {
+    allowed {} cfg1 section10 -145
+} 1
+test cfg-11.5 {allow, range} {
+    allowed {} cfg1 section10 -165
+} 0
+test cfg-11.6 {allow, overlapping ranges} {
+    allowed {} cfg1 section10 600
+} 1
+test cfg-11.7 {allow, overlapping ranges} {
+    allowed {} cfg1 section10 -250
+} 1
+test cfg-11.8 {allow, overlapping ranges} {
+    allowed {} cfg1 section10 -340
+} 1
+
+test cfg-12.1 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 101
+} 1
+test cfg-12.2 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 106
+} 0
+test cfg-12.3 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 149
+} 1
+test cfg-12.4 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 150
+} 0
+test cfg-12.5 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 169
+} 1
+test cfg-12.6 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 170
+} 1
+test cfg-12.7 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 171
+} 0
+test cfg-12.8 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 190
+} 0
+test cfg-12.9 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 50
+} 0
+test cfg-12.11 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 51
+} 0
+test cfg-12.12 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 49
+} 1
+test cfg-12.13 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 40
+} 1
+test cfg-12.14 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 39
+} 0
+test cfg-12.15 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 25
+} 0
+test cfg-12.16 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 200
+} 0
+test cfg-12.17 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 0
+} 0
+test cfg-12.18 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 -100
+} 0
+test cfg-12.19 {allow and disallow, ranges} {
+    allowed {} cfg1 section11 1000
+} 0
+
+test cfg-13.1 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word123 word456
+} 1
+test cfg-13.2 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word123 word456*
+} 1
+test cfg-13.3 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word345 word456
+} 1
+test cfg-13.4 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word123 word4
+} 0
+test cfg-13.5 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word345 word4
+} 1
+test cfg-13.6 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word345 word555
+} 0
+test cfg-13.7 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word135eee word456
+} 1
+test cfg-13.8 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word135eee word45678
+} 0
+test cfg-13.9 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word135* word456
+} 1
+test cfg-13.10 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word1353 word456ee
+} 0
+test cfg-13.11 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word12345 word45678
+} 1
+test cfg-13.12 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word123* word456*
+} 1
+test cfg-13.13 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word12234 word456ee
+} 0
+test cfg-13.14 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word12345 word4
+} 0
+test cfg-13.15 {allow, multiple words, wildcards} {
+    allowed {} cfg1 section12 word12 word456ee
+} 0
+
+# scope-1 test (local access)
+test cfg-14.1 {variable scope} {
+    allowed {} cfg1 scope-1a 46
+} 0
+
+test cfg-14.2 {variable scope} {
+    allowed {} cfg1 scope-1a 23
+} 1
+
+test cfg-14.3 {variable scope} {
+    allowed {} cfg1 scope-1b 23
+} 0
+
+test cfg-14.4 {variable scope} {
+    allowed {} cfg1 scope-1b 46
+} 1
+
+test cfg-14.5 {variable scope} {
+    allowed {} cfg2 scope-1 46
+} 0
+
+test cfg-14.6 {variable scope} {
+    allowed {} cfg2 scope-1 23
+} 1
+# scope-2 test (global access)
+test cfg-15.1 {variable scope} {
+    allowed {} cfg1 scope-2a 46
+} 0
+
+test cfg-15.2 {variable scope} {
+    allowed {} cfg1 scope-2a -23
+} 1
+
+test cfg-15.3 {variable scope} {
+    allowed {} cfg1 scope-2b -23
+} 0
+
+test cfg-15.4 {variable scope} {
+    allowed {} cfg1 scope-2b -46
+} 1
+
+test cfg-15.5 {variable scope} {
+    allowed {} cfg2 scope-2 -23
+} 0
+
+test cfg-15.6 {variable scope} {
+    allowed {} cfg2 scope-2 -46
+} 1
+
+
+test cfg-16.1 {constant scope} {
+    allowed {} cfg1 constant-1 foo
+} 0
+
+test cfg-16.1 {constant scope} {
+    allowed {} cfg1 constant-1 bar
+} 1
+
+
+test cfg-17.1 {ifallowed backward ref} {
+    set what "allowed {} cfg1 ifallowed-1 blah"
+    # do it twice and clear in between to see if 
+    # it works the same the first time and when cached
+    clear cfg1
+    list [eval $what] [eval $what]
+} {1 1}
+
+test cfg-17.2 {ifallowed backward ref} {
+    set what "allowed {} cfg1 ifallowed-1 foo1"
+    clear cfg1
+    list [eval $what] [eval $what]    
+} {0 0}
+
+test cfg-17.3 {ifallowed backward ref} {
+    set what "allowed {} cfg1 ifallowed-1 foo2"
+    clear cfg1
+    list [eval $what] [eval $what]    
+} {0 0}
+
+test cfg-18.1 {ifallowed forward ref} {
+    set what "allowed {} cfg1 ifallowed-2 blah"
+    # do it twice and clear in between to see if 
+    # it works the same the first time and when cached
+    clear cfg1
+    list [eval $what] [eval $what]
+} {1 1}
+
+test cfg-18.2 {ifallowed forward ref} {
+    set what "allowed {} cfg1 ifallowed-2 foo1"
+    clear cfg1
+    list [eval $what] [eval $what]    
+} {0 0}
+
+test cfg-18.3 {ifallowed forward ref} {
+    set what "allowed {} cfg1 ifallowed-2 foo2"
+    clear cfg1
+    list [eval $what] [eval $what]    
+} {0 0}
+
+test cfg-19.1 {ifallowed multiwords} {
+    list [allowed {} cfg1 ifallowed-3 blah3]\
+	    [allowed {} cfg1 ifallowed-3 foo3]\
+	    [allowed {} cfg1 ifallowed-3 foo4]\
+	    [allowed {} cfg1 ifallowed-3 foo5]
+} {1 0 0 0}
+
+test cfg-20.1 {ifallowed multi config} {
+    clear cfg2 ; # it using cfg2 as the indirected config
+    list [allowed {} cfg1 ifallowed-4 blah44]\
+	    [allowed {} cfg1 ifallowed-4 foo44]\
+	    [allowed {} cfg1 ifallowed-4 blah44]
+} {1 0 1}
+
+test cfg-21.1 {ifallowed multiple level recursion} {
+    clear cfg1
+    clear cfg2
+    clear cfg3
+    list \
+	    [allowed {} cfg1 ifallowed-5 foo55]\
+	    [allowed {} cfg1 ifallowed-5 blah55]\
+	    [allowed {} cfg1 ifallowed-5 foo55]\
+	    [allowed {} cfg1 ifallowed-5 blah55]
+} {0 1 0 1}
+
+test cfg-21.2 {ifallowed badly placed causing recursion} {
+    clear cfg1
+    clear cfg2
+    list [allowed {} cfg1 recurs-1 rec1] [allowed {} cfg1 recurs-1 rec1]
+} {1 1}
+
+
+test cfg-22.1 {include} {
+    clear cfg4
+    list [allowed {} cfg4 additional-1 coucou]\
+	    [allowed {} cfg4 recurs-1 rec1]\
+	    [allowed {} cfg4 additional-1 coucou] \
+	    [allowed {} cfg1 ifallowed-5 blah55] \
+	    [allowed {} cfg4 additional-1 toto]
+} {1 1 1 1 0}
+
+
+unset configDir
+

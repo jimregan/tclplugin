@@ -1,0 +1,346 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) config.n 1.3 97/10/17 14:36:11
+'\" 
+.so man.macros
+.TH "config" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+config \-  Configuration management for Safe Tcl.
+.SH SYNOPSYS
+.sp
+\fBpackage require ::cfg\fR
+.sp
+\fB::cfg::init \fIbaseName \fR?\fImasterConfigFile\fR? ?\fIconfigDir\fR?
+.sp
+\fB::cfg::allowed \fIlogToken config section arg arg...\fR
+.sp
+\fB::cfg::getConstant \fIlogToken config section name\fR
+.BE
+
+.SH DESCRIPTION
+.PP
+This manual entry describes the configuration management mechanism for Safe
+Tcl.
+It explains the syntax and structure of configuration files, and details how
+configuration and permission checking work at runtime.
+.PP
+First, the procedures defined by the \fBcfg\fR package are described in the
+section \fBPROCEDURES\fR.
+Then, the section \fBCONFIGURATIONS AND CONFIGURATION FILES\fR describes
+how configurations are organized and located on the local file system.
+The sections \fBSECTION\fR, \fBALLOW\fR, \fBDISALLOW\fR and \fBCONSTANT\fR
+each describe one of the major constructs that can appear in a
+configuration.
+Next, the section on \fBARGUMENT MATCHING\fR describes the process whereby
+the package decides whether a specific configuration option is allowed or
+not by this configuration.
+Finally, we close with an example configuration file that demonstrates how
+all aspects of the package work together.
+
+.SH PROCEDURES
+.PP
+\fB::cfg::init \fIbaseName \fR?\fImasterConfig\fR? ?\fIconfigDir\fR?
+.PP
+Applications that use the \fB::cfg\fR configuration management package must
+call \fB::cfg::init\fR before using any other procedure in the package.
+The \fIbaseName\fR specifies the name of the application, and is stored in
+\fB::cfg::name\fR for future use.
+If \fImasterConfig\fR is not given, the main configuration file name is
+\fIbaseName\fB.cfg\fR; otherwise it is \fImasterConfig\fB.cfg\fR.
+If \fIconfigDir\fR is given, \fB::cfg::configDir\fR is set to \fIconfigDir\fR
+and used in future operations.
+Otherwise, \fB::cfg::configDir\fR is set to the sibling \fBconfig\fR
+directory of the \fBtcl_library\fR directory.
+For example, if \fBtcl_library\fR is \fB/usr/joe/tcl8.0\fR then
+\fB::cfg::configDir\fR is set to \fB/usr/joe/config\fR.
+After computing these settings, \fB::cfg::init\fR sources the main
+configuration file and stores the settings defined therein for future use.
+.PP
+\fB::cfg::allowed \fIlogToken config section arg arg...\fR
+.PP
+Applications invoke \fB::cfg::allowed\fR to check whether a specific
+configuration option is allowed.
+It checks in the configuration \fIconfig\fR and section \fIsection\fR
+whether the supplied arguments are allowed.
+The syntax of configuration files is explained in the next sections; here
+we briefly review how \fB::cfg::allowed\fR decides whether a combination of
+arguments is allowed. See the documentation below for an explanation of the
+\fBallow\fR and \fBdisallow\fR statements.
+.PP
+The \fIlogToken\fR must be a valid token for \fB::browser::iget\fR to use
+to retrieve attributes.
+See the \fBplugin\fR manual page for a discussion of \fB::brower::iget\fR.
+By convention, most callers of \fB::cfg::allowed\fR give the name of the
+interpreter in which a Tclet is executing as the value of \fIlogToken\fR when
+the caller is configuring access permissions on behalf of that Tclet.
+As explained below, this is used during the matching process to provide
+values for predefined variables that can be used to parameterize a match.
+.PP
+The call to \fB::cfg::allowed\fR returns \fB1\fR if the section
+\fIsection\fR contains at least one \fBallow\fR statement whose arguments
+match the arguments supplied in the call, and if the section contains no
+\fBdisallow\fR statement whose arguments match the call's arguments.
+If the section \fIsection\fR was not found, or
+if no matching \fBallow\fR statement is found, or if a matching
+\fBdisallow\fR statement is found, \fB::cfg::allowed\fR returns \fB0\fR.
+The rules for matching call arguments with arguments of \fBallow\fR and
+\fBdisallow\fR statements are explained the section on \fBARGUMENT
+MATCHING\fR.
+.PP
+\fB::cfg::getConstant \fIlogToken config section name\fR
+.PP
+Applications invoke \fB::cfg::getConstant\fR to get the value of a named
+constant declared with a \fBconstant\fR statement in the section
+\fIsection\fR in the configuration \fIconfig\fR.
+If a constant by that name was not declared in the section \fIsection\fR in
+the configuration \fIconfig\fR, the call returns an error.
+The \fBconstant\fR statement is explained below, in the section
+\fBCONSTANT\fR.
+
+.SH "CONFIGURATIONS AND CONFIGURATION FILES"
+.PP
+Configurations are named collections of configuration statements, organized
+in sections.
+Configurations are stored in configuration files, whose name is
+\fIconfiguration\fB.cfg\fR.
+Configuration files are stored on the local file system in the directory
+\fB::cfg::configDir\fR.
+For the Tcl plugin, this is the \fBconfig\fR directory in the plugin
+runtime library directory tree, as explained in the \fBplugin\fR manual
+page.
+.PP
+Configuration are Tcl scripts, and they are sourced into the master
+interpreter of an application.
+The syntax and organization of configuration files has been designed to be
+as readable as possible for humans who may not be expert Tcl programmers.
+.PP
+When an application starts, the configuration package reads the
+configuration for the application to control how the application operates.
+The name of the application is available (and can be stored into)
+\fB::cfg::name\fR.
+For the Tcl plugin, the application name is \fBplugin\fR, and the
+configuration file is \fBplugin.cfg\fR.
+.PP
+The following four sections, \fBSECTION\fR, \fBALLOW\fR, \fBDISALLOW\fR and
+\fBCONSTANT\fR, describe the main configuration statements that can appear
+in a configuration.
+
+.SH SECTION
+.PP
+A configuration is organized into named sections.
+Each section starts with a \fBsection\fR statement, and is followed by
+other configuration statements.
+A section lasts until the next \fBsection\fR statement, and it scopes all
+the following configuration statements to this section.
+.PP
+The word \fBsection\fR in a section statement is followed by an arbitrary
+number of other words that together make up the name of the section.
+Configuration statements in a section must contain the same number of
+arguments as
+
+.SH ALLOW
+.PP
+\fBallow \fIarg arg...\fR
+.PP
+The \fBallow\fR statement specifies that a call to \fBcfg::allowed\fR with
+matching arguments returns \fB1\fR if no matching \fBdisallow\fR
+statements appear in this section.
+The section on \fBARGUMENT MATCHING\fR explains the syntax of arguments to
+\fBallow\fR and the rules for matching
+arguments in the \fBallow\fR statement with arguments given in the call to
+\fB::cfg::allowed\fR.
+.PP
+Each \fBallow\fR statement must have the same number of arguments as the
+name of the section in which it occurs.
+Thus, an \fBallow\fR statement in a section named \fBhosts ports\fR must
+have exactly two arguments.
+
+.SH DISALLOW
+.PP
+\fBdisallow \fIarg arg...\fR
+.PP
+The \fBdisallow\fR statements says that a call to \fBcfg::allowed\fR with
+matching arguments returns \fB0\fR.
+See the section on \fBARGUMENT MATCHING\fR for an explanation of the
+matching rules and the supported syntax for arguments.
+.PP
+Each \fBdisallow\fR statement must have the same number of arguments as the
+name of the section in which it appears.
+Thus, a \fBdisallow\fR statement in a section named \fBredhex greenhex
+bluehex\fR must have exactly three arguments.
+
+.SH CONSTANT
+.PP
+\fBconstant \fIname value\fR
+.PP
+The \fBconstant\fR statement declares a constant with name \fIname\fR and
+value \fIvalue\fR in this section.
+The value can be retrieved through a call to \fB::cfg::getConstant\fR.
+
+.SH "ARGUMENT MATCHING"
+.PP
+The arguments in a call to \fB::cfg::allowed\fR are matched against the
+arguments of an \fBallow\fR or \fBdisallow\fR statement according to the
+following rules:
+.IP
+Arguments are matched from left to right. Matching stops as soon as a
+mismatch is found.
+If no mismatch is found, a match is found.
+If matching runs out of arguments in the call to \fB::cfg::allowed\fR, the
+rest of the arguments in the statement are evaluated as a Tcl expression,
+and a match is found if the result is not \fB0\fR.
+.IP
+Label each argument to \fB::cfg::allowed\fR as \fIa\fR, and each
+corresponding argument in a statement as \fIc\fR.
+.IP
+If \fIc\fR and \fIa\fR are equal as determined by \fBstring equal\fR,
+matching proceeds to the next argument.
+.IP
+If \fIc\fR matches \fIa\fR when used as pattern in \fBstring match\fR,
+matching proceeds to the next argument.
+.IP
+If \fIc\fR is of the form \fBn1\-n2\fR, \fIn1\fR and \fIn2\fR are numbers,
+\fIn1\fR is less than or equal to \fIn2\fR, and \fIa\fR is a number less
+than or equal to \fIn2\fR and greater than or equal to \fIn1\fR, matching
+proceeds to the next argument.
+.IP
+If \fIc\fR is of the form \fB>n\fR, \fIn\fR is a number and \fIa\fR is a
+number greater than \fIn\fR, matching proceeds to the next argument.
+.IP
+If \fIc\fR is of the form \fB<n\fR, \fIn\fR is a number and \fIa\fR is a
+number less than \fIn\fR, matching proceeds to the next argument.
+.IP
+Otherwise a mismatch is found.
+.PP
+If the matching process runs out of arguments in the call to
+\fB::cfg::allowed\fR, the rest of the arguments to the statements are
+collected and evaluated as a Tcl expression.
+If the evaluation returns \fB0\fR or an error occurs, a mismatch is found.
+Otherwise, a match is found.
+.PP
+Several special forms are provided to express common cases in \fBallow\fR
+and \fBdisallow\fR statements:
+.TP
+\fBwhen \fIexpression\fR
+This evaluates to \fB1\fR if the value of \fIexpression\fR as computed by
+\fBexpr\fR is not \fB0\fR.
+.TP
+\fBunless \fBexpression\fR
+This evaluates to \fB0\fR if the value of \fIexpression\fR as computed by
+\fBexpr\fR is not \fB0\fR.
+.TP
+\fBifallowed \fIsection arg arg...\fR
+This evaluates to \fB1\fR if the arguments are recursively allowed in the
+section \fIsection\fR, and to \fB0\fR if they are not allowed.
+If the section is specified as \fIconfig\fR\fB/\fR\fIsection\fR
+the section will be looked up in the given \fIconfig\fR instead of the current
+one by default.
+.PP
+The arguments in an \fBallow\fR or \fBdisallow\fR statement are substituted
+using \fBsubst\fR before they are matched against corresponding arguments
+in \fB::cfg::allowed\fR.
+The matching process provides several Tcl variables that have values
+retrieved from the attributes by the same name associated with the
+\fIlogToken\fR in the call to \fB::cfg::allowed\fR.
+As was explained above, by convention the \fIlogToken\fR is the name of an
+interpreter in which a Tclet is executed.
+Thus during a call to \fB::cfg::allowed tclet1 ...\fR, the value of
+the Tcl variable \fBoriginURL\fR is the canonical form of the URL from
+which the Tclet \fItclet1\fR was loaded.
+The variables \fBoriginURL\fR, \fBoriginPageURL\fR, \fBoriginHomeDirURL\fR,
+\fBoriginProto\fR, \fBoriginHost\fR, \fBoriginSocketHost\fR,
+\fBoriginPort\fR, \fBoriginPath\fR, \fBoriginKey\fR, \fBbrowserArgs\fR,
+\fBscript\fR, \fBwindowGeometry\fR, \fBcompleteWindowGeometry\fR,
+\fBapiVersion\fR, \fBuserAgent\fR and \fBTk\fR are predefined and will have
+useful values during the match process.
+These variables and their meanings are explained in the \fBplugin\fR manual
+entry.
+
+.SH EXAMPLE
+.PP
+The following example is the actual configuration file for the \fBhome\fR
+policy, interspersed with explanatory comments.
+It is one of the more complicated configuration files shipped with the Tcl
+plugin.
+.PP
+.CS
+section features
+allow   url
+allow   network
+allow   persist unless {[string match {UNKNOWN *} [getattr originURL]]}
+.CE
+.PP
+This section is where the policy declares which features it wants to
+install.
+The third \fBallow\fR statement says that the \fBpersist\fR feature should
+be installed unless the \fBoriginURL\fR attribute of the Tclet matches
+\fBUNKNOWN\fR.
+The pattern \fBUNKNOWN\fR is inserted in canonical URLs if any of the parts
+of the URL can not be canonicalized.
+Thus this statement prevents the \fBpersist\fR feature from being used by
+Tclets whose origin cannot fully be determined.
+.PP
+.CS
+section aliases
+allow   socket
+allow   fconfigure
+allow   open
+allow   file
+allow   close
+allow   puts
+allow   tell
+allow   seek
+allow   ::browser::getURL
+allow   ::browser::displayURL
+allow   ::browser::getForm
+allow   ::browser::displayForm
+allow   ::browser::status
+.CE
+.PP
+This section defines which aliases are installed by the policy into the
+interpreter in which the Tclet is executing.
+Each \fBallow\fR statement matches exactly one string, the name of an alias
+to install.
+.PP
+.CS
+section urls
+allow   $originHomeDirURL*
+.CE
+.PP
+The single \fBallow\fR statement in the \fBurls\fR section allows URLs
+whose directory portion matches the directory portion of the URL from which
+the Tclet was loaded.
+For example, if \fBoriginHomeDirURL\fR is
+\fBhttp://sunlabs.sun.com:80/usr/home/joe\fR then
+\fBhttp://sunlabs.sun.com:80/usr/joe/tclets/tclet1.html\fR matches,
+but \fBhttp://sunlabs.sun.com:80/usr/jacob/tclets/tclet1.html\fR does not
+match.
+Note that the caller must ensure that only canonical URLs are used in the
+matching process, otherwise unintentional matches may occur which lead to
+security holes.
+For example, the above \fBoriginHomeDirURL\fR matches
+\fBhttp://sunlabs.sun.com:80/usr/joe/../jacob/tclets/tclet1.html\fR.
+Converting all URLs to a canonical form takes care of this by eliminating
+the \fB..\fR.
+.PP
+.CS
+section hosts ports
+allow   $originSocketHost >1024
+.CE
+This \fBallow\fR statement matches a call to \fB::cfg::allowed\fR if the
+arguments are respectively the name of the host on which the server resides
+from which the Tclet was loaded, and a number greater than \fB1024\fR.
+This section is used in the \fBhome\fR policy to control access to ports on
+the home host via the \fBsocket\fR command.
+
+.SH "SEE ALSO"
+safe(n), policy(n), plugin(n)
+
+.SH KEYWORDS
+allowed, allow, disallow, constant, configuration, Safe Base, Tclet

@@ -1,0 +1,120 @@
+/* 
+ * nplog.c --
+ *
+ *	File based logging for the Tcl plugin.
+ *
+ * CONTACT:		sunscript-plugin@sunscript.sun.com
+ *
+ * AUTHORS:		Jacob Levy			Laurent Demailly
+ *			jyl@eng.sun.com			demailly@eng.sun.com
+ *			jyl@tcl-tk.com			L@demailly.com
+ *
+ * Please contact us directly for questions, comments and enhancements.
+ *
+ * Copyright (c) 1995-1997 Sun Microsystems, Inc.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+ *
+ * SCCS: @(#) nplog.c 1.8 97/11/04 19:02:22
+ */
+
+#include "np.h"
+
+#ifdef	NP_LOG
+/*
+ * Static variables in this file:
+ */
+
+static FILE *logFile = NULL;
+
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * NpLog --
+ *
+ *	Logs a message to a file.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	Logs a message to a file, opens the file in append mode if it
+ *	is not open yet.
+ *
+ *----------------------------------------------------------------------
+ */
+
+	/* VARARGS ARGSUSED */
+void
+NpLog(format, a1, a2, a3)
+    CONST char *format;
+    int a1, a2, a3;
+{
+    /*
+     * Prevent crash if we stopped logging or could not open the file.
+     */
+    
+    if (logFile != NULL) {
+	unsigned long TclpGetClicks _ANSI_ARGS_((void));
+	fprintf(logFile, "[%lu] ",  TclpGetClicks());
+        fprintf(logFile, format, a1, a2, a3);
+        fflush(logFile);
+    }
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * NpStartLog --
+ *
+ *	Initializes logging. Called from NPP_Initialize to be able to
+ *	log as soon as possible.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	Opens a file in append mode and potentially creates the file.
+ *
+ *----------------------------------------------------------------------
+ */
+
+void
+NpStartLog(filename)
+    CONST char *filename;
+{
+    if (logFile == NULL) {
+        logFile = fopen(filename, "a");
+        NpLog("Log started\n", 0, 0, 0);
+    }
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * NpStopLog --
+ *
+ *	Stops logging, and closes the file.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	Closes the file.
+ *
+ *----------------------------------------------------------------------
+ */
+
+void
+NpStopLog()
+{
+    if (logFile != NULL) {
+        NpLog("Log stopped\n", 0, 0, 0);
+        fclose(logFile);
+        logFile = NULL;
+    }
+}
+
+#endif	/* NP_LOG */    

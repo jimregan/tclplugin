@@ -1,0 +1,128 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) unsafe.n 1.6 97/10/10 12:56:41
+'\" 
+.so man.macros
+.TH "unsafe" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+unsafe \- Restore a Safe-Tcl interpreter to a trusted, unsafe state.
+.BE
+
+.SH DESCRIPTION
+.PP
+The \fBunsafe\fR feature is added to a Safe\-Tcl interpreter by a security
+policy that allows the feature.
+This policy is called the \fBcontrolling\fR security policy, below.
+The \fBunsafe\fR feature restores a Safe\-Tcl interpreter to a trusted,
+unsafe state.
+It re\-enables all commands that were previously disabled, and restores
+important variables that were previously removed.
+After it is installed in an interpreter, a Tclet executing in that
+interpreter has complete access to all facilities provided by the Tcl
+language.
+.PP
+The section \fBFEATURES\fR describes exactly what is restored.
+The section \fBCONFIGURATION\fR explains how access to the feature can be
+managed by settings in the configuration for the controlling policy, and by
+settings in the application's master configuration.
+The section \fBSECURITY\fR discusses the security risks incurred by installing
+this feature and how to manage these risks by proper configuration.
+
+.SH FEATURES
+.PP
+The \fBunsafe\fR feature restores a Safe\-Tcl interpreter to a completely
+trusted, unsafe state:
+.IP
+The Safe\-Tcl interpreter is marked as unsafe, so future calls to \fBinterp
+issafe\fR will return \fB0\fR.
+The \fBinterp\fR manual page that is included in the Tcl 8.0 distribution
+describes the \fBinterp\fR command and how to use multiple interpreters.
+.IP
+Hidden commands are exposed and aliases by the same name are removed, if
+allowed by the controlling security policy.
+Hidden commands are explained in the \fBinterp\fR manual page.
+.IP
+The global variables whose name appears in the value of
+\fB::cfg::RestoreVariables\fR are copied from the master interpreter into
+the Safe\-Tcl interpreter, if allowed by the controlling policy.
+By default, the variables \fBauto_path\fR, \fBtcl_library\fR,
+\fBtk_library\fR, \fBtcl_pkgPath\fR, \fBargc\fR, \fBargv\fR and \fBargv0\fR
+are copied.
+.IP
+The global arrays whose name appears in the value of
+\fB::cfg::RestoreArrayVariables\fR are copied from the master interpreter
+into the Safe\-Tcl interpreter, if allowed by the controlling policy.
+By default, the arrays \fBenv\fR, \fRauto_index\fR and \fBtcl_platform\fR
+are copied.
+.IP
+The Tcl command \fBauto_reset\fR is evaluated in the Safe\-Tcl interpreter,
+to force it to notice the new values for \fBauto_path\fR and other
+variables.
+This command is explained in the \fBlibrary\fR manual page that comes with
+the Tcl 8.0 distribution.
+.PP
+
+.SH CONFIGURATION
+.PP
+The \fBunsafe\fR feature is installed by a security policy if the
+\fBfeatures\fR section of the configuration for the policy allows it.
+The \fBtrusted\fR policy allows this feature, so it will be installed into
+Tclets using the \fBtrusted\fR policy.
+.PP
+The variables \fB::cfg::RestoreVariables\fR and
+\fB::cfg::RestoreArrayVariables\fR determine which global variables are
+copied from the master interpreter into a Tclet's interpreter when the
+\fBunsafe\fR feature is installed.
+These variables can be set in the application's master configuration, or
+you can rely on the default lists used if they are not set, as explained
+above.
+For the Tcl plugin, the variables are left unset, and the plugin relies on
+the defaults.
+.PP
+The \fBrestoreCommands\fR section controls which hidden commands are
+re\-exposed.
+If the name of a hidden command is allowed in this section, it is
+re\-exposed when this feature is installed into a Safe\-Tcl interpreter.
+.PP
+The \fBrestoreVariables\fR section controls which global variables are
+copied from the master interpreter into a Tclet.
+If the name of a global variable is allowed in this section, it is copied.
+.PP
+The \fBrestoreArrayVariables\fR section controls which global array
+variables are copied from the master interpreter into a Tclet.
+If the name is allowed by this section, the array is copied when the
+feature is installed into a Safe\-Tcl interpreter.
+.PP
+The \fBmarkTrusted\fR section defines the \fBmarkTrusted\fR constant.
+If this is set to \fB1\fR, when the feature is installed, the Tclet
+interpreter will be marked as trusted.
+This disables hard\-wired safety checks in Tcl 8.0 and Tk 8.0 which would
+otherwise prevent the Tclet from using some features.
+
+.SH SECURITY
+.PP
+This feature restores a Safe\-Tcl interpreter to a state where a Tclet can
+do anything an ordinary Tcl program can do.
+This exposes the user to all of the security risks explained in the
+\fBpolicy\fR manual page.
+Allowing access to this feature to untrusted Tclets is dangerous;
+some level of trust should be established before a Tclet is given access to
+the \fBunsafe\fR feature.
+In a controlled setting such as a company's Intranet, it may be safe to
+give access to selected Tclets loaded from well known sites on the Intranet.
+.PP
+This feature is allowed only by the \fBtrusted\fR security policy, and
+in the Tcl plugin, that security policy is disallowed by settings in the
+\fBpolicies\fR section in the plugin's master configuration.
+
+.SH "SEE ALSO"
+plugin(n), safe(n), policy(n), config(n), feature(n), interp(n).
+
+.SH KEYWORDS
+Safe Base, restoring, unsafe, trusted, alias, hidden command

@@ -1,0 +1,99 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) trusted.n 1.13 97/10/10 12:55:41
+'\" 
+.so man.macros
+.TH "trusted" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+trusted \-  The trusted security policy.
+.SH SYNOPSIS
+.sp
+\fBpolicy trusted\fR
+.BE
+
+.SH DESCRIPTION
+.PP
+The \fBtrusted\fR security policy installs features into a Safe\-Tcl
+interpreter that restore it to a fully trusted, unsafe state.
+A Tclet running in such an interpreter is able to perform any action a
+regular, trusted Tcl program could have performed.
+This policy enables dangerous features that, if used properly, can allow
+Tclets to be the basis for powerful and compelling we enabled applications.
+.PP
+The features installed by the \fBtrusted\fR policy are described in the
+\fBFEATURES\fR section.
+The \fBCONFIGURATION\fR section describes how to enable or disable the use
+of this policy by Tclets and the resources that are controlled by the
+policy's configuration.
+Security issues are discussed in the manual page for each installed feature.
+
+.SH FEATURES
+.PP
+The \fBtrusted\fR policy installs all the features that are mentioned in
+\fB::cfg::featureList\fR in the order in which they appear in the list.
+For the Tcl plugin, the policy installs the \fBurl\fB, \fBstream\fR,
+\fBnetwork\fR, \fBpersist\fR and \fBunsafe\fR features, in that order.
+If you installed more features into your installation of the Tcl plugin,
+the new features will also be installed into a Tclet using this policy.
+See the manual page for each feature to learn what facilities are provided
+by the feature.
+
+.SH CONFIGURATION
+.PP
+The \fBpolicies\fR section of the application's master configuration
+controls whether Tclets can use the \fBtrusted\fR policy.
+If it is not allowed by this section, Tclets hosted in this application
+can not use the \fBtrusted\fR policy.
+For the Tcl plugin, by default the policy is disabled.
+Edit \fBplugin.cfg\fR in the \fB::cfg::configDir\fR directory to modify
+this setting.
+The \fBconfig\fR manual page describes configuration management and the
+syntax and organization of configurations.
+.PP
+The \fBtrusted\fR policy uses a configuration stored in \fBtrusted.cfg\fR
+in the \fB::cfg::configDir\fR directory.
+The configuration has these sections:
+.TP
+\fBfeatures\fR
+This section selects the features that are installed by the policy.
+The \fBtrusted\fR policy allows all features of the application to be
+installed into a Tclet.
+.TP
+\fBaliases\fR
+The aliases of all installed features are enabled in this section.
+.TP
+\fBurls\fR
+All URLs can be used in aliases provided by the \fBurl\fR feature.
+.TP
+\fBrestoreCommands\fR
+This section allows all hidden commands to be re\-exposed.
+.TP
+\fBrestoreVariables\fR
+All variables whose name appears in the value of
+\fB::cfg::RestoreVariables\fR are copied from the master interpreter into a
+Tclet.
+.TP
+\fBrestoreArrayVariables\fR
+The same as \fBrestoreVariables\fR, except that these are array variables.
+.TP
+\fBmarkTrusted\fR
+This section defines the constant \fBmarkTrusted\fR to \fB1\fR, which
+causes the Tclet interpreter to be marked as trusted.
+This disables hard\-wired checks for safety in Tcl 8.0 and Tk 8.0, which
+would otherwise prevent the Tclet from using some features.
+
+.SH "SEE ALSO"
+.PP
+safe(n), policy(n), config(n), plugin(n), url(n), persist(n), network(n),
+stream(n), unsafe(n)
+
+.SH KEYWORDS
+.PP
+Safe\-Tcl, alias, network, socket, URL, persistent local storage,
+JavaScript, unsafe features, electronic mail

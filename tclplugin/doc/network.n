@@ -1,0 +1,171 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) network.n 1.2 97/10/09 08:55:36
+'\" 
+.so man.macros
+.TH "network" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+network \-  Network communication using sockets for Safe-Tcl.
+.SH SYNOPSYS
+.sp
+\fBsocket \fIhost port\fR
+.sp
+\fBfconfigure \fIchannel \fR?\fIoptions...\fR?
+.BE
+
+.SH DESCRIPTION
+.PP
+The \fBnetwork\fR feature is installed into a Safe-Tcl interpreter by
+a security policy that enables this feature.
+This policy is called the \fBcontrolling\fR security policy, below.
+The \fBnetwork\fR feature adds aliases to a Safe-Tcl interpreter to allow it
+to connect to remote services via network sockets.
+.PP
+The procedures that are provided by this feature are described in the
+\fBPROCEDURES\fR section, and the settings that control the behavior
+of these procedures at runtime are explained in the \fBCONFIGURATION\fR
+section.
+The security implications of this feature are discussed in the section
+\fBSECURITY\fR.
+
+.SH PROCEDURES
+.PP
+The \fBnetwork\fR feature provides several aliases to an interpreter into
+which the feature is installed.
+.TP
+\fBsocket \fIhost port\fR
+The \fBsocket\fR procedure opens a client network connection using the
+TCP protocol to a service
+running on the remote host \fIhost\fR and listening on the port \fIport\fR.
+Only client sockets are supported, and no client side options are
+supported.
+For a description of the full \fBsocket\fR command, see the
+\fBsocket\fR manual page that is included with the Tcl 8.0 distribution.
+The \fIhost\fR can be a network name such as \fBwww.sun.com\fR, or a
+network address such as \fB129.23.102.34\fR, or it can be the empty
+string to denote the host from which the Tclet was loaded.
+This allows a Tclet to connect back to the host it came from without
+having to have this information encoded in the Tclet itself.
+Only numeric ports are supported; this limited version of the
+\fBsocket\fR command does not support connecting to services by name.
+The \fBsocket\fR command returns the name of the new socket channel.
+.TP
+\fBfconfigure \fIsock \fR?\fIoptions...\fR?
+This limited version of the \fBfconfigure\fR command disables the
+\fB\-peername\fR option of the full command.
+All other options are fully supported.
+See the \fBfconfigure\fR manual entry that comes with the Tcl 8.0
+distribution for a description of the options supported by this
+command.
+
+.SH CONFIGURATION
+.PP
+The \fBsocket\fR command opens connections to hosts and ports allowed
+by settings in the \fBhosts ports\fR section of the configuration for
+the controlling security policy.
+Here is a hypothetical example:
+.PP
+.CS
+section   hosts            ports
+allow     www.sun.com      >1024
+disallow  *.cs.mysite.edu  <1025
+allow     *.cs.mysite.edu  1030
+.CE
+.PP
+This configuration allows sockets to be opened on ports whose number
+is greater than \fB1024\fR on \fBwww.sun.com\fR.
+It also disallows connections to any ports whose number is less
+than \fB1025\fR on all hosts in the network domain
+\fBcs.mysite.edu\fR.
+It also allows connections to services running on the well known port
+\fB1030\fR on all hosts in the network domain \fBcs.mysite.edu\fR.
+
+.SH SECURITY
+.PP
+This section discusses the risks inherent in the \fBnetwork\fR feature
+and how to reduce these risks.
+.PP
+Network sockets allow a Tclet to connect to remote resources that
+are not under the client's control and which are not administered by
+the client.
+This poses a privacy risk because information that the
+Tclet gleans from the client's host may be disclosed to other
+parties not under the client's control.
+You must carefully consider the risks when combining this feature with
+other features, especially those that allow access to local resources
+such as files stored on the local file system.
+.PP
+There is no limit on the number of sockets that a Tclet can open at
+any one time.
+This can be used by malicious or erroneous Tclets to mount resource
+attacks, to cause the hosting applications to run out of network
+resources or file descriptors.
+When this happens, no other sub\-system running in the hosting
+application will be able to make network connections using sockets.
+In the Tcl plugin,
+if the Tclet is executing in an external process and not in the
+address space of the hosting browser, only the external process runs
+out of network resources, while the hosting browser continues to be
+able to connect to remote sites.
+See the \fBplugin\fR manual entry for more details.
+.PP
+A socket can be maliciously or mistakenly be put into blocking mode,
+by using the \fBfconfigure\fR command.
+Sockets are in blocking mode when they are first opened with the
+\fBsocket\fR command.
+If the Tclet tries to read from the socket when there is no input
+available, or if it tries to write when the output buffer is
+full, the Tclet can block the entire hosting application.
+In the Tcl plugin,
+if a Tclet is executing in an external process and not in the address
+space of the hosting browser, only the external process is blocked and
+the browser continues to function normally.
+Thus this only affects other Tclets that may be executing at the same
+time.
+.PP
+Another risk incurred by the \fBnetwork\fR feature is a risk to your
+reputation.
+If you allow a Tclet to connect to the \fBSMTP\fR or \fBNNTP\fR
+services on any host, the Tclet can forge news articles or send
+electronic mail using your name.
+These articles, which appear to be from you, could contain damaging
+statements that you yourself would never write.
+.PP
+You can minimize these risk by carefully curtailing the hosts and
+ports to which a Tclet can connect in the \fBhosts ports\fR section of
+the configuration for the security policy used by the Tclet.
+Note that you should never allow connections to redirecting services
+such as \fBFTP\fR or \fBHTTP\fR proxy services,
+because you effectively lose control over which hosts the Tclet can
+connect to.
+Unless you have reason to trust the Tclet, you should probably also
+disallow connections to the \fBNNTP\fR and \fBSMTP\fR services on any
+hosts.
+.PP
+Carefully examine the set of hosts to which a connection can be made
+when specifying wildcards and patterns for host names in the
+configuration.
+Find out exactly what hosts are included or excluded by each pattern. 
+.PP
+To minimize the chances of incorrect configuration, the \fBnetwork\fR
+feature allows only connections to numeric ports and not to named
+services.
+This eliminates the possibility that a service would be
+disallowed by name but is port would be allowed.
+.PP
+If you do not have complete control over the accessible services
+executing on a host, avoid numeric ranges (e.g. \fB>1024\fR or
+\fB3000\-4000\fR) in \fBallow\fR statements.
+
+.SH "SEE ALSO"
+plugin(n), socket(n), policy(n), config(n), fconfigure(n), safe(n)
+
+.SH KEYWORDS
+configuration, Safe Base, Safe-Tcl, aliases, multiple interpreters, policy,
+sockets

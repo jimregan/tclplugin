@@ -1,0 +1,231 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) url.n 1.7 97/11/13 23:56:03
+'\" 
+.so man.macros
+.TH "url" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+url \-  URL fetching and display feature for Safe Tcl.
+.SH SYNOPSYS
+.sp
+\fB::browser::status \fImessage\fR
+.sp
+\fB::browser::getURL \fIURL \fI?timeOut\fR? ?\fInewCallback\fR?
+?\fIwriteCallback\fR? ?\fIendCallback\fR?
+.sp
+\fB::browser::displayURL \fIURL frameName\fR
+.sp
+\fB::browser::getForm \fIURL data \fR?\fIraw\fR? ?\fItimeOut\fR?
+?\fInewCallback\fR? ?\fIwriteCallback\fR? ?\fIendCallback\fR?
+.sp
+\fB::browser::displayForm \fIURL frameName data \fR?\fIraw\fR?
+.BE
+
+.SH DESCRIPTION
+.PP
+The \fBurl\fR feature is installed into a Safe\-Tcl interpreter by
+a security policy that enables the feature.
+This policy is called the \fBcontrolling\fR security policy, below.
+The \fBurl\fR feature adds aliases to a Safe\-Tcl interpreter to allow it to
+fetch URLs over a network, post to forms, display the contents of URLs and
+responses from forms, and to show a status message in the hosting
+application's status bar.
+.PP
+The procedures that are provided by the \fBurl\fR feature are described in
+the sections \fBPROCEDURES\fR and \fBCALLBACKS\fR, and the settings that
+control the behavior of these procedures at runtime are explained in the
+\fBCONFIGURATION\fR section.
+The \fBSECURITY\fR section discusses the risks associated with this
+feature and how to minimize them through proper configuration.
+
+.SH PROCEDURES
+.PP
+The \fBurl\fR feature provides several aliases to an interpreter into which
+the feature is installed. Some of these take callbacks as arguments; the
+exact syntax and semantics of these callbacks is explained in the next
+section, titled \fBCALLBACKS\fR.
+.PP
+For those operations taking URLs as arguments, the requested URL must be
+allowed in the \fBurls\fR section of the controlling policy's
+configuration.
+All procedures that accept URL arguments internally canonicalize these
+URLs, to remove \fB..\fR in the path specification and prevent other
+attempts to access resources outside those allowed by the controlling policy.
+See the manual page for each policy and the \fBconfig\fR manual page for
+details on configuration management, as well as the section
+\fBCONFIGURATION\fR below.
+If the requested URL is disallowed, the operation returns an error.
+.TP
+\fB::browser::status \fImessage\fR
+The \fImessage\fR, a string of any length, is displayed in the status bar
+of the hosting application.
+In the Tcl plugin, the message appears in the hosting browser's status bar
+window at the bottom of the browser window.
+Some applications may at various times replace the displayed message with
+new information as significant events occur.
+The status bar is shared among all sub\-systems running within the
+application and the message posted with \fB::browser::status\fR may be
+replaced by another sub\-system at any time.
+.TP
+\fB::browser::getURL \fIURL \fR?\fItimeOut\fR? ?\fInewCallback\fR?\ ?\fIwriteCallback\fR?\ ?\fIendCallback\fR?
+This procedure fetches the contents of a URL \fIURL\fR and calls various
+callbacks during the operation.
+If no \fIendCallback\fR was given, the operation blocks until the complete
+contents of \fIURL\fR have been fetched or until the operation is aborted
+or times out.
+The optional \fItimeOut\fR argument specifies a length of time in
+milliseconds to wait or block before timing out.
+If no timeout is given, a default timeout is used.
+The optional \fInewCallback\fR argument specifies a callback to call when
+the contents of \fIURL\fR start to arrive from the network.
+The optional \fIwriteCallback\fR argument specifies a callback to call each
+time a part of the contents of \fIURL\fR arrives from the network.
+The optional \fIendCallback\fR argument specifies a callback to call when
+the entire contents of \fIURL\fR have arrived, or when the operation is
+aborted or times out.
+Thus, when the data starts to arrive, the \fInewCallback\fR is called once,
+then for each subsequent part of the data \fIwriteCallback\fR is called,
+and finally \fIendCallback\fR is called once.
+If no data ever arrives, \fIendCallback\fR is guaranteed to be called
+when the operation times out.
+If the call is blocking, it returns the data fetched from \fIURL\fR.
+If the call is non\-blocking, it returns \fIendCallback\fR.
+.TP
+\fB::browser::displayURL \fIURL frame\fR
+Displays the contents of \fIURL\fR in a frame \fIframe\fR.
+This operation may create new top level frames in the hosting application.
+The operation is asynchronous and the invoking interpreter does not have
+access to the contents of \fIURL\fR.
+Several frame names have special meaning: \fB_self\fR and \fB_current\fR
+cause the hosting application to replace the contents of the frame
+containing the Tclet with the result.
+\fB_blank\fR always create new frames to display the result.
+\fB_top\fR causes the hosting application to replace the contents of the
+top\-most frame in an application\-specific hierarchy to be replaced with
+the result. \fB_parent\fR is the parent frame.
+.TP
+\fB::browser::getForm \fIURL data \fR?\fIraw\fR? ?\fItimeOut\fR? ?\fInewCallback\fR?\ ?\fIwriteCallback\fR?\ ?\fIendCallback\fR?
+This procedure posts \fIdata\fR to a remote service identified by \fIURL\fR
+and receives the result.
+If \fIraw\fR is zero or ommitted, the \fIdata\fR is taken to be unprotected
+and it is encoded to protect special characters such as spaces during
+transmission; in that case, \fIdata\fR should be a list of
+alternating field names and values.
+If \fIraw\fR is non\-zero, the \fIdata\fR is taken to already be encoded.
+The optional \fItimeOut\fR, \fInewCallback\fR, \fIwriteCallback\fR and
+\fIendCallback\fR arguments have the same meaning as in
+\fB::browser::getURL\fR.
+The operation is blocking if no \fIendCallback\fR is given and returns the
+result of posting the data to the form.
+If the operation is non\-blocking then \fIendCallback\fR.
+.TP
+\fB::browser::displayForm \fIURL frame data \fR?\fIraw\fR?
+This procedure posts \fIdata\fR to a remote service identified by \fIURL\fR
+and displays the result in a frame \fIframe\fR.
+The \fIraw\fR argument has the same meaning as for \fB::browser::getForm\fR.
+The special frame names described that can be used in
+\fB::browser::displayURL\fR have the same meaning for
+\fB::browser::displayForm\fR.
+
+.SH CALLBACKS
+.PP
+The \fBurl\fR feature defines several non\-blocking procedures that
+retrieve the contents of URLs or the results of computations by remote
+services.
+.TP
+\fBnewCallback \fIname stream URL mimeType lastModified size\fR
+The \fBnewCallback\fR callback is invoked to inform a Tclet that data is
+starting to arrive for the requested \fIURL\fR.
+This \fIURL\fR may have been requested in a call to \fB::browser::getURL\fR
+or \fB::browser::getForm\fR.
+The \fIname\fR argument is the name of the
+Tclet that issued the request that generates this stream, and
+the \fBstream\fR argument contains the name of the new stream.
+The \fImimeType\fR indicates the mime type associated with the data, and
+the expected size of the data is \fIsize\fR bytes.
+The \fIlastModified\fR argument contains the time at which the document was
+last modified, in seconds since midnight, January 1, 1970.
+.TP
+\fBwriteCallback \fIname stream size data\fR
+The \fBwriteCallback\fR callback is invoked repeatedly as parts of the data
+for \fIstream\fR arrive.
+The name of the requesting Tclet is passed in the \fIname\fR argument, and
+the size in bytes of the current part of the data is passed in \fIsize\fR.
+.TP
+\fBendCallback \fIname stream reason data\fR
+The \fIendCallback\fR callback is invoked when all the data has arrived on
+\fIstream\fR, the operation that caused the stream to be sent has timed
+out, or the operation was cancelled or caused an error.
+The exact reason for calling \fBendCallback\fR is passed in \fIreason\fR;
+it is one of the strings \fBEOF\fR, \fBNETWORK_ERROR\fR, \fBUSER_BREAK\fR
+or \fBTIMEOUT\fR.
+The name of the Tclet that requested this stream is \fIname\fR, and
+whatever data was received until the callback is invoked is passed in
+\fIdata\fR.
+
+.SH CONFIGURATION
+.PP
+The configuration options for the \fBurl\fR feature are contained in the
+configuration for the controlling policy, in the section \fBurls\fR
+and \fBframes\fR.
+The \fBurls\fR section contains \fBallow\fR and \fBdisallow\fR statements 
+that define
+exactly what URLs are allowed in procedures such as
+\fB::browser::getURL\fR. The \fBframes\fR section specifies 
+which frames are allowed in procedures
+such as \fB::browser::displayURL\fR. The configuration variable
+\fBmaxFrames\fR controls the global total number of frames that the
+tclets can access.
+For an explanation of configurations and policies, see the \fBconfig\fR and
+\fBpolicy\fR manual pages, respectively.
+The location of these configuration files is governed by the value of
+\fB::cfg::configDir\fR, as explained in the \fBplugin\fR manual page.
+.PP
+For example, the following \fBurls\fR section from the configuration file
+for the \fBhome\fR policy only allows URLs if they refer to resources on
+the same server and in the same directory as the file from which the Tclet
+was loaded:
+.PP
+.CS
+section urls
+allow   $originHomeDirURL*
+.CE
+.PP
+If a procedure is not allowed in the \fBaliases\fR section of the
+controlling policy's configuration, it is not installed into a Tclet
+using the policy.
+This allows a policy fine control over the use of individual aliases
+provided by each feature.
+
+.SH SECURITY
+.PP
+This feature enables a Tclet to fetch the contents of URLs and to post
+data to remote services via the \fBHTTP\fR network protocol.
+This can be used to leak private information which belongs to the hosting
+site to remote sites.
+A Tclet may also attempt to harm the user's reputation by posting data
+to remote services, to make it appear that the user is making bogus or
+objectionable submissions.
+Careful control over the set of accessible URLs limits the
+potential for privacy and reputation attacks by a Tclet.
+Consideration must also be given to the combination of this feature
+with other features, especially the \fBnetwork\fR feature, to
+eliminate unintentional information leaks.
+.PP
+The \fBurl\fR feature also allows a Tclet to display a status message
+in the hosting application's status bar.
+This can be used to harm the reputation of the user, or for annoyance
+attacks.
+
+.SH "SEE ALSO"
+plugin(n), policy(n), config(n), safe(n)
+
+.SH KEYWORDS
+configuration, Safe Base, Safe-Tcl, aliases, multiple interpreters, policy,
+URLs, posting, status messages

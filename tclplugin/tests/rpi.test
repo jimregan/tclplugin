@@ -1,0 +1,138 @@
+# rpi.test --
+#
+# This file contains a collection of tests for the rpi (Remote Proc Invocation)
+# package.
+#
+# Sourcing this file into Tcl runs the tests and generates output for
+# errors.  No output means no errors were found.
+#
+# In order for these tests to run, the "com" tcl package must be on the
+# auto_path ('require'able).
+#
+# CONTACT:		sunscript-plugin@sunscript.sun.com
+#
+# AUTHORS:		Jacob Levy			Laurent Demailly
+#			jyl@eng.sun.com			demailly@eng.sun.com
+#			jyl@tcl-tk.com			L@demailly.com
+#
+# Please contact us directly for questions, comments and enhancements.
+#
+# Copyright (c) 1996-1997 Sun Microsystems, Inc.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+#
+# SCCS: @(#) rpi.test 1.10 97/09/26 07:02:38
+
+if {[string compare test [info procs test]] == 1} then {source defs}
+
+package require rpi 1.0;
+
+proc testLog {who name str {type NOTICE}} {
+    puts "\tTRACE $who: $name $str";
+}
+
+proc testSet {var args} {
+  eval set [list ::common($var)] $args;
+}
+
+test rpi-1.1 {communication : big overall test} {
+    set res {}
+    foreach i {client server} {
+	interp create $i
+	interp eval   $i "
+	    proc bgerror msg {
+		puts stderr \"*** FAILED TEST: bgerror occured in $i : \$msg\"
+		puts stderr \$::errorInfo
+	    }
+        "
+	interp alias  $i appendResult {} lappend res;
+	interp alias  $i commonSet    {} testSet;
+	# needed to find both logging and rpi
+	interp eval   $i [list set auto_path $auto_path];
+	# Install the logging (::log::truncateStr is needed by rpi)
+	interp eval   $i {package require log 1.0}
+	# replace the log with ours
+	interp alias  $i ::log::log {} testLog $i;
+	interp eval   $i {namespace import ::log::log}
+    }
+    proc bgerror msg {
+	puts stderr "*** FAILED TEST: bgerror occured in Master : $msg"
+	puts stderr $::errorInfo
+    }
+    after idle [list interp eval server {
+	package require rpi 1.0
+
+	proc sFoo {x} {return "s=($x)"}
+
+	set s [::rpi::newServer 0 localhost]
+	log {} "iget{$s} = ([::rpi::iget $s])";
+	commonSet port [::rpi::iget $s Port];
+
+	::rpi::iset $s timeout 5000;
+	set i [::rpi::serverWaitConnect $s];
+	log {} "got new instance \"$i\"";
+
+	# We don't need the server anymore (mono client test).
+	::rpi::delete $s
+
+	if {[catch {set r1 [::rpi::invoke $i [list cFoo bar]]} msg]} {
+	    puts stderr "$msg:\n$::errorInfo"
+	    exit
+	}
+	appendResult $r1;
+	log {} "result1 is $r1";
+	set r2 [catch {::rpi::invoke $i [list error bar]} msg]
+	appendResult $r2 $msg;
+	log {} "result2 is $r2 : $msg";
+	proc s2way {a} {
+	    return "s2way($a)";
+	}
+	set r3 [::rpi::invoke $i [list c2way {it is} {cool !}]];
+	appendResult $r3;
+	log {} "result3 is $r3";
+
+	# timeout test
+	proc ::rpi::linkError {this errorType ref code what msg} {
+	    appendResult [list $errorType $ref $code $what]
+	}
+	set r4 [catch {::rpi::invoke $i\
+		{after 600; update; set r tooLate} \
+		MYREF 300} msg];
+	log {} "result4 is $r4 : $msg";
+	appendResult $r4 $msg;
+	# get the pending result / timeout
+	update;
+
+	# we are done
+	::rpi::delete $i;
+
+	appendResult "server done"
+    }] ; # end [list ...]
+
+    after idle [list interp eval client {
+	package require rpi 1.0
+	proc cFoo {x} {return "c=($x)"}
+	
+	set i [::rpi::newClient localhost [commonSet port] localhost]
+
+	log {} "got new instance \"$i\"";
+
+	appendResult [::rpi::invoke $i [list sFoo toto]]
+	proc c2way {a b} {
+	    global i;
+	    return "c2way($a,[::rpi::invoke $i [list s2way $b]])";
+	}
+	proc ::rpi::linkDown {args} {
+	    log {} "Server closed connect ($args)!"
+	    appendResult "client done"
+	}
+    }]
+
+
+    update
+    interp delete server
+    interp delete client
+    set res
+} {s=(toto) c=(bar) 1 bar {c2way(it is,s2way(cool !))} 1 {timeout after 300 (invoke|::wait::WT__rpiRepMYREF|1)} {UNEXPECTED_MSG MYREF 0 tooLate} {server done} {client done}}
+

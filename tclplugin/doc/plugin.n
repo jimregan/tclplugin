@@ -1,0 +1,718 @@
+'\"
+'\" Copyright (c) 1995-1996 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) safe.n 1.10 97/03/24 09:21:12
+'\" 
+.so man.macros
+.TH "Plugin Architecture" n 2.0 Tcl "Tcl Built-In Commands"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+Plugin Architecture \- The architecture of the Tcl Plugin
+.BE
+.SH DESCRIPTION
+.PP
+The Tcl Plugin allows Tclets (downloaded Tcl scripts embedded
+in HTML web pages) to be executed in the context of a web browser.
+The plugin can be configured in a variety of ways described here to provide
+a flexible and efficient environment for executing and distributing Tcl
+applications over the Web.
+.TP
+\fBLIFECYCLE\fR
+Everyone should read the \fBPLUGIN LIFECYCLE\fR section for an overview of
+the operation of the Tcl plugin, and to understand the layout of the rest
+of this manual page.
+.TP
+\fBTCLET\ EXECUTION\fR
+You should read the section on \fBTCLET EXECUTION\fR if you are interested
+in how Tclets are downloaded and executed.
+The section \fBBASE TCLET ENVIRONMENT\fR describes the procedures and
+variables available in the interpreter in which a Tclet is executing, in
+addition to those supplied by the Safe Base; to learn about the Safe Base,
+you should read the \fBsafe\fR manual page.
+.TP
+\fBMASTER\ EXECUTION\fR
+The sections on \fBFILES\fR, \fBENVIRONMENT VARIABLES\fR and \fBMASTER
+EXECUTION ENVIRONMENT\fR contain important information for system
+administrators and site managers, and also for more advanced configuration
+of the plugin.
+.TP
+\fBINSPECTION\ FACILITIES\fR
+You should read the sections on the \fBPLUGIN CONSOLE\fR and on
+\fBLOGGING\fR if you are developing a Tclet, as they contain information
+that may aid in debugging.
+.TP
+\fBCONFIGURATION\fR
+Finally, you should read the \fBconfig\fR manual page to understand the
+format of configuration files.
+.PP
+
+.SH "PLUGIN LIFECYCLE"
+.PP
+This section summarizes the actions of the Tcl plugin during various stages
+of its execution; the text refers to other sections or manual pages for a
+complete description.
+.PP
+The first thing that the plugin does is to create the master interpreter
+that will control all Tclets, and locate its runtime library, as described
+in the section \fBFILES\fR.
+If the runtime library can not be found, no Tclets are executed.
+The master interpreter contains several important procedures and variable
+settings, as described in the section on the \fBMASTER INTERPRETER
+ENVIRONMENT\fR.
+.PP
+After locating its runtime libraries, the plugin decides whether to execute
+Tclets in the same address space as the browser, or in a separate process.
+This decision is controlled by the execution platform and by the
+\fBTCL_PLUGIN_WISH\fR environment variable, as described in the
+\fBENVIRONMENT VARIABLES\fR section.
+Next, the master interpreter attempts to source an initialization file and
+invoke an initialization procedure, as described in the \fBFILES\fR
+section.
+.PP
+Now, the plugin is ready to accept the first Tclet for execution.
+A new interpreter is created and the source for the Tclet is loaded into
+it and started, as described in the section \fBTCLET EXECUTION\fR.
+.PP
+The Tclet executes in an environment described in the \fBBASE TCLET
+ENVIRONMENT\fR section, and it can call back into the plugin to use its
+features, e.g. to fetch URLs from the network or invoke a JavaScript
+command.
+To obtain access to features provided by the plugin to the Tclet, a Tclet
+must first request to use a security policy that allows these features to
+be used by the Tclet.
+The Tclet requests to use a policy with the \fBpolicy\fR command described
+in the \fBpolicy\fR manual page.
+This request causes the master to perform any required security checks.
+After the security checks are done, the master installs aliases in the
+Tclet that allow it to use the new features.
+For an explanation of aliases and multiple interpreters, see the
+\fBinterp\fR manual page that comes with the Tcl 8.0 distribution.
+.PP
+When a Tclet finishes execution, its interpreter is destroyed and all state
+associated with the Tclet is discarded.
+When the last Tclet finishes execution, the plugin is unloaded by the
+hosting browser.
+This can happen for example as a result of the user clicking the \fBBack\fR
+button to leave the page containing a Tclet.
+
+.SH "TCLET EXECUTION"
+.PP
+Tclets are downloaded from a web server and executed locally in a safe
+interpreter under the control of a master interpreter.
+Tclets are embedded in a web page using the HTML \fBembed\fR statement, as
+shown below:
+.PP
+.CS
+<embed src=source.tcl width=100 height=100 ...>
+.CE
+.PP
+The \fBwidth\fR and \fRheight\fR arguments are required if the Tclet is
+visible, and may be ommitted if the Tclet is hidden.
+The \fBwidth\fR and \fBheight\fR arguments tell the
+browser to allocate the specified area, in pixels, on the screen for use by
+the plugin.
+The Tclet can not control the size of its window and must accept the size
+given in the \fBembed\fR statement.
+.PP
+The value supplied in the \fBsrc\fR argument can be any URL; as shown in
+the example above, it is a relative URL, and this directs the browser to
+retrieve the Tcl source file \fBsource.tcl\fR from the same server and the
+same directory as the HTML page containing the \fBembed\fR statement.
+An \fBsrc\fR argument must be supplied if the Tclet is stored in a separate
+file; for small Tclets, the Tclet can be given in\-line as the value of a
+\fBscript\fR argument.
+If an \fBsrc\fR argument is given, the Tclet must be stored on a web server
+in a file whose name ends with the \fB.tcl\fR extension, to ensure that the
+browser will activate the Tcl plugin.
+.PP
+Both an \fBsrc\fR and a \fBscript\fR argument may be given; the program
+executed by the Tclet is composed of the value of the \fBscript\fR argument
+followed by the Tcl code downloaded from the URL value of the \fBsrc\fR
+argument.
+.PP
+If only a \fBscript\fR argument is given, a \fBtype\fR
+argument whose value is \fBapplication/x-tcl\fR must also be given. This
+tells the browser to activate the Tcl plugin.
+Note that some browsers (for example, Microsoft Internet Explorer) do not
+properly handle \fBscript\fR arguments without an accompanying \fBsrc\fR
+argument, because they do not understand the \fBtype\fR argument and are
+unable to start the Tcl plugin in that case.
+.PP
+Several \fBembed\fR statements can appear within one HTML web page,
+resulting in multiple concurrent Tclets being activated.
+Each Tclet executes within its own interpreter created by the master
+using \fB::safe::interpCreate\fR.
+Each interpreter contains all the aliases and commands as defined in the
+section \fBBASE TCLET ENVIRONMENT\fR.
+The Tclet does not share any code or variables with other concurrently
+active Tclets.
+All Tclets are controlled by a shared master interpreter.
+.PP
+During execution, Tclets can request to use a security policy to extend
+their features in a safe manner, by invoking the \fBpolicy\fR command.
+The \fBpolicy\fR manual page described how Tclets request to use a policy.
+.PP
+On Unix and Win32 platforms it is possible to execute Tclets in a separate
+process; the process must contain Tk 8.0 for this to work properly.
+The environment variable \fBTCL_PLUGIN_WISH\fR determines which executable
+is used to execute Tclets. This is fully described in the section
+\fBENVIRONMENT VARIABLES\fR.
+On the Macintosh platform the only option is to execute Tclets in the same
+address space as the hosting browser and the \fBTCL_PLUGIN_WISH\fR
+environment variable is ignored.
+
+.SH FILES
+.PP
+The plugin is partially written in Tcl; a library of scripts is provided
+with the distribution to implement various aspects of the plugin.
+These files are stored in a directory chosen at installation time and in a
+platform specific location.
+At runtime, the master interpreter can obtain the location of the library
+in the value of the global Tcl variable \fB::plugin(library)\fR.
+.PP
+Here is how the library is located at startup time on each platform:
+.TP
+\fBUNIX\fR
+The plugin first checks whether an environment variable
+\fBTCL_PLUGIN_DIR\fR is set. If it is and the value denotes the name of an
+existing directory, the plugin library is found by appending the version
+number of the plugin (e.g. \fB2.0\fR) and \fBplugin\fR.
+If the environment variable is not set, the plugin attempts to use one of
+\fIyourHomeDir\fB/.netscape\fR,
+\fB/usr/local/lib/netscape\fR,
+the grandparent of the directory containing the executable of the browser,
+and the current working directory to compute the name of its library.
+The name of the library is computed by appending \fBtclplug\fR, the version
+number of the plugin (e.g. \fB2.0\fR) and \fBplugin\fR to the candidate
+directory, and checking whether that directory exists.
+The first directory that is found on the local file system is used as the
+location of the plugin library.
+If the plugin library can not be found, the plugin produces an error message
+and will not execute Tclets.
+.TP
+\fBWindows\fR
+The plugin first checks whether an environment variable
+\fBTCL_PLUGIN_DIR\fR is set. If it is and the value denotes the name of an
+existing directory, the plugin library is found by appending the version
+number of the plugin (e.g. \fB2.0\fR) and \fBplugin\fR.
+If the environment variable is not set, the plugin looks in the system
+registry for the value \fBDirectory\fR under the key
+\fBHKEY_LOCAL_MACHINE\\Software\\Sun\\Tcl Plugin\\2.0\fR and uses the
+stored value to compute the name of the library directory by appending the
+version number of the plugin and \fBplugin\fR.
+If the \fBTCL_PLUGIN_DIR\fR environment variable is not set and the
+system registry does not contain the required information,
+the plugin will produce an error message and will not execute Tclets.
+The installation script provided with the plugin
+distribution installs the key and value into the registry.
+.PP
+An initialization file is \fBsource\fRd into the master interpreter before
+the first Tclet interpreter is created.
+In it, you can include code that you want to always execute before the
+first Tclet runs, e.g. to load extensions into the master interpreter.
+The name of the initialization file and where it is found varies by platform:
+.TP
+\fBUNIX\fR
+The plugin tries to source \fIyourHomeDir\fB/.tclpluginrc\fR.
+.TP
+\fBWindows,\ Mac\fR
+On Win32 and Macintosh systems, the plugin sources the file
+\fBtclplugin.rc\fR in the \fB::plugin(library)\fR directory.
+.PP
+After potentially sourcing the intialization file, the plugin attempts to
+invoke \fB::siteInit\fR.
+The definition for this procedure could be provided in the initialization
+file or it may be possible to locate it via auto-loading.
+If an error results from attempting to invoke \fB::siteInit\fR, it is
+logged and ignored.
+.PP
+The plugin runtime libraries are installed in several directories related
+to the \fB::plugin(library)\fR directory:
+.TP
+\fBsafetcl\fR
+Contains Tcl code to implement the various features supplied by the plugin
+to Tcl scripts, such as the ability to write HTML streams and fetch URLs.
+This is a peer directory of \fB::plugin(library)\fR.
+.TP
+\fBtcl8.0\fR
+This peer directory contains a copy of the \fBTcl 8.0\fR Tcl library.
+These files are included with the plugin installation so that the plugin
+can be used without requiring the user to have installed Tcl 8.0.
+.TP
+\fBtk8.0\fR
+This peer directory contains a copy of the \fBTk 8.0\fR Tcl library.
+These files are likewise included to allow the plugin to be used when the
+user does not have Tk 8.0 installed.
+.TP
+\fBconfig\fR
+This peer directory contains configuration files that control the behavior
+of the plugin, such as which security policies and features are enabled.
+See the \fBconfig\fR and \fBpolicy\fR manual pages, and manual pages for
+individual policies, to learn about the contents of these files.
+.TP
+\fButils\fR
+This child directory of the \fB::plugin(library)\fR directory contains Tcl
+code implementing various utility functions such as support for logging,
+URL parsing, configuration file parsing and a reentrant remote procedure
+invocation package.
+
+.SH "ENVIRONMENT VARIABLES"
+.PP
+The following environment variables affect the behavior of the Tcl Plugin.
+Unless stated otherwise, their value must be set before the hosting browser
+is started for them to affect the Tcl Plugin.
+All of these variables are accessible in the master interpreter in the
+global Tcl array \fBenv\fR.
+.TP
+\fBTCL_PLUGIN_DIR\fR
+The value is used to find the runtime library for the Tcl plugin.
+This process is fully described in the section \fBFILES\fR, above.
+This environment variable must be set before the hosting browser is
+started.
+.TP
+\fBTCL_PLUGIN_WISH\fR
+If set to \fB0\fR, Tclets are executed in the address space of the
+hosting browser.
+If set to \fB1\fR, Tclets are executed in the address space of a \fBwish\fR
+supplied with the plugin installation.
+If the variable is set to anything else, it is takes as the full path to an
+executable that will be used as an external process to run Tclets. The
+executable must be based on Tcl and Tk 8.0 or later.
+This environment variable must be set before the browser is started.
+.TP
+\fBTCL_PLUGIN_CONSOLE\fR
+If set to \fB1\fR, a console using Jeff Hobb's \fBtkCon\fR application will
+be created; if set to another value, the console will be created by
+\fBsource\fRing the value as a Tcl script.
+The console window is created and iconified; it will show up as an icon on
+your window manager's task bar.
+The console is connected to the master interpreter and can be used to type
+commands and query the state of the master interpreter and of all Tclets.
+You can set \fBenv(TCL_PLUGIN_CONSOLE)\fR in your initialization file and
+it will control whether a console is created and what Tcl script is used to
+create it.
+.TP
+\fBTCL_PLUGIN_LOGWINDOW\fR
+If set to \fB1\fR, the master interpreter logs important events to a window.
+The window is initially iconified and its icon appears in your window
+manager's task bar.
+The window supplies a simple menu bar that allows you to reset its contents
+or save it to a file.
+.TP
+\fBTCL_PLUGIN_LOGFILE\fR
+If set, and if \fBTCL_PLUGIN_LOGWINDOW\fR was not set to 1, this specifies
+the name of a file on the local file system into which the master
+interpreter logs important events.
+You can follow the operation of the plugin by using \fBtail\fR on this
+file; event log entries are flushed to this file as soon as they are added,
+so you can use this to interactively debug a Tclet or configuration
+problem.
+
+.SH "MASTER INTERPRETER ENVIRONMENT"
+.PP
+This section describes the environment in which code in the master
+interpreter executes.
+This is of interest if you want to debug a Tclet with the console, or if
+you want to implement new features; this information will aid you in
+finding the relevant state information.
+.PP
+The global array \fB::plugin\fR contains information about the Tcl plugin
+and its runtime environment:
+.TP
+\fB::plugin(library)\fR
+Specifies the directory where the plugin finds its runtime libraries.
+This directory is used to find other directories containing script files,
+as described in the \fBFILES\fR section.
+.TP
+\fB::plugin(version)\fR
+The version number of the Tcl plugin.
+.TP
+\fB::plugin(patchLevel)\fR
+The patch level of the Tcl plugin.
+.TP
+\fB::plugin(release)\fR
+The release date of this version of the Tcl plugin, encoded as
+\fBYYYYMMDD\fR.
+.PP
+The \fB::browser\fR namespace contains the implementations of all the
+features provided by the plugin to Tclets.
+It provides several interesting Tcl variables:
+.TP
+\fB::browser::userAgent\fR
+A string identifying the hosting browser; note that due to limitations in
+the interface between the hosting browser and the plugin this variable is
+not set until right before the first Tclet starts executing and is
+unavailable when the initialization script is executed.
+.TP
+\fB::browser::apiVersion\fR
+The major and minor API version numbers for the features provided to the
+plugin by the hosting browser.
+.PP
+The \fB::cfg\fR namespace contains the implementation of configuration
+management.
+The configuration management package \fBcfg\fR is fully documented in the
+\fBconfig\fR manual page.
+The namespace provides these interesting variables:
+.TP
+\fB::cfg::configDir\fR
+The name of the directory containing configuration files for controlling
+the behavior of the Tcl plugin.
+This is the \fBconfig\fR directory described in the \fBFILES\fR section.
+.TP
+\fB::cfg::featureList\fR
+This variable contains an ordered list of all the features available in the
+Tcl plugin.
+For more information, see the \fBpolicy\fB and \fBconfig\fR manual pages.
+.TP
+\fB::cfg::userConfig\fR
+The name of the main configuration file in the configuration directory.
+Settings in this file controls major aspects of the behavior of the plugin
+such as which policies are available and which features are installed.
+See the \fBpolicy\fR and \fBconfig\fR manual pages for more information.
+.TP
+\fB::cfg::slaveNs\fR
+The name of the namespace used to contain aliases installed into a Tclet.
+The value of this variable is \fB::browser\fR, which means that aliases
+will be installed into the \fB::browser\fR namespace in Tclets.
+.TP
+\fB::cfg::implNs\fR
+The name of the namespace containing the implementation of all features
+provided by the Tcl plugin.
+The value of this variable is \fB::browser\fR, which means that aliases
+installed in the slave invoke procedures installed in the \fB::browser\fR
+namespace in the master interpreter.
+.TP
+\fB::cfg::safeAttributes\fR
+A list of named attributes that are reflected into the Tclet, so that it
+can inspect its state. Attributes of the Tclet that are not in this list
+are only available in the master interpreter for inspection.
+Example attributes are \fBoriginURL\fR, which contains the canonical URL
+from which the Tclet was loaded, and \fBwindowGeometry\fR, whose value
+describes the geometry and location of the main window used by the Tclet.
+.PP
+The master interpreter manages attributes of a Tclet through an API that
+hides the implementation of these attributes. Some of the attribute values
+may be cached or computed on demand, or even refreshed every time they are
+requested.
+Some of the procedures, e.g. to update or delete attributes, are
+semi-private and should be used carefully. Their names start with an
+upper-case letter to indicate this.
+Others, documented below, are for public use; these have names starting
+with a lower-case letter.
+Each of these procedures takes the name of an interpreter containing a
+Tclet name as an argument.
+Use \fBinterp slaves\fR to retrieve the names of all slave interpreters
+containing Tclets; you can use \fBinterp eval\fR to evaluate an expression
+in the context of a Tclet, and \fBinterp invokehidden\fR to invoke a hidden
+command in the Tclet's context.
+See the \fBinterp\fR manual page in the Tcl distribution
+for more details on the \fBinterp\fR command.
+.TP
+\fB::browser::iexists\ \fItclet\ attribute\fR
+To check that an attribute exists, use \fB::browser::iexists\fR, which
+returns \fB1\fR if the requested attribute exists for the given Tclet, and
+\fB0\fR otherwise.
+.TP
+\fB::browser::iget\ \fItclet\ attribute\fR
+Retrieves the value of an attribute associated with the Tclet.
+If the attribute does not exist, an error is raised.
+.PP
+The following attributes are commonly associated with Tclets executing in a
+hosting web browser.
+Unless otherwise mentioned, each of these attributes is also accessible in
+the Tclet itself, by using \fBgetattr\fR, as described in the \fBBASE TCLET
+ENVIRONMENT\fR section:
+.TP
+\fBoriginURL\fR
+The canonical form of the URL from which the Tclet was loaded.
+.TP
+\fBoriginPageURL\fR
+The canonical form of the URL for the page containing the \fBembed\fR
+statement that caused the Tclet to be loaded.
+This can be used by policies or Tclets to control copying of the Tclet.
+For example, a Tclet may refuse to execute if it is loaded from an
+unauthorized page.
+.TP
+\fBoriginHomeDirURL\fR
+The canonical form of the URL naming the directory containing the file from
+which the Tclet was loaded.
+.TP
+\fBoriginProto\fR
+The protocol used to load the Tclet. This is \fBhttp\fR or \fBfile\fR.
+.TP
+\fBoriginHost\fR
+The host from which the Tclet was loaded.
+If the Tclet was loaded from a \fBscript\fR argument in the \fBembed\fR
+statement, this attribute is not set.
+If the Tclet was loaded from a URL using the \fBfile:\fR protocol, the host
+is set to \fBlocalhost\fR.
+.TP
+\fBoriginSocketHost\fR
+The hostname to use for connecting back to the \fBoriginHost\fR via
+sockets. This may be different in some esoteric cases from
+\fBoriginHost\fR.
+.TP
+\fBoriginPort\fR
+The port used to load the Tclet from the remote web server.
+.TP
+\fBoriginPath\fR
+The path portion of the \fBoriginURL\fR attribute.
+.TP
+\fBoriginKey\fR
+If the URL from which the Tclet was loaded contains a key (\fB#\fR followed
+by an alphanumeric string) which identifies a location within the page,
+the value of this attribute will contain the key.
+.TP
+\fBbrowserArgs\fR
+A list of the arguments and values supplied in the \fBembed\fR statement.
+.TP
+\fBscript\fR
+The script evaluated in the Tclet.
+This consists of the value of the \fBscript\fR argument, if present in the
+\fBembed\fR statement, concatenated with the contents of the URL specified
+in the \fBsrc\fR argument to the \fBembed\fR statement, if present.
+.TP
+\fBwindowGeometry\fR
+Geometry of the window:
+the format is \fIwidth\fRx\fIheight\fR.
+All elements are specified in pixel values.
+.TP
+\fBwidth\fR
+The current width in pixels of the window.
+.TP
+\fBheight\fR
+The current height in pixels of the window.
+.TP
+\fBcompleteWindowGeometry\fR
+A list of eight elements, specifying the geometry of the Tclet's main
+window.
+All elements are specified in pixel values.
+The elements of the list are the x and y offsets of the top
+left corner of the Tclet window from the top left corner of the containing
+page window, followed by the width and height of the Tclet window,
+followed by the left, top, right and bottom coordinates of the clip
+rectangle.
+The clip rectangle settings are meaningless on Unix and Win32 platforms,
+and contain useful values for the Macintosh platform.
+.TP
+\fBapiVersion\fR
+The major and minor version numbers of the API provided by the browser to
+the Tcl plugin.
+.TP
+\fBuserAgent\fR
+A string identifying the browser in which the Tclet is executing.
+.TP
+\fBTk\fR
+The value is \fB1\fR if Tk is being used in the Tclet.
+Hidden Tclets do not use Tk, and hence the value will be \fB0\fR for them.
+.PP
+Other attributes are added as needed by implementations of features.
+For example, the local persistent storage feature adds several attributes
+that record information about the file and channel usage in a Tclet.
+These attributes are documented in the manual pages of each feature.
+.PP
+The \fB::log\fR namespace contains the implementation of the logging
+facility.
+It provides several interesting variables and procedures, as explained in
+the section on \fBLOGGING\fR, below.
+.PP
+URL parsing and manipulation is provided by the \fBurl\fR package. See the
+manual page for \fBurl\fR for more details.
+
+.SH "BASE TCLET ENVIRONMENT"
+.PP
+In addition to the Safe Base, described in the \fBsafe\fR manual page, the
+Tclet also has access to the following variables and procedures:
+.TP
+\fBembed_args\fR
+an array containing the arguments supplied in the \fBembed\fR statement.
+.TP
+\fBplugin\fR
+A copy of the \fBplugin\fR array from the master interpreter, containing
+only the \fBpatchLevel\fR, \fBrelease\fR and \fBversion\fR entries.
+Other entries have been removed, for security reasons.
+.TP
+\fBenv\fR
+A copy of the global \fBenv\fR array, containing only the \fBdisplay\fR
+entry. Other entries have been removed, for security reasons.
+.TP
+\fBauto_path\fR
+A list of directory tokens representing real directory names, used to
+search for implementations of procedures during auto-loading.
+The actual names of directories in the list have been replaced with
+symbolic tokens, to avoid leaking site-specific information to the Tclet.
+.TP
+\fBauto_index\fR
+An array of information used by the auto-loading mechanism to find
+implementations of procedures.
+The names of directories in this array have been replaced by symbolic
+tokens to avoid leaking site-specific information to the Tclet.
+.TP
+\fBtcl_library,\ tk_library\fR
+The values of these global variables have been replaced by symbolic tokens,
+to avoid leaking site-specific information to the Tclet.
+.PP
+The Tclet can obtain access to those attributes of itself that are made
+available by the master interpreter, using \fBgetattr\fR.
+If called with no arguments, \fBgetattr\fR returns a list of attribute
+names and values.
+When called with the name of a specific attribute, the value of that
+attribute is returned.
+The attributes exported by the master interpreter into the Tclet are
+\fBoriginURL\fR, \fBoriginHomeDirURL\fR, \fBoriginProto\fR,
+\fBoriginPath\fR, \fBoriginKey\fR, \fBoriginHost\fR, \fBoriginPort\fR,
+\fBoriginSocketHost\fR, \fBbrowserArgs\fR, \fBapiVersion\fR,
+\fBuserAgent\fR, \fBwindowGeometry\fR, \fBcompleteWindowGeometry\fR,
+and \fBTk\fR.
+These attributes are the same as explained in the \fBMASTER INTERPRETER
+ENVIRONMENT\fR section, above.
+Other attributes may be exported into the Tclet by implementations of
+features. For example, if the Tclet is using a security policy that enables
+the persistent local file feature, several attributes that record file and
+channel usage by the Tclet are exported.
+These attributes are documented in the manual page for each feature.
+.PP
+A Tclet can log messages to the plugin log using the \fBlog\fR command.
+The argument, a string, is added to the log with identifying information
+about the Tclet.
+The logging facility is described below, in the section on \fBLOGGING\fR.
+.PP
+If an error occur during the processing of a Tclet, a special
+\fBbgerror\fR graphical user interface installed by the plugin 
+will pop up to show the error to
+the user by covering the tclet window. It has minimal
+interactive debugging capabilities. 
+This micro-console like interface can be summoned at anytime 
+during the execution of 
+the tclet by pressing the hot-key combination Control-Shift-C.
+If the tclet wish to handle errors in a special manner it just
+need to redefine \fBbgerror\fR and eventually remove the binding
+(bound to the tag \fBall\fR).
+
+.SH "PLUGIN CONSOLE"
+.PP
+The plugin creates a console connected to the master interpreter if the
+environment variable \fBTCL_PLUGIN_CONSOLE\fR is set. If its value is
+\fB1\fR, the console will be created by using the \fBTkCon\fR
+application authored by Jeff Hobbs.
+If the environment variable is explicitly set to \fB0\fR, no console window
+is created.
+.PP
+By default, the console is created using \fBtkCon\fR, a sophisticated
+console application written by Jeff Hobbs.
+For more information, see the \fBtkCon\fR documentation on the web, at
+\fBhttp://www.cs.uoregon.edu/~jhobbs/work/tkcon/docs/index.html\fR.
+If the environment variable is set to a value other than \fB0\fR or
+\fB1\fR, the value is used as the name of a file to \fBsource\fR to
+create the console.
+.PP
+You can type commands in the console window and they will immediately be
+executed in the master interpreter, and the result will be displayed in the
+console.
+The console window has a menu bar with tear off menus that allow quick
+access to the interesting bits of state, such as the command history.
+.PP
+The plugin is unloaded when the last instance is
+destroyed and the console is destroyed when the last
+Tclet is destroyed. If you leave one page containing a Tclet to visit
+another page that also contains a Tclet, the console window will be
+destroyed if the page you left contained the last active Tclet.
+.PP
+Note that when Tclets are hosted in an external process, two console
+windows will be provided. The title of each window identifies which process
+it is connected to: one is connected to the plugin executing within the
+browser address space, and the other is connected to the main interpreter
+in the external process.
+This arrangement allows you to debug problems in communication between the
+two processes and enables you to observe the interaction between the two
+processes.
+
+.SH LOGGING
+.PP
+The Tcl plugin provides a comprehensive and extensible logging facility.
+The plugin itself uses this facility extensively throughout its code to log
+important life cycle events such as starting and stopping Tclets.
+Observing the log is an excellent way to learn more about how the plugin
+operates and helps diagnoze problems quickly.
+.PP
+Logging is controlled by two environment variables,
+\fBTCL_PLUGIN_LOGFILE\fR and \fBTCL_PLUGIN_LOGWINDOW\fR.
+See the \fBENVIRONMENT VARIABLES\fR section above for an explanation of
+these variables.
+You can set these variables in your initialization script by setting the
+equivalent entries in the \fB::env\fR array and reload the
+Tcl plugin, and subsequently the plugin will use the new settings.
+This is convenient for platforms such as Windows 95, where environment
+variables must be set in system files such as \fBauto_exec.bat\fR; setting
+them in your initialization script alleviates the need to edit these system
+files.
+.PP
+The following interesting variables are provided by the \fBlog\fR package:
+.TP
+\fB::log::attributes
+A list of log entry classes and their attributes.
+These attributes are applied to log entries tagged with the class to
+alter the manner in which the log entry is displayed in the log window,
+and to identify the class of the log entry in the log file.
+The predefined classes include \fBNOTICE\fR, \fBWARNING\fR, \fBSECURITY\fR,
+\fBERROR\fR and \fBSLAVE\fR.
+The \fBSLAVE\fR class is used for all log entries generated by Tclets
+and the other classes are used by the master interpreter.
+You can \fBlappend\fR new classes and their attributes to this list and
+then call \fB::log::refreshAttributes\fR to make the logging facility aware
+of the changes.
+Subsequently you can use the new class in \fB::log::log\fR, as described
+below.
+.TP
+\fB::log::max
+This many entries are kept in the log window.
+.TP
+\fB::log::strTruncLen
+A log entry is truncated and elided with elipsis if it contains more
+characters than the value of this variable.
+.PP
+The following procedures are provided by the \fBlog\fR package:
+.TP
+\fB::log::log\ \fIid\ message\ class\fR
+The \fImessage\fR argument is added to the log, identified with the
+\fIid\fR string and attributes specified by the \fIclass\fR argument
+are applied to the log entry.
+By convention, \fIid\fR is the name of the Tclet or feature for which this
+log entry was generated, but it can be anything; its only use is to
+identify the log entry to a human viewing the log.
+Log entry classes are described in the documentation of the
+\fB::log::attributes\fR variable.
+If logging is done to a file, the log message is appended and the file is
+flushed so that the message appears immediately in the file.
+If logging is to a window, the new message is added to the bottom of the
+window and the window is scrolled up to make the new message visible.
+If you call \fB::log::log\fR with a class name that does not appear in the
+\fB::log::attributes\fR list, the entry will be recorded with that class
+but no attributes will be applied to alter its display.
+.TP
+\fB::log::refreshAttributes\fR
+Refreshes the list of classes known to the logging facility.
+Use this after modifying the value of \fB::log::attributes\fR.
+.TP
+\fB::log::setup\ \fIflag\fR
+Configures the logging facility.
+If the flag \fBwindow\fR is given, logging will be done to a window.
+You can also use \fBsuspsend\fR, \fBstop\fR, \fBresume\fR and \fBclear\fR
+to respectively suspend, stop, resume or clear the log.
+If \fIflag\fR is anything else starting with a \fB.\fR, it is assumed to be
+a window name and log entries will be directed to that window.
+If \fIflag\fR is anything else not starting with a \fB.\fR, it is assumed
+to be a file name and log entries will be appended to the named file.
+You can call \fB::log::setup\fR in the console window to modify the behavior
+of logging interactively.
+.PP
+
+.SH "SEE ALSO"
+safe(n)
+.SH KEYWORDS
+browser, console, downloaded code, feature, interpreters, logging, master
+interpreter, Safe Base, security policy, Tclet, tkCon

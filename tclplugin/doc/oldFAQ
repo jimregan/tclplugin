@@ -1,0 +1,744 @@
+ANSWERS TO COMMONLY ASKED QUESTIONS ABOUT THE TCL PLUGIN
+========================================================
+
+This FAQ addresses the following questions:
+
+	0. Quickly, tell me what's new in the latest release.
+	1. Running Navigator with -install makes the colors appear strange.
+	2. Site wide installation - how?
+	3. The Tcl plugin vs TCL_LIBRARY and TK_LIBRARY.
+	4. Why can't I open a new toplevel? Why does the menu command
+	   give me an error?
+	5. What's a "security policy"?
+	6. What's installed by the plugin installation procedure?
+	7. So what can it do right now in the "Safe Base"?
+	8. Let me do "dangerous" things please, I know what I'm doing.
+	9. I still want to do it, my site is protected by a firewall.
+	10. How do I write a page containing a tclet?
+	11. What is this <embed ...> statement?
+	12. Environment variables vs the Tcl plugin.
+	13. Installation woes... what to check for.
+	14. Sun's demos work but my pages don't -- why?
+	15. My users do not have the plugin -- what to do?
+	16. I want to use someone else's tclet -- how to?
+	17. Dynamic loading of extensions into the plugin -- is it possible?
+	18. How to use an external 'wish'?
+	19. Focus management problems.
+	20. Why only a binary distribution?
+	21. I want to read the sources to ensure that it's really safe.
+	22. I want to get the sources to port the plugin to my platform.
+	23. Why isn't the plugin available on my favorite platform?
+	24. What about support for Windows 3.1?
+	25. What platforms are supported now?
+	26. What's the release schedule for the Tcl plugin?
+	27. What bugs are fixed in the 1.0 final release?
+	28. What new features are planned for 2.0? Will there be a 3.0?
+	    What's already implemented in the 2.0 Alphas?
+	29. I have a couple of machines. Can I download multiple copies of
+	    the plugin, one for each machine?
+	30. What about commercial use?
+	31. Can I redistribute the plugin? Can I bundle it on a CD ROM?
+	32. I think this is cool stuff, and I want to mirror your archive.
+	    How can I do that?
+	33. I think this is cool stuff, and I want to help. How?
+	34. I hate Tcl. Can I do a plugin with Tk for Perl, python, scheme?
+	35. Tcl is really slow... right?
+	36. Tcl interprets source. I'm giving source away when I send a
+	    tclet to someone remote?
+	37. First Java and now Tcl? Isn't this confusing?
+	38. What other information is available about the plugin? Tcl, Tk?
+
+Here are the answers:
+
+0. Quick, what's new in this release of the Tcl plugin?
+
+	It would take too much space here to describe all of what is
+	new. Instead, we have decided to include a file named 'new' in
+	each new release, starting with 2.0a2. This file is installed
+	in the root directory of the plugin runtime libraries. On Unix
+	you can view this file during the installation by pressing the
+	"What's New" button if you're running the graphical install.
+
+	We strongly advise you to read the 'new' file. It contains a
+	wealth of information you will need to make effective use of
+	the plugin.	
+
+1. Running Navigator with -install makes the colors of the plugin strange.
+
+	This happens if you're using an older version of the plugin. That
+	version had a bug whereby it would use its own colormap that would
+	conflict with Navigator. Newer versions of the plugin (after 1.0a2)
+	should not exhibit this problem. If you are still seeing this
+	problem please let <URL:mailto:jyl@eng.sun.com> know ASAP.
+
+	You should now be upgrading to 1.1 final or 2.0 alpha 2, earlier
+	versions are obsolete.
+
+2. I want to do a site wide installation instead of installing in my
+   home directory.
+
+	For Unix: The installation procedure supports this via the
+	site-wide installation option. This is a button on the Tk
+	based installation, and is available by choosing "site-wide"
+	as the type of installation to do in the "sh" based installation
+	procedure. This is a new option, and there are probably bugs
+	in the procedure. Let <URL:mailto:jyl@eng.sun.com> know about
+	problems you find.
+
+	For Windows: The plugin uses a registry key to find the Tcl
+	runtime libraries, so if you installed it once, all users will be
+	able to find these libraries. Just ensure that the version of
+	Navigator that is shared amongst all your users has the plugin
+	installed, and you're done.
+
+	For Macintosh: you only need to provide an alias to the Net
+	wide distribution in the "Netscape PlugIns" folder.  However,
+	this is not recomended.  Netscape unloads and reloads the
+	plugin everytime it comes accross a new Tcl Applet.  Loading
+	over the Network would be very slow.
+
+	***NOTE***: Please note that a site-wide installation requires
+	a commercial use license if the installation will be used for
+	a company related task. If each user of the site-wide installation
+	is using the plugin for his or her personal use, no commercial
+	use license is required. Please view the answers to questions 29,
+	30 and 31 below, if in doubt.
+
+3. I have installed the plugin and I also have another installation of
+   Tcl on my machine. When I view any page containing a tclet I get a
+   message saying that the file 'safe.tcl' couldn't be found. What's wrong?
+
+	You may have the env vars TCL_LIBRARY and TK_LIBRARY set to point
+	at the Tcl libraries for the other installation of Tcl on your
+	machine. This confuses older versions of the plugin, preventing it
+	from finding its own library. This is a known bug that is fixed in
+	versions of the plugin after 1.0a2. A workaround is to unset these
+	variables, and this should not be needed after 1.0a2.
+
+	If you are still using an older version than 1.1 final, it is time
+	to upgrade to 1.1 final, or to try 2.0a2 or later.
+
+	The Tcl & Tk libraries for the Macintosh PlugIn are actually
+	located in TEXT resources in the PlugIn it self.  Therefore,
+	you shouldn't see the above problem.
+
+4. Why can't I open a toplevel in a tclet? There are no menus? Can't do a
+   "wm title", why? There's no "socket" command?!
+
+	The tclet runs inside a restricted version of Tcl and Tk, called
+	Safe Tk. These commands have been removed from Tcl, for safety
+	reasons:
+
+		cd, exec, fconfigure, file, glob, pwd, socket, vwait
+
+	These commands have been removed from Tk, for safety reasons:
+
+		bell, clipboard, grab, menu, send, tk, tkwait, toplevel,
+		wm
+
+	The 2.0 version of the plugin supports configurable security
+	policies. Read the manual page safe.n in the 'man' subdirectory
+	of where you installed the plugin, as well as the manual pages
+	supplied in that directory for each individual security policy.
+
+5. What's that, a "security policy"?
+
+	A security policy is a list of things that a tclet can do. It is
+	implemented by the master interpreter restricting the interpreter
+	in which the tclet runs, so that functionality that's not in the
+	specified security policy will not be accessible to the tclet. A
+	master can also define new aliases (commands that when invoked in
+	the tclet interpreter actually execute some code in the master)
+	to provide safe access to dangerous functionality. For example,
+	a master can provide an alias that allows the tclet to open a
+	file for reading and writing, but only in a specified directory
+	on the file system, and the file size is also limited.
+
+	Check out the "white paper" on Safe Tcl; it's available on the
+	web at http://www.sunlabs.com/people/john.ousterhout/SafeTcl.html.
+
+6. What's in each directory installed by the installation procedure?
+
+	The following directories are created below the root of the
+	installation (usually ~/.tclplug/2.0 on Unix, c:\tclplug\2.0
+	on Win32 platforms):
+
+	- tcl8.0:		contains runtime libraries for Tcl 8.0.
+	- tk8.0:		contains runtime libraries for Tk 8.0.
+	- tcl8.0/policies:	contains the security policies that are
+				supplied with the plugin.
+	- plugin:		contains runtime scripts for the plugin
+				to manage lifecycle operations on each
+				Tclet, and to communicate with the browser.
+	- man:			manual pages supplied with the plugin.
+
+7. So what can it do, by default?
+
+	Each Tclet is running in a safe environment called the Safe Base,
+	as described in the Safe Tcl white paper (see #4 and #5).
+
+	These Tcl commands are available in a tclet:
+
+		after, append, array, break, case, catch, clock, close,
+		concat, continue, eof, error, eval, expr, fblocked,
+		fileevent, flush, for, foreach, format, gets, global,
+		history, if, incr, info, interp, join, lappend, lindex,
+		linsert, list, llength, lower, lrange, lreplace, lsearch,
+		lsort, package, pid, proc, puts, read, regexp, regsub,
+		rename, return, scan, seek, set, split, string, subst,
+		switch, tell, time, trace, unset, update, uplevel, upvar,
+		unsupported0, while
+
+	These Tk commands are available in a tclet:
+
+		button, entry, listbox, scale, scrollbar, text, bind, .,
+		focus, tkerror, bgerror, winfo
+
+	The Safe Base provides these aliases:
+
+		exit -- a safe version that only destroys the tclet.
+		load -- a safe version that only loads files from
+			directories in the master's $auto_path.
+		source --
+			a safe version that only sources from
+			directories in the master's $auto_path.
+		file -- implements a subset of the subcommands of the
+			Tcl "file" command.
+		tclPkgUnknown --
+			implements the mechanism for finding security
+			policies so that Tclets can request them.
+
+8. Come on, I know what I'm doing. Now please get out of my way and let me
+   do these things you call "dangerous".
+
+	We're sure you're a savvy person and that you know what you're
+	doing, but the problem is that you can't know ahead of time what
+	the script that you download from someone else's page is going
+	to do. Enabling dangerous features in the Safe Base makes them
+	available to *all* downloaded scripts. If you know what your Tclet
+	does and are certain it does not pose undue security risks, write
+	a security policy to enable these features.
+
+9. I still want to modify the Safe Base. My site is isolated behind a firewall.
+
+	We strongly advise against it anyway, because if you can visit
+	pages outside the firewall, you are able to download scripts
+	through the firewall. These scripts can be malicious and do bad
+	things through the dangerous facilities you enabled.
+
+	We strongly encourage you to write security policies to enable
+	your Tclets to perform useful functions while preventing rogue
+	Tclets from doing harm.
+
+10. How do I write a page with a tclet in it?
+
+	Very simple. Follow these steps:
+
+	- Write your Tcl program in a file, call it simple.tcl. The
+	  important part of this is that the file has to have a '.tcl'
+	  extension, because that's how Navigator decides that it is
+	  a tclet.
+
+	  For example, here is a small Hello World Tk application:
+
+		button .b -text "Hello World" -bg red
+		pack .b
+
+	  Save the above into the simple.tcl file.
+
+	- Write a web page (an HTML document) into a file named, e.g.,
+	  simple.html, as follows:
+
+		<html>
+		<head>
+		<title>My First Tclet</title>
+		</head>
+		<body>
+		Here is my first tclet:
+		<p>
+		<embed src=simple.tcl width=120 height=35>
+		</body>
+		</html>
+
+	- Now visit the simple.html page with your browser, and you
+	  should see the tclet, a red button with the text 'Hello World'.
+
+	By the way, all of this is explained on the Tcl plugin tutorial
+	web site, http://www.sunlabs.com/tcl/plugintut/index.html.
+
+11. What is this <embed ...> statement?
+
+	That's how Navigator finds the plugin. In it you specify:
+
+	- the name of the source file containing the tclet, in the
+	  src=... argument.
+	- the width and height of the window to create to display
+	  the tclet, in the width=... and height=... arguments.
+
+	You can also invent additional name=value pairs as you wish, to
+	parameterize the tclet. All the name=value pairs are made
+	available to the tclet in the global array embed_args. So,
+	in the example in question 10 above, embed_args would have the
+	following values:
+	
+		browser_args(src) == simple.tcl
+		browser_args(width) == 120
+		browser_args(height) == 35
+
+	*** NOTE ***
+	In versions of the plugin before 2.0a2, the array used to be
+	named "embed_args". This array is still present but its use is
+	deprecated.
+
+12. I set a lot of environment variables, yet when I access env(FOO)
+    in my tclet, I don't see the value I set. Why?
+
+	Environment variables are not passed to the tclet, for security
+	reasons. There is only one value that we pass, currently, and
+	that is env(DISPLAY).
+
+13. OK, I installed the plugin and everything seems to be fine. Yet, when
+    I visit any of the demos, I only get the broken image icon. Why?
+
+	You may have the plugin installed incorrectly. Here's a quick
+	list of things to check for on Unix:
+
+	- Are you running Navigator 3.0? On Unix, only Navigator 3.0 can
+	  be used to view plugins, as 2.0 does not support plugins.
+	- Did you install the libtclplugin.so file in ~/.netscape/plugins?
+	- Did you install the Tcl runtime libraries in ~/.tclplug/2.0?
+	- Did you remember to exit from all running instances of Navigator
+	  and restart?
+	- Now that you restarted Navigator, is the plugin listed as one
+	  of the installed plugins in the Help->About plug-ins page? If
+	  you get an empty page you may have Javascript disabled.
+	- Now that all of these questions are answered, visit our demo
+	  pages at <URL:http://www.sunlabs.com/tcl/plugin/index.html>.
+	  Are you able to view and execute the example tclets?
+
+	Note that the Unix installation produces a log file, and that
+	the install procedure includes an install-time-test option. Please
+	include the log file in any trouble report you send, and please
+	attempt to use the install-time-test option. This option also lets
+	you send a trouble report which automatically includes the log
+	file generated during the install.
+
+	On Windows:
+
+	- Are you running Navigator 3.0, 4.0 or IE 3.0? Although the plugin
+	  does work with Navigator 2.0, it does not work properly with
+	  2.0 Gold. We strongly recommend to upgrade to Navigator 3.0. Some
+	  of the newer features such as those enabled by the Browser security
+	  are only available in Netscape Navigator 3.0 and later; they do not
+	  work properly with IE 3.0. The 2.0a2 plugin still works with
+	  these less capable browsers, but the advanced features are
+	  disabled.	
+	- Did you install nptcl32.dll in <navigator>\program\plugins? Do you
+	  have tk80.dll and tcl80.dll in your system directory?
+	- Did you install the Tcl runtime libraries in c:\tclpug?
+	- Did you remember to exit from all running instances of Navigator
+	  and restart? It seems that if you are using IE 3.0, you do not
+	  need to restart it -- it is able to pick up new plugins on the
+	  fly, at runtime.
+	- Now that you restarted Navigator, is the plugin listed as one
+	  of the installed plugins in the Help->About plug-ins page? If
+	  you get an empty page you may have Javascript disabled.
+	- Now that all of these questions are answered, visit our demo
+	  pages at <URL:http://www.sunlabs.com/tcl/plugin/index.html>.
+	  Are you able to view and execute the example tclets?
+
+	Note that the installation procedure offers to test the plugin at
+	install-time; please take advantage of this option, and please
+	include the log file produced by the installer in any trouble
+	reports you submit.
+
+       On the Mac: TBD.
+
+14. Your demos work just fine, but when I visit my own pages with tclets in
+    them, at http://www.myserver.com/~mypages/mypage.html, I still get the
+    broken image icon. Why doesn't it work for me?
+
+	This is likely because your web server -- the program that sends
+	the pages to your browser when you click on a URL -- is not
+	sending the right mime-type when it sends the '.tcl' file. You
+	can work around this by adding a type=application/x-tcl name=value
+	pair to the embed statement, which will cause Navigator to infer
+	that it should use the Tcl plugin anyways. A better solution is
+	to ask your system administrator to configure the web server to
+	send the mime type application/x-tcl when it sends files with a
+	'.tcl' extension. Nearly all web servers in the world nowadays
+	are already configured to do this, the only ones we are aware of
+	that do not are some older versions of Apache.
+
+	It is also possible that you have the '.tcl' extension mapped to
+	some other application in your .mime.types or .mailcap files (on
+	Unix), or in the registry (on Windows). Check these files too.
+
+15. I have users that want to visit my pages with tclets, but they do not
+    have the plugin. What can I do?
+
+	Add a pluginspage=http://www.sunlabs.com/tcl/plugin/ name=value
+	pair to the embed statement. This will cause Navigator to find
+	the plugin for your user and suggest they install it. The user
+	is then prompted to download and install the plugin, and then she
+	has to restart the browser and revisit your page. Very inconvenient
+	and only slightly better than giving your users the broken image
+	icon. Netscape Navigator 4.0 will likely support automatic
+	installation of plugins.
+
+16. I want to use someone else's tclet in my page. How do I do that?
+
+	Very easy. All you have to do is to make the src=... name=value
+	pair have the absolute URL for where the other person's tclet
+	is stored on the net. For example, if you wanted to use the 15
+	puzzle with the Java cup in your page, you'd write:
+
+	<embed src=http://www.sunlabs.com/tcl/plugin/puzzle.tcl ...>
+
+17. I have a dynamically loaded extension of Tcl. How do I load it into
+    the plugin?
+
+	Extensions cannot be directly loaded into the plugin. However,
+	the 2.0a2 version of the plugin supports, on Unix and Windows,
+	the use of an external 'wish' process to view Tclets. See #18 for
+	details how to use the external 'wish'. If you want to use some
+	extension(s), you must use the external 'wish' approach.
+
+	Extensions must be specially written to be able to load into the
+	Safe Base. Extensions that have not been prepared this way can not
+	be loaded into an interpreter using the Safe Base. Here's what
+	extension writers must do to make their extension loadable: 
+
+	* You need to implement a safe entry point. If your extension is
+	  named foo.so, and your regular entry point is Foo_Init, you now
+	  need to implement a second entry point, Foo_SafeInit. This
+	  entry point is called with exactly the same arguments as the
+	  original Foo_Init entry point.
+
+	  Your safe entry point is responsible for only providing safe
+	  functionality to the interpreter being initialized. If your
+	  extension has functionality that could be used to damage the
+	  integrity of the hosting system in any way, or if it could be
+	  used to compromise the user's privacy of information, your
+	  safe entry point should *NOT* provide that functionality to
+	  the interpreter being initialized.
+
+	* You need to port your extension to Tk 8.0a2 or later. This is
+	  because only Tk 8.0a2 or later support embedding of an external
+	  'wish' inside a window given to it by the browser.
+
+	You may also need to modify any Tcl code that comes with your
+	extension to account for the security restrictions placed on
+	Tcl code executing in a safe interpreter. See questions 4 through
+	9 for details.
+
+18. OK, so I figured out that I need this "external 'wish'" thing. What
+    do I do?
+
+	Define the environment variable TCL_PLUGIN_WISH and set it to
+	the file name of the executable you want to use. This must be
+	an executable based on Tk 8.0a2 or later, because only from that
+	version onwards is embedding supported.
+
+	On Unix, you'd insert the following statement into your shell
+	initialization file, to always use an external 'wish' when
+	viewing Tclets:
+
+	setenv TCL_PLUGIN_WISH /home/me/bin/wish8.0
+
+	On Windows NT, you can add a variable to the environment using
+	the control panel, system applet. On Windows 95, you need to edit
+	config.sys to set the variable there.
+
+19. Focus sometimes behaves strangely, for example, if I have a page open
+   with a tclet in it, I sometimes cannot type into other windows. Why?
+
+	This is a known bug in the current version of the plugin. We are
+	working hard to improve support for focus management, but there
+	are still bugs.
+
+20. Why are you only distributing binaries for the plugin?
+
+	The plugin contains code that Sun believes is of high value. At
+	this time Sun is not releasing the source code, but in the future
+	that may change. We are considering restricted source licenses.
+	Contact Jacob Levy <URL:mailto:jyl@eng.sun.com> if you believe you
+	have a need for the source code.
+
+	However, we also believe that for most uses source code will not
+	be needed. You do not need to extend the plugin to use extensions,
+	you can use a standard 'wish' to incorporate your extensions into
+	the plugin.
+
+21. I'm a security expert for my site. My boss won't let me run the plugin
+    until I tell him it's safe to do so. I want to read the sources so
+    that I can convince myself it iss safe.
+
+	Contact us. We are open to doing special releases of the sources
+	for this purpose. You will be required so sign a license that will
+	prohibit any use of the sources other than for the express purpose
+	of examining them for security risks.
+
+22. I want the sources so I can port the plugin to my favorite platform.
+
+	Thanks for the interest. Please contact us and we can talk about
+	it. You will probably be required to sign a special license that
+	will go over all the issues.
+
+23. Hey, the plugin is not available for my favorite platform. How come?
+
+	We will make the plugin available on all platforms that
+	qualify as follows:
+
+	- Navigator supports plugins on that platform.
+	- There is sufficient demand for a Tcl plugin on that platform.
+
+	We can determine the second of these by hearing about it from
+	you. Please do the homework and find out before asking whether
+	Navigator support plugins on your platform. If it doesn't
+	there is nothing we can do; in that case you may wish to contact
+	Netscape to inform them of your interest.
+
+24. OK, but what about a Windows 3.1 release? There's millions of these
+    boxes out there...
+
+	Yes, we know there are millions of these boxes out there :). We
+	are examining what it would take to run the plugin on Windows 3.1.
+	If it's possible, it'll be a priority goal for the 3.0 release.
+
+25. What platforms does it run on now?
+
+	The 1.0 plugin runs on Windows 95, Windows NT 3.5x, Windows NT 4.0,
+	with Netscape Navigator 2.02, Navigator 3.0, Navigator Gold 3.0
+	and Microsoft Internet Explorer 3.0.
+
+	The 1.0 plugin works on MacOS 7 on both 68K and PowerPC. However the
+	Mac version currently breaks if more than one tclet is running.
+
+	The 1.0 plugin works on the following versions of Unix:
+
+	- Solaris 2.4 and up, both on Sparc and X86 machines.
+	- SunOS 4.1.4 and up, on Sparc machines.
+	- IRIX 5.3, on SGI machines.
+	- Linux 1.x and Linux 2.0.7, but *not* Linux 2.0.10 or higher.
+	  There are currently bugs in 2.0.10 and higher that prevent
+	  Navigator from correctly using *any* plugin.
+	- HPUX 9.x and HPUX 10.x on HP workstations.
+	- OSF 1 (aka Digital Unix) on Dec Alphas.
+
+	At present the 2.0a2 version works on Windows 95, Windows NT 3.5
+	and Windows NT 4.0 with Netscape Navigator 2.02, Navigator 3.0,
+	Navigator Gold 3.0, Netscape Navigator 4.0 Preview 2 and Microsoft
+	Internet Explorer 3.0. The following versions of Unix are currently
+	supported in the 2.0a2 version:
+
+	- Solaris 2.4 and up, both on Sparc and X86 machines.
+	- SunOS 4.1.4 and up, on Sparc machines.
+	- Linux 2.0.0 to 2.0.7, but *not* Linux 2.0.10 through 2.0.20.
+	  There are currently bugs in 2.0.10 through 2.0.20 that prevent
+	  Navigator from correctly using *any* plugin. The 2.0.27 kernel
+	  is known to work again, I have no information on kernels
+	  between 2.0.21 and 2.0.27.
+
+26. What's the release schedule for the plugin?
+
+	The final release of the Tcl Plugin 1.0 is out now and the 2.0
+	release is in Alpha, currently Alpha 2. If there is a feature that
+	you want to see in 2.0, please let us know, by email, at
+	<URL:mailto:jyl@eng.sun.com>. Check out the features planned, at
+	<URL:http://www.sunlabs.com/tcl/plugin/plans.html> 
+
+27. What bugs from the above mentioned are fixed in 2.0?
+
+	2.0 no longer has the colormap problem, and it is no longer
+	necessary to unset TCL_LIBRARY and TK_LIBRARY. We fixed pointer
+	location translation problems that were present in 1.0. We have not
+	completely addressed the focus problems.
+
+28. What are you already planning for 2.0? What's implemented already? Is
+    there going to be a 3.0? 
+
+	First, it's useful to view the various releases of the plugin as
+	a sequence of enhancements. The 1.0 release was really only a proof
+	of concept. In the 2.0 release we are adding as many requested
+	features as possible, and in 3.0 we are planning to provide even
+	more flexibility for security and feature access.
+
+	Visit <URL:http://www.sunlabs.com/tcl/plugin/plans.html> to
+	see what the plans are. This page will be kept up to date with
+	the current status and plans as they develop. Check here to see
+	if your suggestion is being incorporated in the 2.0 or 3.0 release
+	planning.
+
+	We already have a comprehensive security framework in 2.0. This
+	allows more than one security policy to be used in different
+	Tclets. Tclets can request the plugin to run them under a
+	different policy than the Safe Base. We provide several new
+	interesting security policies that enable different features than
+	the Safe Base, to demonstrate that different policies are possible
+	and interesting. 
+
+	Second, in 2.0a2 Tclets using the Browser policy are able to
+	communicate with the browser and with Javascript objects in the
+	document. In 2.0a2, it is possible to submit forms, send email,
+	source a URL as you would source a file, send the browser to a new
+	URL, open frames, dynamically generate HTML, etc.
+
+	In 2.0a2, using the Safesock policy, Tclets can communicate with
+	the host from which they were loaded using socket communication.
+	Yes, we do know how to prevent the DNS spoofing attack... :)
+
+	All of these features are accessible to the Tclet only if it is
+ 	running under a security policy that enables this; we do not plan
+	to make any of this accessible in the Safe Base.
+
+	There is likely to be a 3.0, and a 4.0, etc. It all depends on what
+	features people want. We already know we won't be able to do
+	everything we want to do with the plugin in 2.0 if we are to get
+	2.0 out in a timely manner.
+
+	We're also working on embedding Tcl and Tk into other frameworks
+	besides plugins. Watch for Tcl and Tk to become available as OLE
+	controls (ActiveX components), as OpenDoc parts, etc. This is all
+	futuristic stuff; there is no schedule yet.
+
+29. I have more than one machine, perhaps with different OSes. Can I
+    download more than one copy of the plugin?
+
+	Yes, go ahead. The license says that you can use the plugin for
+	private use in an unrestricted manner, and you can obtain one
+	copy for your personal use.
+
+	If your company has many employees and you do not know who else
+	downloaded the plugin, don't worry. You are not in violation of
+	our license for at least ninety days.
+
+30. Can I use the plugin commercially?
+	
+	Yes. Check http://www.sunlabs.com/tcl/products/ for the pricing
+	and licensing arrangements.
+
+31. Can I redistribute the plugin? Can I bundle it for example on a CD ROM?
+
+	If you are interested in redistributing the plugin as part of
+	a product you build, contact us at <URL:mailto:jyl@eng.sun.com>.
+
+32. This is cool stuff, I want to help by mirroring the archive.
+
+	Please contact us. Thanks for the offer! We have one mirror already
+	set up at <URL:http://www.neosoft.com/tcl/plugin>. For mirroring to
+	work, you need to be willing to respond quickly when we release a new
+	version, to upgrade your site also.
+
+33. This is way cool! How can I help?
+
+	Thanks for the kind words. You can help by the following ways:
+
+	- write more tclets and let us know about them so we can link
+	  to your pages.
+	- make your pages have links to the Sun Labs site.
+	- tell your friends, and teach them how easy it is to write tclets.
+	- write articles and letters to the editors of some of the major
+	  PC related magazines.
+	- help by contributing to the Tcl plugin tutorial site at
+	  http://www.sunlabs.com/tcl/plugintut/index.html.
+
+34. I hate Tcl, but I think Tk is cool. Can I create a Perl or Python
+    plugin that uses Tk?
+
+	First, we're sorry you hate Tcl :). It's not so bad, really.
+	Of course we're happy that you like Tk. We also think it's
+	way cool!
+
+	Second, there are already plugins for Perl and Python. You can
+	find them on the web.
+
+	Third, if you want to write your own plugin based on Tk, start
+	by using Tk 8.0a2. It supports embedding and it's really quite
+	straightforward.
+
+35. Tcl is really inefficient... right?
+
+	Depends what you want to do. Deriving factors for possible prime
+	numbers is likely to be abysmally slow in Tcl. On the other hand
+	doing user interface work is likely to be very efficient in Tcl
+	and Tk, because most of the work is done by highly optimized and
+	compiled C code, called by a thin layer of code written in Tcl.
+
+	The 2.0a2 release of the plugin contains Tcl 8.0, which has a
+	just-in-time compiler to bytecodes. This means that you benefit
+	from the speed increase in your tclets if you use 2.0a2.
+
+36. Tcl interprets the source code; doesn't that mean that I'm giving away
+    the company secrets every time someone loads my tclet?
+
+	Guilty as charged. However, we believe that for most cases, the
+	value of an application lies in the algorithm, not in the source
+	code. If you send your application over the net to some other site,
+	the other site can steal it whether or not you sent source code.
+
+37. I thought you guys were into Java. What's this Tcl stuff? Isn't it
+    confusing?
+
+	We don't think it is confusing. Yes, we love Java. We intend for
+	the plugin to be able to talk to Java, and 2.0a2 is already able to
+	talk to Javascript.
+
+	Sun is fully committed to making Java the best it can be. A lot of
+	resources are going into making Java *the* natural choice for any
+	system programming task you might undertake in the near future.
+
+	Realistically, however, Java is not the solution to all the world's
+	problems just like C++ was not. There are tasks for which you do
+	not want to use Java, medium and small sized programs. Just like
+	you wrote some of your code in C/C++ and some in csh or awk or sed,
+	you can now do some of your work on the web in Java, and some other
+	parts are more a suitable in Tcl and Tk. We believe that where
+	computational efficiency really matters, you want to use Java (e.g.
+	doing joins on databases) but when you just want to display
+	something quickly, Tk is better.
+
+	We intend to make Java and Tcl work together as tightly as possible.
+	This will allow you to write components in Java and glue components
+	together in Tcl, which is as it should be. Check out the Java Beans
+	information at <URL:http://www.javasoft.com/beans/> for the Java
+	component strategy. Tcl will be a big player in that strategy. For
+	our complete position statement on the relationship between
+	Java and Tcl, visit http://www.sunlabs.com/tcl/java.html.
+
+38. What other information is available about the plugin? About Tcl and Tk?
+
+	The Sun Labs web site is the primary resource. Visit the Tcl plugin
+	pages at
+
+	<URL:http://www.sunlabs.com/tcl/plugin/>.
+
+	This site has all the up to date information about the plugin, and
+	it will also point at where to obtain the "white paper" once we've
+	finished writing it.
+
+	I'm working on a Tcl plugin tutorial site. Check out this site
+	at http://www.sunlabs.com/tcl/plugintut/index.html. It is chock
+	full of cool Tclets that demonstrate various features of Tcl and
+	Tk. And you can use any of these Tclets in your own pages, free.
+
+	There are many sites on the web that provide information about
+	Tcl. The primary Sun site is at <URL:http://www.sunlabs.com/tcl/>.
+	Other important sites are the Tcl Resource Mirror site at Neosoft,
+	Inc., at <URL:http://www.neosoft.com/tcl/>. Yahoo has pointers to
+	about 100 other Tcl related sites, <URL:http://www.yahoo.com/>.
+
+	Larry Virden <URL:mailto:lvirden@cas.org> is the able maintainer
+	of the Tcl FAQ, available online through the World Wide Web at
+	<URL:http://www.teraform.com/~lvirden/tcl-faq/>.
+
+	There is a wealth of published material about Tcl and more is
+	being written all the time. We are aware of a book being written
+	that will cover tclet programming specifically, and there are
+	chapters about the Tcl plugin in several other books whose subject
+	is plugins in general. The FAQ about published materials on Tcl
+	is available at
+
+	<URL:ftp://ftp.neosoft.com/languages/tcl/alcatel/docs/tcl-faq-bib.gz>
+
+	being maintained by Glenn Vanderburg <URL:mailto:glv@utdallas.edu>.

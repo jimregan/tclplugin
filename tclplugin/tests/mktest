@@ -1,0 +1,4 @@
+source ../library/trust.tcl
+set VERBOSE -1
+source all
+

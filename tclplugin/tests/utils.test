@@ -1,0 +1,119 @@
+# url.test --
+#
+# This file contains a collection of tests for the tcl::utils package
+# of utility functions.
+#
+# Sourcing this file into Tcl runs the tests and generates output for
+# errors.  No output means no errors were found.
+#
+# In order for these tests to run, the "tcl::utils" tcl package must be on the
+# auto_path or have been loaded already.
+#
+# Copyright (c) 1996-1997 Sun Microsystems, Inc.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+#
+# SCCS: @(#) utils.test 1.1 97/12/02 00:02:40
+
+if {[string compare test [info procs test]] == 1} then {source defs}
+
+package require tcl::utils 1.0;
+
+catch {namespace import tcl::is* tcl::get* tcl::quote}
+
+test utils-1.1 {quote syntax} {
+  list [catch quote msg] $msg
+} {1 {wrong # args: should be "quote string"}}
+
+test utils-1.2 {basic quote (no quote)} {
+  quote "abcdef3632 sadhzz"
+} "abcdef3632 sadhzz"
+
+test utils-1.3 {basic quote: special chars \0,... and following} {
+  quote "a\0b\1c\016d\0025x\7\010\011\012\013\014\015y\0"
+} {a\0b\1c\16d\0025x\a\b\t\n\v\f\ry\000}
+
+test utils-1.4 {meta test on random data} {
+  for {set i 1} {$i <= 100} {incr i} {
+    set r [tcl::randomBytes 512]
+    set q [quote $r]
+    set c1 [subst $q]
+    eval set c2 \"$q\"
+# subst is not (yet) binary clean...
+#    if {[string compare $r $c1] != 0} {
+#	error "on try #$i quote not reversed by subst on \"$q\":\"$c1\""
+#    }
+    if {[string compare $r $c2] != 0} {
+	error "on try #$i quote not reversed by eval on \"$q\":\"$c2\""
+    }
+  }
+} {}
+
+
+set b0list {0 no false}
+set b1list {1 yes true 42 1.5 -7}
+
+set blist [concat $b0list $b1list]
+
+set berrlist [list "0x" {[error]} fgsdg "1\0" "\0000" "0\0x"]
+
+
+test utils-2.1 {isBoolean 1} {
+    foreach bb $blist {
+	foreach b [list $bb "\t$bb  "] {
+	    if {[isBoolean $b]!=1} {
+		error "isBoolean found \"[quote $b]\" not being a boolean !"
+	    }
+	}
+    }
+} {}
+
+test utils-2.2 {isBoolean 0} {
+    set notbool $berrlist
+    foreach b $blist {
+	lappend notbool "$b\n"
+	lappend notbool "\r$b"
+	lappend notbool "$b;"
+    }
+    foreach b $notbool {
+	if {[isBoolean $b]} {
+	    error "isBoolean found \"[quote $b]\" to be a valid boolean !"
+	}
+    }
+} {}
+
+
+test utils-2.3 {getBoolean 0} {
+    foreach bb $b0list {
+	foreach b [list $bb "\t$bb  "] {
+	    if {[string compare [getBoolean $b err] "0"]!=0} {
+		error "getBoolean found \"[quote $b]\" not being valuated to 0 !"
+	    }
+	}
+    }
+} {}
+
+
+test utils-2.4 {getBoolean 1} {
+    foreach bb $b1list {
+	foreach b [list $bb "\t$bb  "] {
+	    if {[string compare [getBoolean $b err] "1"]!=0} {
+		error "getBoolean found \"[quote $b]\" not being valuated to 1 !"
+	    }
+	}
+    }
+} {}
+
+test utils-2.5 {getBoolean err} {
+    foreach bb $berrlist {
+	foreach b [list $bb "\t$bb  "] {
+	    if {[string compare [getBoolean $b err] "err"]!=0} {
+		error "getBoolean found \"[quote $b]\" not being valuated to error !"
+	    }
+	}
+    }
+} {}
+
+
+

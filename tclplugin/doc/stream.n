@@ -1,0 +1,138 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) stream.n 1.3 97/10/09 08:53:01
+'\" 
+.so man.macros
+.TH "stream" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+stream \- HTML stream manipulation feature for Safe-Tcl
+.SH SYNOPSYS
+.sp
+\fB::browser::openStream \fItarget\fR ?\fImimeType\fR?
+.sp
+\fB::browser::closeStream \fIstream\fR
+.sp
+\fB::browser::writeToStream \fIstream data\fR
+.sp
+\fB::browser::javascript \fIjavaScriptCmd \fR?\fIcallback\fR?
+.sp
+\fB::browser::email \fIrecipients text\fR
+.BE
+
+.SH DESCRIPTION
+.PP
+The \fBstream\fR feature is installed into a Safe\-Tcl interpreter by
+a security policy that enables the feature.
+This policy is called the \fBcontrolling\fR security policy, below.
+The \fBstream\fR featue adds aliases to a Safe\-Tcl interpreter to
+allow it to invoke JavaScript commands, generate output to a frame as
+encodd by a mime type, and to send electronic mail.
+.PP
+The procedures added by the \fBstream\fR feature are discussed in the
+\fBPROCEDURES\fR section.
+The \fBCONFIGURATION\fR section describes how to control the behavior
+of this feature at runtime.
+The risks associated with the feature are described the \fBSECURITY\fR
+section.
+
+.SH PROCEDURES
+The \fBstream\fR feature provides these procedures:
+.TP
+\fB::browser::openStream \fIframe \fR?\fImimeType\fR?
+This procedure opens a stream to a frame \fIframe\fR managed by the
+hosting application and returns the name of the new stream.
+Data sent to the stream is interpreted as having the mime type
+\fImimeType\fR, which defaults to \fBtext/html\fR.
+The name of the stream is returned.
+The frame names \fB_self\fR, \fB_current\fR and the empty string are
+disallowed, because their use causes data sent on the stream to
+replace the contents of the frame containing the Tclet, which causes
+some hosting applications to operate incorrectly.
+See the description of the \fB::browser::displayURL\fR procedure in
+the manual page for the \fBurl\fR feature for details on other special
+names.
+If the frame \fIframe\fR does not exist, it is created with the
+current default size, toolbar decorations and location for the hosting
+application.
+Otherwise, the current contents of the frame are discarded and the
+frame is repainted with the current default background color for the
+hosting application.
+.TP
+\fB::browser::closeStream \fIstream\fR
+Closes the stream \fIstream\fR which was previously opened with
+\fB::browser::openStream\fR.
+Subsequently, calling \fB::browser::writeToStream\fR with this
+\fIstream\fR returns an error.
+.TP
+\fB::browser::writeToStream \fIstream data\fR
+Writes \fIdata\fR to the \fIstream\fR which must be the name of a
+stream previously opened with \fB::browser::openStream\fR.
+.TP
+\fB::browser::javascript \fIjavascriptCmd \fR?\fIcallback\fR?
+This procedure sends a JavaScript command for execution by the hosting
+application, and receives the result if one is produced.
+Some JavaScript computations do not produce a result and hence no result is
+returned for them by this procedure.
+If an error results from the JavaScript command, the error is returned by
+this command.
+If \fIcallback\fR is not given, the operation blocks until the JavaScript
+computation completes, or until a timeout occurs.
+If the optional \fIcallback\fR is given, the procedure returns immediately
+and arranges for \fIcallback\fR to be called when the computation finishes
+or times out.
+The callback argument is explained below.
+This procedure is dangerous because it gives access to all of JavaScript's
+capabilities.
+.TP
+\fBcallback \fIname stream reason data\fR
+The \fB::browser::javascript\fR procedure accepts an optional callback that
+will be called when the result of the JavaScript computation arrives from
+the hosting application.
+It is invoked with the same arguments as the \fBendCallback\fR explained
+in the manual page for the \fIurl\fR feature.
+.TP
+\fB::browser::email \fIrecipients text\fR
+This procedure sends electronic mail to a comma\-separated list of
+\fIrecipients\fR with content \fItext\fR.
+Because of limitations in the APIs of hosting applications, a subject field
+or other common header fields can not be specified.
+This procedure is dangerous because it allows untrusted Tcl programs to
+send electronic mail using the user's originating address.
+It is enabled only by the \fBjavascript\fR policy.
+
+.SH CONFIGURATION
+.PP
+If a specific alias is not allowed in the \fBaliases\fR section of a
+controlling policy's configuration, it will not be
+installed into a Tclet when using this policy.
+This allows a policy to enable or disable each alias individually.
+
+.SH SECURITY
+.PP
+This feature allows a Tclet to send electronic mail,
+call arbitrary JavaScript code, and generate streams to frames managed
+by the hosting application without filtering the data sent.
+The ability to send electronic mail exposes the user to loss of
+reputation and privacy risks.
+Because JavaScript is an evolving language, and because its use
+together with arbitrary Tclet code is not well understood, one must
+assume the worst about the risks that the user is exposed to.
+.PP
+For these reasons, 
+the \fBstream\fR feature is allowed only in the \fBjavascript\fR and
+\fBtrusted\fR policies.
+These policies are themselves disabled by default; it is highly
+recommended that they be enabled only for Tclets that are trusted by
+the user.
+
+.SH "SEE ALSO"
+plugin(n), policy(n), feature(n), url(n), safe(n), config(n)
+
+.SH KEYWORDS
+JavaScript, electronic mail, HTML generation, frames

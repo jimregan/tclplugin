@@ -1,0 +1,231 @@
+Principles for Security Policies
+================================
+
+This document lays down the principles for how and why we design security
+policies: what goals we are trying to achieve with security policies, what
+guidelines we use to implement a policy, what classes of risks are we
+trying to avoid, and what classes of risks we're not trying to avoid.
+
+Goals
+=====
+
+The goal of this work is to produce an extensible framework for imposing
+restrictions on Tcl scripts and providing security for hosting
+applications. Scripts being executed under this framework can expect a
+constant set of features that are always available, called the "Safe Base",
+and can also request extended security related behaviors. These behaviors
+are embodied in security policies.  Security policies modify the security
+provided by the Safe Base in various ways according to the specific
+situation in which the script is executed.  The security policy decides to
+allow a script to use it based on the level of trust it has in the script.
+
+The Safe Base should be applicable for all uses of Tcl. The Safe Base
+should not have special features that are directed towards the needs of a
+specific use of Tcl. Such features would likely be detrimental to using the
+Safe Base in other situations.  However, specific security policies are
+allowed to have features that are attuned to specific uses of Tcl; as an
+example, a Browser security policy might have specific features that are
+only useful when scripts are executed within the context of a web browser.
+
+The goal of each policy is to strike a reasonable balance between providing
+scripts with access to interesting functionality and incurring risks due to
+this access. A security policy makes safe access to dangerous functionality
+possible in a potentially untrusted script. A completely untrusted script
+should be allowed to use the functionality for carrying out its task, but
+it should be prevented from using this functionality to do mischief.
+
+Choosing the Safe Base
+======================
+
+The Safe Base is designed to eliminate several security related risks,
+while tolerating others. Specifically:
+
+* The Safe Base eliminates risks to the privacy and integrity of
+  information belonging to the user of a script which executes using only
+  the Safe Base (i.e. without relaxing security through a security policy).
+  Information belonging to the user can not be corrupted by a script using
+  only the Safe Base nor can it be disclosed without the user's permission
+  to another party.
+* The Safe Base does not prevent "annoyance" or "denial of service" attacks
+  by the script. Such attacks use features in the Safe Base to either annoy
+  the user of the script (e.g. ringing the workstation's bell continuously)
+  or prevent the user temporarily from performing useful work.
+
+We now define the Safe Base by a three-step construction:
+
+A feature could be provided in the Safe Base if its use in isolation does
+not require trust of the using script. It is a candidate for inclusion if
+it does not expose the hosting application to privacy or integrity attacks.
+That is, its use does not require any trust in the script.  We call such a
+feature "safe in isolation".
+
+A feature could be provided in the Safe Base if that feature is safe in
+isolation and composes safely with other features already in the Safe Base.
+Two features "A" and "B" might be safe in isolation but combining them is
+unsafe. For example, read-only access to local files is safe, and opening a
+socket to a remote host is safe, in isolation.  Combining these allows
+information to be copied from the local file system to the remote host,
+which is not safe.
+
+Read-only access to local files could be included in the Safe Base, but it
+would be impossible to use the socket command without requiring trust, and
+vice versa.  We define the Safe Base to include features that are safe in
+isolation iff they can be composed without requiring trust with all other
+features that are safe in isolation. This excludes read-only access to
+local files and the socket command, because they require trust when
+combined with each other.
+
+The definition of the Safe Base is based on the feature set of Tcl 8.0 and
+Tk 8.0. In the future when features that are safe in isolation are added to
+Tcl and Tk, they are included in the Safe Base based on whether they
+compose without requiring trust with features that are already in the Safe
+Base.
+
+Design Principles for Security Policies
+=======================================
+
+Features that cannot safely be combined with other features already in the
+Safe Base can not be part of the Safe Base. Instead, collections of
+features that incur more risk than the Safe Base should be grouped into
+policies. This approach is incremental -- at every stage of composing a
+security policy, it is possible to analyze what risks are incurred.
+
+Policy composition is disallowed. A script can use either the Safe Base
+alone, or the Safe Base plus one security policy.  This means that the
+author of a security policy can analyze the security risks incurred by her
+policy in isolation, without having to consider security risks due to
+composition with functionality enabled by other, as yet unknown, policies.
+
+A security policy may require a varying degree of trust in the script using
+the policy before access can be granted. Access control is the
+responsibility of each security policy, and can be assisted by utility
+libraries provided together with our implementation of the Safe Base. These
+libraries will include several canned access control and authentication
+mechanisms for use by security policies [Are these mechanisms part of the
+Safe Base, or just hooks provided in our implementation for policy writers?]
+
+Policies should be kept simple: "fits on a page" is a good approach.
+Policies should be designed to address the 80% solution; they should be
+right for most uses. Policies should be designed with a real-life example
+of usage in mind.
+
+Policies should not compose unrelated sub-policies and should not rely on
+features or implementations of other policies. For example, Safesock and
+HomeSock are separate policies. Policies are internally allowed to classify
+scripts into classes of risks; for example, Safesock classifies scripts as
+"inside" and "outside", based on whether they are allowed to open sockets
+on ports and hosts inside or outside a firewall.
+
+Acceptable and Unacceptable Risks
+=================================
+
+All specific mentions of acceptable or unacceptable risks are intended as
+examples from which principles can be inferred. I do not attempt to provide
+an exhaustively complete list of such risks in this document. Such a
+complete list must be produced as part of a definition statement.
+
+Over time, more risks may become acceptable as our implementation of
+mechanisms to prevent attacks improves. For example, it may be possible in
+a future implementation to impose timeouts or user interrupts to prevent a
+script from blocking indefinitely (a "denial of service" attack). Any
+changes made to how we protect the script's host from such attacks should
+be invisible to the script.
+
+[misplaced trust] Each policy must decide whether to trust a script and
+grant access to its capabilities. If trust is misplaced, the script should
+not incur more risk than a correctly trusted script using the same policy.
+Here are some ways in which a policy might be tricked into misplacing trust:
+
+	* DNS spoofing: assigning trust based on the host name from which
+	  the script was loaded (over a network) is susceptible to a form
+	  of attack known as "DNS spoofing". This form of attack is not
+	  preventable with current technology.
+	* Replacement attacks: A script can be replaced by an attacker, in
+	  transit over the network, with another script, making it appear
+	  that the replacing script actually originated at the trusted
+	  host.
+
+[integrity] Allowing an untrusted script to destroy information on the
+hosting system is not an acceptable risk. To allow access to functionality
+that could potentially result in such damage requires trust.
+
+[privacy] Allowing an untrusted script to leak information stored on the
+hosting system to other hosts is not an acceptable risk. Access to locally
+stored information in combination with communication requires trust.
+
+[denial of service] An untrusted script can mount denial of service attacks
+such as consuming all CPU cycles or all the IPC kernel buffers. We do not
+prevent such attacks, and this is an acceptable risk in untrusted scripts.
+
+	* blocking: we allow an untrusted script to block the computation
+	  of the hosting process indefinitely. vwait, blocking IO, after
+	  and tkwait visibility are OK.
+	* flooding: untrusted scripts can write unlimited amounts of data
+	  on sockets, straining system buffer resources.
+	* CPU time attacks: an untrusted script can consume all CPU
+	  cycles. It may be possible in a future release to limit CPU
+	  cycle consumption.
+	* memory hogging: untrusted scripts can consume unlimited amounts
+	  of memory. In a future release we may be able to limit memory
+	  consumption.
+	* access to screen space: an untrusted script cannot consume
+	  unlimited amounts of screen real-estate (e.g. by creating big
+	  top-levels and menus, or by doing "raise" repeatedly). Creating
+	  new top-levels of arbitrary size or modifying the Z-order of
+	  arbitrary windows on the screen requires trust.
+	* keyboard focus: an untrusted script cannot modify the keyboard
+	  focus outside of its window hierarchy (e.g. by doing a global
+	  grab or focus -force). These features require trust.
+	* clipboard and selection: an untrusted script cannot directly
+	  read from or write to the clipboard and cannot obtain access to
+	  selections outside its window hierarchy.
+	* filling the file system: an untrusted script cannot consume
+	  unlimited amounts of disk space.
+
+[naive users] scripts that present user interfaces can attempt to confuse or
+intimidate a user into actively compromising her own integrity or privacy.
+Security policies should strive to protect users from such attacks by
+providing visual cues that alert a user to the fact that the user interface
+was created by an untrusted script. Allowing a script to provide a user
+interface that does not include such visual cues requires trust.
+
+Trust
+=====
+
+Trust is necessary in order for a policy to give a script access to
+dangerous features that could be used to harm a hosting system. Determining
+whether to trust a script is a thorny issue. Generally, the problem is
+reduced to trusting the originator of the script; this is used as the
+"principal" for trust purposes. If the identity of the principal can be
+determined, a policy can decide whether it knows and trust that principal.
+Thus, determining whether and to what degree to trust a script hinges on
+our ability to determine the identity of the principal. Here are several
+well known mechanisms that can be used by policies to determine trust:
+
+	* Weak authentication: weak forms of determining the originator
+	  include use of the host name from which the script originated.
+	  As noted above this is susceptible to several forms of attack,
+	  and is generally not to be used for deciding whether to grant
+	  access to truly dangerous functionality. Examples of weak
+	  authentication: using the URL from which a script was loaded to
+	  decide whether to trust that script, or using the host name of
+	  a socket command to classify the script as either "inside" or
+	  "outside".
+
+	* Strong authentication: cryptographic techniques such as checksums
+	  can ensure that the script is identical to one we trust. Checking
+	  the checksum against a list of known checksums can quickly allow
+	  the policy to determine whether to trust the script. In addition,
+	  this ensures that the script was not modified in transit. An
+	  example of strong authentication: using the MD5 checksum to
+	  identify trusted scripts.
+
+	* Strong identification: cryptographic techniques such as digital
+	  signatures strongly identify both the signing party and ensure
+	  that the script was not modified in transit. The signature can
+	  be quickly compared against a list of known signatures to
+	  determine the identity of the signing party and to verify that
+	  the script has not been tampered with.
+
+The Safe Base at present does not include mechanisms for determining trust
+[should it?].

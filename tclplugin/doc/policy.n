@@ -1,0 +1,291 @@
+'\"
+'\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\"
+'\" See the file "license.terms" for information on usage and redistribution
+'\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+'\" 
+'\" SCCS: @(#) policy.n 1.8 97/10/10 12:54:57
+'\" 
+.so man.macros
+.TH "policy" n 2.0 Tcl "Safe-Tcl"
+.BS
+'\" Note:  do not modify the .SH NAME line immediately below!
+.SH NAME
+policy \-  Tcl command to request use of a security policy.
+.SH SYNOPSIS
+.sp
+\fBpolicy \fR?\fIpolicyName\fR? \fR?\fIargs ...\fR?
+.BE
+
+.SH DESCRIPTION
+.PP
+The \fBpolicy\fR command allows a Tclet executing in a safe, untrusted
+interpreter to request that a security policy be installed into it, or to
+recall the name of the security policy in use if one has been installed.
+The \fBpolicy\fR command is available in interpreters created with
+\fB::safe::interpCreate\fR or initialized with \fB::safe::interpInit\fR.
+.PP
+Security policies make unsafe features available in a safe mediated manner
+in an untrusted interpreter.
+All access to unsafe features is mediated in the untrusted interpreter
+through aliases which transfer control to a master interpreter. The master
+interpreter can decide whether to allow or deny the access, modify the
+arguments and modify the returned result.
+An example policy is \fBhome\fR, described in the \fBhome\fR
+manual page.
+.PP
+You should read the section on the \fBPOLICY\fR command to learn how to
+invoke the command.
+If you are interesting in how the internals of the \fBpolicy\fR command
+work, read the section on \fBIMPLEMENTATION OF POLICY COMMAND\fR.
+If you want to implement a new security policy, you should read the section
+on the \fBIMPLEMENTATION OF SECURITY POLICIES\fR.
+If you are a system administrator and want to learn how to install policies
+and how to enable or disable use of specific policies, read the sections on
+\fBPOLICY CONTROL\fR, \fBPOLICY ADMINISTRATION\fR and \fBFILES\fR.
+The \fBSECURITY\fR section discusses the general security
+considerations that affect your decision to enable or disable a policy.
+You should read the \fBconfig\fR manual page to understand configuration
+management and the syntax and structure of configuration files.
+
+.SH POLICY
+.PP
+The \fBpolicy\fR command can be invoked with any number of arguments.
+The \fBpolicy\fR command is actually an alias that is executed in the
+master interpreter for the invoking interpreter.
+.PP
+If invoked with no arguments, the \fBpolicy\fR command returns the name of
+a policy installed in the invoking interpreter, if one was installed.
+If no policy is currently installed, an empty string is returned.
+Only one policy may be installed in an interpreter, and it cannot be
+uninstalled later.
+For example, if a policy named \fBhome\fR was installed in the invoking
+interpreter, the \fBpolicy\fR command when invoked with no arguments will
+return the string \fBhome\fR:
+.PP
+.CS
+policy
+=> home
+.CE
+.PP
+If the \fBpolicy\fR command is invoked with one or more arguments, the
+first argument is used as the name of a policy to install, and the rest of
+the arguments are passed to the policy initialization procedure (see below).
+The command will attempt to install that policy into the invoking interpreter.
+For example, to install the \fBgetMyMail\fR policy with several arguments,
+the \fBpolicy\fR command could be invoked as follows:
+.PP
+.CS
+policy getMyMail \-name jones \-color green
+=> getMyMail
+.CE
+.PP
+If the command succeeds, the policy has been installed in the invoking
+interpreter.
+The command may also cause an error that can be caught with \fBcatch\fR;
+the invoking interpreter can then try to load a different policy.
+.PP
+The \fBpolicy\fR command can be invoked multiple times with exactly the
+same arguments; in that case, after the first invocation, it just returns
+the name of the policy and doesn't do anything else.
+This allows a Tclet to defer obtaining the policy until it is needed and
+then request it without having to check whether it was already obtained.
+
+.SH "IMPLEMENTATION OF POLICY COMMAND"
+.PP
+This section explains what the master interpreter does in order to load a
+requested policy into an invoking Tclet.
+.PP
+First, if another policy was already installed in the invoking Tclet,
+the command returns an error immediately.
+Next, it verifies that the policy is allowed for this Tclet,
+as explained in the section on \fBTRUST MAPPING\fR below.
+If this check produces an error, it is propagated to the invoking
+interpreter. 
+.PP
+If the security checks succeed, the master interpreter obtains the list of
+features available in the application and attempts to install each feature
+into the Tclet by invoking the feature installation procedure.
+Features are described in the \fBfeature\fR manual page.
+If an error occurs at this stage, the interpreter containing the Tclet is
+killed to prevent it from executed in an undefined state that may result
+from partially installed features.
+If no error occurs, the policy is now loaded into the invoking interpreter.
+
+.SH "IMPLEMENTATION OF SECURITY POLICIES"
+.PP
+Security policies are specifications of features and resources that are
+accessible or inaccessible in a Tclet.
+As such, they are implemented as configuration files stored in the
+directory \fB::cfg::configDir\fR.
+By convention, the configuration file for a policy is named
+\fIpolicy\fB.cfg\fR.
+The \fBconfig\fR manual page describes how configuration management works
+and the complete syntax of configuration files.
+.PP
+The \fBpolicy\fR command appears as an atomic action to the invoking
+interpreter.
+It either succeeds, and then the policy is installed, or it
+fails, in which case no side effects are visible in the invoking
+interpreter.
+
+.SH "POLICY ADMINISTRATION"
+.PP
+To administer the resources made accessible to a Tclet when it obtains a
+policy, edit the configuration file for that policy.
+Several sections are present by convention in each configuration file:
+.TP
+\fBfeatures\fR
+This section enables or disables use of specific named features in a Tclet.
+In order to be installed, a feature must be present in the value of
+\fB::cfg::featureList\fR; otherwise it will not be installed into a Tclet
+even if an \fBallow\fR statement for this feature appears in this section.
+See the \fBfeature\fR manual page and manual pages for each feature to
+learn what capabilities they provide.
+.TP
+\fBaliases\fR
+This section lists all the aliases that are enabled by this policy.
+Individual features check this section to see which of the aliases they
+install are allowed by the policy.
+If an alias is not allowed in this section, it will not be installed into
+the Tclet.
+.PP
+Other sections may also be present if the policy exercises control over
+access to named resources.
+For example, the configuration file for the \fBoutside\fR policy,
+\fBoutside.cfg\fR, lists the \fBurls\fR and \fBhosts ports\fR section to
+control which URLs can be fetched and which ports can be accessed via the
+\fBsocket\fR command on what hosts.
+.PP
+You should exercise care when editing policy configuration files.
+Complicated combinations of \fBallow\fR and \fBdisallow\fR statements
+should be avoided; they can easily lead to making resources available to a
+Tclet in an unintended manner, potentially opening up security holes.
+
+.SH "POLICY CONTROL"
+.PP
+Policies can be globally enabled or disabled for use across an entire site
+by the \fBpolicies\fR section in the application's main configuration file.
+The Tcl plugin main configuration file is \fBplugin.cfg\fR in the directory
+\fB::cfg::configDir\fR.
+.PP
+During installation of a policy the master interpreter checks whether the
+invoking interpreter can use the requested policy.
+The master interpreter examines the \fBallow\fB and \fBdisallow\fR
+statements in the \fBpolicies\fR section of \fBplugin.cfg\fR.
+If the policy is disallowed the requesting Tclet can not use that policy
+and the \fBpolicy\fR command will return an error.
+If the policy is not mentioned in this section, no Tclet can use the
+policy.
+.PP
+To install a new policy and enable it, you should edit the \fBplugin.cfg\fR
+file and add an \fBallow\fR statement that enables the policy in exactly
+the intended circumstances.
+To disable a policy completely, ensure that there are no \fBallow\fR
+statements in this section for the policy.
+If you want to disallow the policy under some condition (e.g. when the
+Tclet is loaded from a certain host), add a \fBdisallow\fR statement that
+explicitly tests for that condition.
+
+.SH SECURITY
+.PP
+You should understand exactly what resources and capabilities each
+policy makes accessible to Tclets.
+Tclets that come from untrusted sources should generally not be given
+access to sensitive resources.
+For example, because the \fBinside\fR policy is intended to allow
+access to resources on your company's Intranet, the default
+configuration file for the Tcl plugin disables this policy.
+.PP
+The risks incurred by policies stem from the combination of features
+each policy enables.
+These risks are listed in the manual entries for each feature, and the
+manual entry for each policy lists what features it enables; this
+allows you to quickly oversee the risks incurred by a specific policy.
+.PP
+The security risks can be divided into four general classes:
+.TP
+\fBIntegrity risks\fR
+A feature may include a capability that lets a malicious Tclet destroy
+a sensitive resource on the client's host.
+For example, the feature might enable a Tclet to remove files on the
+local disk, and a malicious Tclet might use it to destroy all files.
+The Safe Base is designed to protect the integrity of a computer on
+which Tclets are executed.
+Policies may relax restrictions imposed for this purpose on Tclets,
+but relaxing these restrictions also weakens the protection.
+.TP
+\fBPrivacy risks\fR
+A feature may enable a malicious Tclet to obtain sensitive information
+and leak it to other parties.
+Even one bit of information when leaked in this way may be very
+damaging; for example, whether the owner of the computer on which the
+Tclet is being executed has even been arrested.
+The Safe Base is designed to prevent privacy attacks.
+However, by relaxing restrictions imposed on a Tclet for this purpose,
+policies may expose the hosting computer or its owner to some privacy
+attacks.
+.TP
+\fBRisk of annoyance and resource attacks\fR
+A feature may allow a malicious Tclet to perform operations that
+disrupt the work of the human using the hosting computer, such as
+ringing the bell or opening a large number of windows on the
+computer's display.
+Or, the Tclet could try to exhaust some finite resource on the hosting
+computer, such as storage or memory space.
+At present, the Safe Base is not attempting to prevent all annoyance
+and resource attacks.
+.TP
+\fBLoss of reputation\fR
+A Tclet may gain access to a resource or capability that can be used
+to perform actions that are detrimental to the reputation of the human
+owner of the hosting computer.
+For example, a malicious Tclet could send bogus or inflamatory
+electronic mail, or post netnews articles, making it appear that
+the user of the computer is the one who actually sent the email or
+posted the articles.
+While the Safe Base prevents such attacks, individual policies may
+expose the user of the computer on which Tclets are executing to these
+risks by relaxing some of the attendant restrictions.
+.PP
+The policies provided with the Tcl plugin make a variety of resources
+available to Tclets.
+The policies have been carefully designed and documented to minimze
+the risks associated with their use.
+However, some policies are disabled by default because they provide
+access to features that would be dangerous in the hands of potentially
+malicious Tclets.
+.PP
+The 2.0 release of the Tcl plugin provides no mechanism for
+authenticating the author of a Tclet or web page, and thus has no way
+to associate a higher level of trust with a Tclet.
+In controlled situations such as when the plugin is used to view
+Tclets loaded from servers on a company's Intranet, it may be
+sufficient to trust the URL from which a Tclet is loaded.
+However, this is a very weak form of authentication and can be
+subverted when used for authenticating Tclets loaded from sites not
+under your control.
+.PP
+All of the above means that you carefully control, through settings in
+the application's master configuration, which Tclets can use
+each policy.
+Incorrect configuration exposes your computer and potentially other
+computers on the same network to the risks discussed above.
+
+.SH FILES
+.PP
+Policy configuration files are stored, along with other configuration
+files, in the \fB::cfg::configDir\fR directory.
+Policy configuration files are named \fIpolicy\fB.cfg\fR.
+.PP
+The use of policies in an application is controlled by settings in the
+\fBpolicies\fR section in the master configuration for that
+application.
+For the Tcl plugin, the master configuration is contained in the
+\fBplugin.cfg\fR file in the \fB::cfg::configDir\fR directory.
+
+.SH "SEE ALSO"
+safe(n), config(n), feature(n)
+
+.SH KEYWORDS
+Safe Base, policies, trust predicates

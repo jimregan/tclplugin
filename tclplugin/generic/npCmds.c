@@ -92,7 +92,7 @@ PnDisplayStatusCmd(
         return TCL_ERROR;
     }
 
-    Np_NPN_Status(instance, (const char *) Tcl_GetString(objv[2]));
+    NPN_Status(instance, (const char *) Tcl_GetString(objv[2]));
 
     NpLog("LEAVING Status: %s\n", Tcl_GetString(objv[2]));
 
@@ -151,7 +151,7 @@ PnOpenStreamCmd(
 
     mtype = (char *) Tcl_GetString(objv[2]);
     frame = (char *) Tcl_GetString(objv[3]);
-    status = Np_NPN_NewStream(instance, mtype, frame, &streamPtr);
+    status = NPN_NewStream(instance, mtype, frame, &streamPtr);
     if (status != NPERR_NO_ERROR) {
         Tcl_AppendResult(interp, "could not open stream of type \"",
                 mtype, "\" to \"", frame, "\"", (char *) NULL);
@@ -243,7 +243,7 @@ PnWriteToStreamObjCmd(
     
     dataPtr = Tcl_GetStringFromObj(objv[3], &len);
 
-    (void) Np_NPN_Write(instance, streamPtr, len, dataPtr);
+    (void) NPN_Write(instance, streamPtr, len, dataPtr);
 
     NpLog("Leaving PnWriteToStream (%d) with success\n", len);
     
@@ -302,7 +302,7 @@ PnCloseStreamCmd(
         return TCL_ERROR;
     }
 
-    status = Np_NPN_DestroyStream(instance, streamPtr, NPRES_DONE);
+    status = NPN_DestroyStream(instance, streamPtr, NPRES_DONE);
     if (status != NPERR_NO_ERROR) {
 	Tcl_AppendResult(interp, "could not destroy stream \"",
 		Tcl_GetString(objv[2]), "\"", (char *) NULL);
@@ -386,7 +386,7 @@ PnGetURLCmd(
 	frame = Tcl_GetString(objv[3]);
     }
     
-    if (Np_NPN_GetURL(instance, (const char *) url, (const char *) frame)
+    if (NPN_GetURL(instance, (const char *) url, (const char *) frame)
 	    != NPERR_NO_ERROR) {
 	Tcl_AppendResult(interp, "could not get URL \"", url, "\"",
 		(char *) NULL);
@@ -462,7 +462,7 @@ PnPostURLObjCmd(
 	frame = NULL;
     }
     url = Tcl_GetStringFromObj(objv[2], NULL);
-    status = Np_NPN_PostURL(instance, (const char *) url, (const char *) frame,
+    status = NPN_PostURL(instance, (const char *) url, (const char *) frame,
 	    dataLen, (const char *) dataPtr, (NPBool) fromFile);
     if (status != NPERR_NO_ERROR) {
 	Tcl_AppendResult(interp, "could not post to URL \"", url, "\"",
@@ -519,7 +519,7 @@ PnUserAgentCmd(
 	return TCL_ERROR;
     }
 
-    userAgentPtr = (char *) Np_NPN_UserAgent(instance);
+    userAgentPtr = (char *) NPN_UserAgent(instance);
     if (userAgentPtr == NULL) {
 #if 0
 	Tcl_AppendResult(interp, "failed to retrieve useragent",
@@ -573,7 +573,7 @@ PnVersionCmd(
     /*
      * Ignore arguments
      */
-    Np_NPN_Version(&pMaj, &pMin, &bMaj, &bMin);
+    NPN_Version(&pMaj, &pMin, &bMaj, &bMin);
 
     objPtr = Tcl_NewObj();
     Tcl_ListObjAppendElement(NULL, objPtr, Tcl_NewIntObj(pMaj));

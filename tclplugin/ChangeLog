@@ -1,5 +1,8 @@
 2004-05-24  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* generic/np.h:     remove Np_NPN_* -> NPN_ defines needed for
+	* generic/npCmds.c: MAC_TCL (OS 8/9), which is no longer supported
+
 	* confiure:     readd TEA_PROG_WISH as we need to set the wish
 	* configure.in: executable on install
 	* Makefile.in:

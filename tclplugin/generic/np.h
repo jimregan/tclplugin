@@ -36,32 +36,6 @@
 #    define	F_OK	0
 #  endif
 
-#elif defined(MAC_TCL)
-
-#  include <stdio.h>
-
-#  define HIBYTE(i) (i >> 8)
-#  define LOBYTE(i) (i & 0xff)
-
-#  define HAVE_UNISTD_H 1
-#  if HAVE_UNISTD_H
-#	include <types.h>
-#	include <unistd.h>
-#  endif
-
-#  include <Quickdraw.h>
-
-#  include <Threads.h>
-
-#  define TCL_THREAD_STACK_SIZE (256*1024)
-
-int	NpMacServiceNpScript(void);
-void	NpMacWakeUpTclThread(int serviceMode);
-void 	NpMacDoACompleteEval(int serviceMode);
-
-EXTERN ThreadID gTclThread;     /* The ThreadID of the Tcl thread */
-EXTERN ThreadID gMainThread;    /* The ThreadID of the thread we started in */
-
 #else /* UNIX */
 
 #  include <stdio.h>
@@ -128,7 +102,7 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 
 /*
  * Define the name of the environment variable that will contain the
- * path to the Tcl plugin library.
+ * path to the Tcl plugin library.  Obsolete for v3, may be reused.
  */
 
 #define TCL_PLUGIN_DIR		"TCL_PLUGIN_DIR"
@@ -147,54 +121,6 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 EXTERN void		NpLog _ANSI_ARGS_(TCL_VARARGS(CONST char *, format));
 EXTERN void		NpStartLog _ANSI_ARGS_((CONST char *filename));
 EXTERN void		NpStopLog _ANSI_ARGS_((void));
-
-/*
- * For the Mac, we need to make sure the Tcl_Evals are all
- * done in the plugin thread, so we wrap Tcl_Eval in Np_Eval.
- *
- * However, we cannot call the NPN_ functions from the Tcl
- * thread, so we have to wrap the calls in the pn Tcl commands,
- * to run them in the main thread...
- *
- * For Unix & Windows this is irrelevant...
- */
-
-#ifdef MAC_TCL
-    EXTERN int 		Np_Eval _ANSI_ARGS_((Tcl_Interp *interp, char *string));
-    EXTERN int 		Np_EvalObj _ANSI_ARGS_((Tcl_Interp *interp, Tcl_Obj *objPtr));
-    
-
-    EXTERN void        	Np_NPN_Status(NPP instance, const char* message);
-    EXTERN NPError     	Np_NPN_NewStream(NPP instance, NPMIMEType type,
-				const char* target, NPStream** stream);
-    EXTERN int32        Np_NPN_Write(NPP instance, NPStream* stream, int32 len,
-				void* buffer);
-    EXTERN NPError    	Np_NPN_DestroyStream(NPP instance, NPStream* stream,
-				NPReason reason);
-    EXTERN NPError     	Np_NPN_GetURL(NPP instance, const char* url,
-				const char* target);
-
-    EXTERN NPError     	Np_NPN_PostURL(NPP instance, const char* url,
-				const char* target, uint32 len,
-				const char* buf, NPBool file);
-
-    EXTERN void        	Np_NPN_Version(int* plugin_major, int* plugin_minor,
-			        int* netscape_major, int* netscape_minor);
-    EXTERN const char* 	Np_NPN_UserAgent(NPP instance);
-
-#else 
-#   define Np_Eval 		Tcl_Eval
-#   define Np_EvalObj 		Tcl_EvalObj
-#   define Np_NPN_Status 	NPN_Status
-#   define Np_NPN_NewStream 	NPN_NewStream
-#   define Np_NPN_Write 	NPN_Write
-#   define Np_NPN_DestroyStream NPN_DestroyStream
-#   define Np_NPN_GetURL 	NPN_GetURL
-#   define Np_NPN_PostURL 	NPN_PostURL
-#   define Np_NPN_UserAgent 	NPN_UserAgent
-#   define Np_NPN_Version 	NPN_Version
-#endif
-
 
 /*
  * Procedures shared between various modules in the plugin:

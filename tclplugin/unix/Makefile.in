@@ -104,6 +104,10 @@ TCLSHP_LIBS= $(LIBS) ${XTLIB}
 # some -l switched at link time and which
 SHLIB_LD_LIBS = @SHLIB_LD_LIBS@
 
+
+DBGX=
+TCL_DBGX=
+
 # Unfortunatly for SunOS4 we have to
 # Add -lm
 # (otherwise you get a ld.so: Undefined symbol: _cosh at 
@@ -165,6 +169,8 @@ INCLPATH= -I. -I${GENERIC_DIR} -I${TCL_INCLDIR} -I${TK_INCLDIR} ${TK_XINCLUDES}
 TCL_BIN_DIR=		@TCL_BIN_DIR@
 # the symlink to the tcl dir
 TCLBINDIR=	tcl
+
+TCL_LIB_FILE= @TCL_LIB_FILE@
 
 # tk ones
 TK_BIN_DIR=		@TK_BIN_DIR@
@@ -228,7 +234,7 @@ TCLSHP= tclshp$(VERSION)
 TCLSHP_PATH= $(BIN_DIR)/$(TCLSHP)
 
 CFLAGS = $(CNPDEBUGFLAGS) $(INCLPATH) $(ACDEFS) \
-	$(DEFINES) $(SHLIB_CFLAGS) $(MEM_DEBUG_FLAGS)
+	$(DEFINES) $(SHLIB_CFLAGS) $(MEM_DEBUG_FLAGS) -DTCL_LIB_FILE="\"$(TCL_LIB_FILE)\""
 CNSFLAGS = $(CNSDEBUGFLAGS) $(INCLPATH) $(ACDEFS) \
 	$(DEFINES) $(SHLIB_CFLAGS) $(MEM_DEBUG_FLAGS)
 CTCLFLAGS = $(CNPDEBUGFLAGS) $(INCLPATH) $(ACDEFS) $(TCL_DEFS) \
@@ -281,7 +287,7 @@ $(TCL_OBJECTS):
 $(TK_OBJECTS):
 	cd $(TK_BIN_DIR); $(MAKE) objs 
 
-$(NSP_LIB_FILE): $(TCLBINDIR) $(TKBINDIR) $(TCL_OBJECTS) $(TK_OBJECTS) $(OBJS)
+$(NSP_LIB_FILE): $(TCLBINDIR) $(TKBINDIR) $(POWBINDIR) $(FITSTCLBINDIR) $(CFITSIOBINDIR) $(TCL_OBJECTS) $(TK_OBJECTS) $(OBJS)
 	@echo "Linking the fat library (tcl+tk+plugin objects)..."
 	@echo "  { if you get an error (eventually at netscape runtime!),"
 	@echo "    check the values of :"
@@ -297,7 +303,7 @@ $(TKBINDIR)/tkAppInit.o:
 $(TCLSHP): $(NSP_LIB_FILE) tclAppInit.o
 	@echo "Linking wish with the fat library, if this fails"
 	@echo "    check SHLIB_LD_LIBS and XTLIB"
-	$(CC) tclAppInit.o -o $(TCLSHP) $(BUILD_LIB_SPEC) $(TCLSHP_LIBS)
+	$(CC) $(CFLAGS) tclAppInit.o -o $(TCLSHP) $(BUILD_LIB_SPEC) $(TCLSHP_LIBS)
 
 staging:
 	@if test "$(DISTRIB)" = "unknown" ; then \
@@ -310,6 +316,7 @@ staging:
 	$(MAKE) install INST_TOP=$(STAGEDIR) STAGING=1 DISTRIB=$(DISTRIB)
 	@echo "### Install scripts staging..."	
 	$(INSTALL_PROGRAM) $(TOP_DIR)/installer/install.sh $(STAGEDIR)
+	$(INSTALL_DATA) $(TOP_DIR)/doc/INSTALL.unix $(STAGEDIR)/README
 	-$(RM) -rf $(STAGEDIR)/installer
 	$(MKDIR) $(STAGEDIR)/installer
 	@for f in $(TOP_DIR)/installer/*.tcl; do \
@@ -400,10 +407,11 @@ install-libraries:
 	$(MKDIR) $(NPDOC_DESTDIR)
 	@for f in $(TOP_DIR)/changes `/bin/ls -d $(TOP_DIR)/doc/* | grep -v SCCS | grep -v '~'`;\
 	do \
+		if test ! -d $$f ; then \
 		echo "Installing $$f in $(NPDOC_DESTDIR)"; \
 		$(INSTALL_DATA) $$f $(NPDOC_DESTDIR) ; \
+		fi; \
 	done ;
-
 
 clean:
 	-$(RM) $(TARGETS) *.o *~ #*

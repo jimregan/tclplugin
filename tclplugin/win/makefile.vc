@@ -19,16 +19,18 @@
 ROOT	= ..
 TMPDIR	= .
 OUTDIR	= $(TMPDIR)
-TOOLS32	= c:\msdev
-TK	= ..\..\tk8.0
-TCL	= ..\..\tcl8.0
+TOOLS32	= c:\progra~1\devstu~1\Vc
+TOOLS32RC	= c:\progra~1\devstu~1\SharedIDE
+TK	= ..\..\tk8.2.1
+TCL	= ..\..\tcl8.2.1
+
 MACHINE	= IX86
 
 # Figure out which configuration is being built.
 
 !IF "$(CFG)" == ""
 CFG=nptcl32 - Win32 Debug
-!MESSAGE No configuration specified. Defaulting to nptcl32 - Win32 Debug.
+!MESSAGE No configuration specified. Defaulting to nptcl32 - Win32 Release.
 !ENDIF
 
 # If the configuration is not one we know, die with a nice error message.
@@ -57,7 +59,7 @@ NODEBUG=1
 PATH=$(TOOLS32)\bin;$(PATH)
 
 cc32 = $(TOOLS32)\bin\cl -I$(TOOLS32)\include
-rc32 = $(TOOLS32)\bin\rc
+rc32 = $(TOOLS32RC)\bin\rc
 link32 = $(TOOLS32)\bin\link
 
 INCLUDES= -I. -I$(ROOT)\generic -I$(TCL)\generic -I$(TK)\generic \
@@ -125,7 +127,7 @@ cdebug = -Z7 -Od
 # declarations common to all compiler options
 ccommon = -c -W3 -Dtry=__try -Dexcept=__except -Dleave=__leave \
 	  -Dfinally=__finally -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl \
-	  -nologo -D_WINDOWS 
+	  -nologo -D_WINDOWS -DUSE_TCL_STUBS -DUSE_TK_STUBS -DSTATIC_BUILD
 
 !IF "$(MACHINE)" == "IX86"
 cflags = $(ccommon) -D_X86_=1 $(IE_30_FLAGS) -DXP_WIN32
@@ -151,13 +153,13 @@ cvarsdll   = $(cvarsmt) -D_DLL
 # Project specific targets
 ######################################################################
 
-TCLVERSION = 80
+TCLVERSION = 82
 DEF_FILE= npdll32.def
 
 # Flags for the linker:
 
 LFLAGS	= $(LDEBUG) $(LLIBS) $(LCOMMON) $(LOBJS)
-LLIBS	= $(TCL)\win\tcl$(TCLVERSION).lib $(TK)\win\tk$(TCLVERSION).lib \
+LLIBS	= $(TCL)\win\Release\tcl$(TCLVERSION).lib $(TK)\win\Release\tk$(TCLVERSION).lib \
 	msvcrt.lib oldnames.lib kernel32.lib user32.lib advapi32.lib
 
 
@@ -169,7 +171,7 @@ WISH = wish$(TCLVERSION).exe
 TKBUILD= $(TK)\win
 
 WISHOBJS = \
-	$(TKBUILD)\tkConsole.obj \
+	$(TKBUILD)\Release\tkConsole.obj \
 	$(TMPDIR)\plugWinMain.obj
 
 WISH = wish$(TCLVERSION).exe
@@ -180,8 +182,7 @@ all: $(OUTDIR)\nptcl32.dll $(WISH)
 
 $(OUTDIR)\nptcl32.dll: $(DEF_FILE) $(OBJS)
 	$(link32) $(ldebug) $(dlllflags) -def:$(DEF_FILE) \
-		$(TCL)\win\tcl$(TCLVERSION).lib \
-		$(TK)\win\tk$(TCLVERSION).lib \
+		$(TCL)\win\Release\tclstub$(TCLVERSION).lib \
 		$(guilibsdll) -out:$(OUTDIR)\nptcl32.dll @<<
 		$(OBJS)
 <<
@@ -213,10 +214,10 @@ clean:
 
 # Build target for wish
 
-$(WISH): $(OUTDIR)\nptcl32.lib $(WISHOBJS) $(TKBUILD)\wish.res
+$(WISH): $(OUTDIR)\nptcl32.lib $(WISHOBJS) $(TKBUILD)\rc\wish.res
 	set LIB=$(TOOLS32)\lib
-	$(link32) $(ldebug) $(guilflags) $(TKBUILD)\wish.res -out:$@ \
+	$(link32) $(ldebug) $(guilflags) $(TKBUILD)\rc\wish.res -out:$@ \
 		$(guilibsdll) $(WISHOBJS) \
-		$(TCL)\win\tcl$(TCLVERSION).lib \
-		$(TK)\win\tk$(TCLVERSION).lib \
+		$(TCL)\win\Release\tcl$(TCLVERSION).lib \
+		$(TK)\win\Release\tk$(TCLVERSION).lib \
 		$(OUTDIR)\nptcl32.lib

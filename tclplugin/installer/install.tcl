@@ -14,8 +14,9 @@
 #
 # SCCS: @(#) install.tcl 1.41 98/01/16 10:12:38
 
-set supportEmail "sunscript-plugin@sunscript.sun.com"
-set supportUrl   "http://sunscript.sun.com/plugin/"
+set supportEmail "plugin@scriptics.com"
+set supportUrl   "http://www.scriptics.com/plugin/"
+
 
 # Check if this is running with the plugin environment
 if {![info exists plugin(patchLevel)]} {
@@ -252,6 +253,7 @@ proc Install {targetdir} {
     Visit the demos at :
 
     	${::supportUrl}applets.html
+
 
     or test the plugin now by hitting the \"Test It!\" button." 1
 
@@ -662,7 +664,7 @@ if {$GUI} {
 	set text [.troubleview.t get 1.0 end]
 	set msg "To: $::supportEmail
 From: $email
-Subject: trouble report
+Subject: Tcl plugin trouble report
 
 Trouble report $PRODUCT $DETAILS:
 

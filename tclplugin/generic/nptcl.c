@@ -22,7 +22,6 @@
 
 #include	"np.h"
 #include "tclMiscUtils.h"
-
 /*
  * Stack counter
  */
@@ -31,6 +30,13 @@ static int instances = 0;
 static int shutdown = 0;
 
 int streams = 0;
+
+#ifdef USE_TK_STUBS
+#undef Tk_Init
+#define Tk_Init PnTkInit
+#undef Tk_SafeInit
+#define Tk_SafeInit PnTkSafeInit
+#endif
 
 
 /*
@@ -186,7 +192,6 @@ set tk_library [file join $plugin(topdir) \"tk\"]\n\
 #set env(TK_LIBRARY) $tk_library\n\
 #  Make package require Tk work:\n\
 package ifneeded Tk $tk_version {load {} Tk}";
-
     /*
      * Set the plugin versions and patchLevel.
      */

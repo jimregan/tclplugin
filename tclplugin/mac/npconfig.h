@@ -35,13 +35,13 @@
  * (the 3 strings are computed from the 4 internal numbers)
  */
 #define NPTCL_VERSION "2.0"
-#define NPTCL_PATCH_LEVEL "2.0"
-#define NPTCL_INTERNAL_VERSION "2.0.200"
+#define NPTCL_PATCH_LEVEL "2.0.1"
+#define NPTCL_INTERNAL_VERSION "2.0.201"
  
 #define NPTCL_MAJOR_VERSION 2
 #define NPTCL_MINOR_VERSION 0
 #define NPTCL_RELEASE_LEVEL 2
-#define NPTCL_RELEASE_SERIAL 0
+#define NPTCL_RELEASE_SERIAL 1
 
 #endif /* _NPCONFIG */
 

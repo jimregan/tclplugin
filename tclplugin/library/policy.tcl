@@ -23,7 +23,7 @@ package provide policy 1.3
 
 # We need the Safe Base in Tcl core 8.0:
 
-package require -exact Tcl 8.0
+package require Tcl 8.0
 
 # First ensure that the ::safe namespace exists along with
 # the needed procs by making the safe:: base eventually load 

@@ -82,8 +82,9 @@ NPP_GetValue(void *future, NPPVariable variable, void *value)
             break;
         case NPPVpluginDescriptionString:
             sprintf(msgBuf,
-            "Tcl Plugin %s (%s). Executes tclets found in Web pages.\
-	     See the <a href=http://sunscript.sun.com/plugin/>Tcl\
+	    "TCL Plugin %s (%s). Executes tclets found in Web pages.\
+             POW and FitsTcl extensions are included.\
+	     See the <a href=href=http://www.scriptics.com/plugin/>Tcl\
 	     Plugin</a> home page for more details.",
                     NPTCL_PATCH_LEVEL,
 		    NPTCL_INTERNAL_VERSION);
@@ -94,4 +95,5 @@ NPP_GetValue(void *future, NPPVariable variable, void *value)
     }
     return err;
 }
+
 

@@ -12,8 +12,8 @@
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,200,1
- PRODUCTVERSION 2,0,200,1
+ FILEVERSION 2,1,1,1
+ PRODUCTVERSION 2,1,1,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -29,15 +29,15 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
 
-            VALUE "CompanyName",     "Sun Microsystems Inc.\0"
-            VALUE "FileDescription", "Tcl Plugin 2.0 (2.0.200). Executes tclets found in Web pages. See the <a href=http://sunscript.sun.com/plugin/>Tcl Plugin</a> home page for more details.\0"
-            VALUE "FileVersion",     "2.0.200\0"
-            VALUE "InternalName",    "Tcl Plugin 2.0\0"
-            VALUE "LegalCopyright",  "Copyright Sun Microsystems Inc., 1998\0"
+            VALUE "CompanyName",     "Scriptics Inc.\0"
+            VALUE "FileDescription", "Tcl Plugin 2.1b1 Executes tclets found in Web pages.  See the <a href=http://www.scriptics.com/plugin/>Tcl Plugin</a> home page for more details.\0"
+            VALUE "FileVersion",     "2.1b1\0"
+            VALUE "InternalName",    "Tcl Plugin 2.1b1\0"
+            VALUE "LegalCopyright",  "Copyright Scriptics Inc., 1999\0"
             VALUE "LegalTrademarks", "None\0"
             VALUE "OriginalFilename","nptcl32.dll\0"
-            VALUE "ProductName",     "Tcl Plugin 2.0\0"
-            VALUE "ProductVersion",  "2.0.200\0"
+            VALUE "ProductName",     "Tcl Plugin 2.1b1\0"
+            VALUE "ProductVersion",  "2.1b1\0"
             VALUE "MIMEType",        "application/x-tcl\0"
             VALUE "FileExtents",     "tcl\0"
             VALUE "FileOpenName",    "Tcl (*.tcl)\0"

@@ -86,6 +86,19 @@ static void		FileProc _ANSI_ARGS_((XtPointer clientData,
 static void		InitNotifier _ANSI_ARGS_((void));
 static void		TimerProc _ANSI_ARGS_((XtPointer clientData,
 			    XtIntervalId *id));
+static void		SetTimer _ANSI_ARGS_((Tcl_Time *timePtr));
+static void		CreateFileHandler _ANSI_ARGS_((int fd,
+			    int mask, Tcl_FileProc *proc, ClientData clientData));
+static void		DeleteFileHandler _ANSI_ARGS_((int fd));
+static int		WaitForEvent _ANSI_ARGS_((Tcl_Time *timePtr));
+
+static Tcl_NotifierProcs procs = {
+    SetTimer,
+    WaitForEvent,
+    CreateFileHandler,
+    DeleteFileHandler
+};
+
 
 /*
  *----------------------------------------------------------------------
@@ -231,6 +244,8 @@ InitNotifier(void)
     
     initialized = 1;
 
+    Tcl_SetNotifier(&procs);
+
     memset(&notifier, 0, sizeof(notifier));
 
     /*
@@ -268,7 +283,7 @@ NpXtStopNotifier()
         XtRemoveTimeOut(notifier.currentTimeout);
     }
     for (; notifier.firstFileHandlerPtr != NULL; ) {
-        Tcl_DeleteFileHandler(notifier.firstFileHandlerPtr->fd);
+        DeleteFileHandler(notifier.firstFileHandlerPtr->fd);
     }
     if (notifier.appContextCreated) {
         XtDestroyApplicationContext(notifier.appContext);
@@ -283,7 +298,7 @@ NpXtStopNotifier()
 /*
  *----------------------------------------------------------------------
  *
- * Tcl_SetTimer --
+ * SetTimer --
  *
  *	This procedure sets the current notifier timeout value. When
  *	called with a NULL timeout, the procedure cancels any pending
@@ -298,8 +313,8 @@ NpXtStopNotifier()
  *----------------------------------------------------------------------
  */
 
-void
-Tcl_SetTimer(timePtr)
+static void
+SetTimer(timePtr)
     Tcl_Time *timePtr;		/* Timeout value, may be NULL. */
 {
     long timeout;
@@ -379,7 +394,7 @@ TimerProc(data, id)
 /*
  *----------------------------------------------------------------------
  *
- * Tcl_CreateFileHandler --
+ * CreateFileHandler --
  *
  *	This procedure registers a file handler with the Xt notifier.
  *
@@ -393,8 +408,8 @@ TimerProc(data, id)
  *----------------------------------------------------------------------
  */
 
-void
-Tcl_CreateFileHandler(fd, mask, proc, clientData)
+static void
+CreateFileHandler(fd, mask, proc, clientData)
     int fd;			/* Handle of stream to watch. */
     int mask;			/* OR'ed combination of TCL_READABLE,
 				 * TCL_WRITABLE, and TCL_EXCEPTION:
@@ -480,7 +495,7 @@ Tcl_CreateFileHandler(fd, mask, proc, clientData)
 /*
  *----------------------------------------------------------------------
  *
- * Tcl_DeleteFileHandler --
+ * DeleteFileHandler --
  *
  *	Cancel a previously-arranged callback arrangement for
  *	a file.
@@ -494,8 +509,8 @@ Tcl_CreateFileHandler(fd, mask, proc, clientData)
  *----------------------------------------------------------------------
  */
 
-void
-Tcl_DeleteFileHandler(fd)
+static void
+DeleteFileHandler(fd)
     int fd;			/* Stream id for which to remove
 				 * callback procedure. */
 {
@@ -698,7 +713,7 @@ FileHandlerEventProc(evPtr, flags)
 /*
  *----------------------------------------------------------------------
  *
- * Tcl_WaitForEvent --
+ * WaitForEvent --
  *
  *	This function is called by Tcl_DoOneEvent to wait for new
  *	events on the message queue.  If the block time is 0, then
@@ -715,8 +730,8 @@ FileHandlerEventProc(evPtr, flags)
  *----------------------------------------------------------------------
  */
 
-int
-Tcl_WaitForEvent(
+static int
+WaitForEvent(
     Tcl_Time *timePtr)		/* Maximum block time, or NULL. */
 {
     int timeout;
@@ -730,14 +745,14 @@ Tcl_WaitForEvent(
     if (timePtr) {
         timeout = timePtr->sec * 1000 + timePtr->usec / 1000;
         if (timeout == 0) {
-            Tcl_SetTimer(NULL);
+            SetTimer(NULL);
             if (XtAppPending(notifier.appContext)) {
                 goto process;
             } else {
                 return 0;
             }
         } else {
-            Tcl_SetTimer(timePtr);
+            SetTimer(timePtr);
         }
     }
 process:

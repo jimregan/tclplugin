@@ -43,14 +43,14 @@ resource 'vers' (1) {
 	NPTCL_MAJOR_VERSION, MINOR_VERSION,
 	RELEASE_LEVEL, 0x00, verUS,
 	NPTCL_PATCH_LEVEL,
-	NPTCL_PATCH_LEVEL ", by Jim Ingham © Sun Microsystems"
+	NPTCL_PATCH_LEVEL ", by Scriptics and Jim Ingham © Sun Microsystems"
 };
 
 resource 'vers' (2) {
 	NPTCL_MAJOR_VERSION, MINOR_VERSION,
 	RELEASE_LEVEL, 0x00, verUS,
 	NPTCL_PATCH_LEVEL,
-	"Tcl Plugin " NPTCL_INTERNAL_VERSION " © 1997-8"
+	"Tcl Plugin " NPTCL_INTERNAL_VERSION " © 1997-9"
 };
 
 /*
@@ -61,8 +61,8 @@ resource 'vers' (2) {
  */
 
 resource 'STR#' (126, "Plugin Information") {
-	{	"Tcl Plugin " NPTCL_PATCH_LEVEL " (" NPTCL_INTERNAL_VERSION ").  Executes tclets found in Web pages.  See the <a href=http://sunscript.sun.com/plugin/>Tcl Plugin</a> for more details.",
-	    "Tcl Plugin 2.0"
+	{	"Tcl Plugin " NPTCL_PATCH_LEVEL ".  Executes tclets found in Web pages.  See the <a href=http://www.scriptics.com/plugin/>Tcl Plugin</a> home page for more details.",
+	    "Tcl Plugin 2.1b1"
 	};
 };
 

@@ -108,42 +108,59 @@ NP_GetValue(void *future, NPPVariable variable, void *value)
  */
 
 EXTERN int
-NpLoadLibrary(void *tclHandle, void *tkHandle)
+NpLoadLibrary(void **tclHandle, void **tkHandle)
 {
     char *pos, libname[512];
+    char *loadfile = NULL;
+    void *handle = NULL;
 
-    if (strlen(TCL_LIB_FILE) < 3) {
-	NpPlatformMsg("Invalid base Tcl library filename provided!",
-		"NpCreateMainInterp");
-	return TCL_ERROR;
+    *tclHandle = NULL;
+    *tkHandle  = NULL;
+
+    /*
+     * Try a user-supplied Tcl dll to start with.
+     */
+    loadfile = getenv("TCL_PLUGIN_DLL");
+    if (loadfile != NULL) {
+	NpLog("Attempt to load Tcl dll '%s'\n", loadfile);
+	handle = dlopen(loadfile, RTLD_NOW | RTLD_GLOBAL);
     }
 
-    /* Try based on full path. */
-    sprintf(libname, "%s/%s", LIB_RUNTIME_DIR, TCL_LIB_FILE);
-    NpLog("Attempt to load Tcl dll '%s'\n", libname);
-    tclHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
-    if (!tclHandle) {
-	/* Try based on anywhere in the path. */
-	strcpy(libname, TCL_LIB_FILE);
+    if (!handle) {
+	if (strlen(TCL_LIB_FILE) < 3) {
+	    NpPlatformMsg("Invalid base Tcl library filename provided!",
+		    "NpCreateMainInterp");
+	    return TCL_ERROR;
+	}
+
+	/* Try based on full path. */
+	snprintf(libname, 511, "%s/%s", defaultLibraryDir, TCL_LIB_FILE);
 	NpLog("Attempt to load Tcl dll '%s'\n", libname);
-	tclHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
-    }
-    if (!tclHandle) {
-	/* Try different versions anywhere in the path. */
-	pos = strstr(libname, "tcl")+4;
-	if (*pos == '.') {
-	    pos++;
-	}
-	*pos = '9'; /* count down from '8' to '4'*/
-	while (!tclHandle && (--*pos > '3')) {
+	handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
+	if (!handle) {
+	    /* Try based on anywhere in the path. */
+	    strcpy(libname, TCL_LIB_FILE);
 	    NpLog("Attempt to load Tcl dll '%s'\n", libname);
-	    tclHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
+	    handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
+	}
+	if (!handle) {
+	    /* Try different versions anywhere in the path. */
+	    pos = strstr(libname, "tcl")+4;
+	    if (*pos == '.') {
+		pos++;
+	    }
+	    *pos = '9'; /* count down from '8' to '4'*/
+	    while (!handle && (--*pos > '3')) {
+		NpLog("Attempt to load Tcl dll '%s'\n", libname);
+		handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
+	    }
 	}
     }
-    if (!tclHandle) {
+    if (!handle) {
 	NpPlatformMsg("Failed to load Tcl dll!", "NpCreateMainInterp");
 	return TCL_ERROR;
     }
+    *tclHandle = handle;
 
     /*
      * Derive the name of Tk's library from Tcl's.
@@ -158,13 +175,14 @@ NpLoadLibrary(void *tclHandle, void *tkHandle)
 	}
     }
     NpLog("Attempt to load Tk dll '%s'\n", libname);
-    tkHandle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
-    if (!tkHandle) {
+    handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
+    if (!handle) {
 	dlclose(tclHandle);
-	tclHandle = NULL;
+	*tclHandle = NULL;
 	NpPlatformMsg("Failed to load Tk dll!", "NpCreateMainInterp");
 	return TCL_ERROR;
     }
+    *tkHandle = handle;
 
     return TCL_OK;
 }

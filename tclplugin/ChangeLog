@@ -1,3 +1,34 @@
+2005-01-04  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/np.h: bump to v3.0a4 (3.0.0.4)
+
+	* generic/npInit.c: remove v9plugin support (NS v4)
+
+	* generic/npInterp.c: code cleanup
+
+	* win/npdll32.def (removed): made EXPORT file link.exe -export opts
+
+	* Makefile.in:             updated to TEA 3.1
+	* configure, configure.in: removed extra defined cruft
+	* tclconfig/tcl.m4:
+
+	* aclocal.m4: look in ${APPDATA}/Mozilla on Windows for MOZILLA_DIR
+
+	* win/npWinPlat.c (ContainerProc): add WM_PAINT handling to
+	correct repaint issue in newer Firefox builds.  This doesn't
+	affect IE (but also isn't necessary there).
+
+	* win/npWinDll.c (removed): 
+	* win/npWin.c (DllMain):    moved DllMain into npWin.c
+
+	* library/plugmain.tcl (::plugin::init_extern): restore default
+	out-of-process operating mode for plugin on unix.
+
+	* unix/tclTest.c (removed):    removed old cruft files
+	* unix/tclAppInit.c (removed): 
+	* win/plugin.wse (removed): 
+	* win/plugWinMain.c (removed): 
+
 2005-01-03  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* library/browser.tcl:

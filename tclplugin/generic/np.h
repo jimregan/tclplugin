@@ -65,14 +65,14 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
  * Tcl Plugin version identifiers
  * (the 3 strings are computed from the 4 internal numbers)
  */
-#define NPTCL_VERSION		"3.0"
-#define NPTCL_PATCH_LEVEL	"3.0a3"
-#define NPTCL_INTERNAL_VERSION	"3.0.0.3"
+#define NPTCL_VERSION		"3.0"    /* == PACKAGE_VERSION */
+#define NPTCL_PATCH_LEVEL	"3.0a4"
+#define NPTCL_INTERNAL_VERSION	"3.0.0.4"
 
 #define NPTCL_MAJOR_VERSION	3
 #define NPTCL_MINOR_VERSION	0
 #define NPTCL_RELEASE_LEVEL	0
-#define NPTCL_RELEASE_SERIAL	3
+#define NPTCL_RELEASE_SERIAL	4
 
 #ifdef BUILD_nptcl
 #undef TCL_STORAGE_CLASS

@@ -1,5 +1,10 @@
 2004-02-11  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* library/plugmain.tcl: improve unix fallback for temp dir.
+
+	* library/utils/log.tcl: do not export truncateStr.
+	Force flush on writes to the logfile.
+
 	* library/browser.tcl (EventuallyLaunch): add CRLF/CR => LF
 	conversion back.  Apparently the browser doesn't do this for us,
 	so if we are served a Windows or Mac file, we have to take care of

@@ -19,7 +19,7 @@
 package provide pluglog 1.2
 
 namespace eval ::pluglog {
-    namespace export log setup refreshAttributes truncateStr
+    namespace export log setup refreshAttributes
 
     # Set the behavior of different severity tags:
 
@@ -277,7 +277,7 @@ proc ::pluglog::log {name msg {type NOTICE}} {
 	return
     }
 
-    # Do nothing if the filter proc ::pluglog::wants us to skip this entry
+    # Do nothing if the filter wants us to skip this entry
 
     if {[filter $name $msg $type]} {
 	return
@@ -286,7 +286,7 @@ proc ::pluglog::log {name msg {type NOTICE}} {
     set what [LogStr $name $msg $type]
 
     if {$IsChannel} {
-	catch {puts -nonewline $Dest $what}
+	catch {puts -nonewline $Dest $what; flush $Dest}
     } else {
 	catch {addTxt $what $type}
     }

@@ -40,7 +40,7 @@ static char defaultLibraryDir[sizeof(LIB_RUNTIME_DIR)+200] = LIB_RUNTIME_DIR;
  *----------------------------------------------------------------------
  */
 
-EXTERN int
+extern int
 NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle)
 {
     char path[MAX_PATH], vers[MAX_PATH], libname[MAX_PATH];

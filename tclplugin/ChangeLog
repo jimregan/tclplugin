@@ -1,3 +1,8 @@
+2000-05-19  Jeff Hobbs  <hobbs@scriptics.com>
+
+	* library/url.tcl: added patch that corrects the IE local file
+	loading problem due to MSIE's non-standard file:// path.
+
 2000-05-13  David Gravereaux <davygrvy@pobox.com>
 	* config/home.cfg:
 	* config/inside.cfg:

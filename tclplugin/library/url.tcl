@@ -76,8 +76,18 @@ namespace eval ::url {
 	    }
 	    if {[string compare $port ""] == 0} {
 		set port $tabProtos($proto)
-	    } else {
-		if {[catch {set port [expr {int($port)}]}]} {
+	    } elseif {[catch {set port [expr {int($port)}]}]} {
+		if {[file exists $host:$port]} {
+		    ## OK, IE gives us a different file: type URL
+		    ## Handle that here
+		    set what $host:$port
+		    regsub ^/+ $what / what
+		    ## Get it into the way that Tcl likes to see it
+		    eval file join [file split $what]
+		    set proto file
+		    set port {}
+		    set host {}
+		} else {
 		    error "invalid url \"$url\": non numeric port $port"
 		}
 	    }

@@ -19,9 +19,9 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-mozilla=DIR      Will install in DIR/plugins and DIR/tclplug"
 ac_help="$ac_help
-  --with-tcl=DIR          use Tcl 8.2.1 build dir from DIR"
+  --with-tcl=DIR          use Tcl 8.3.1 build dir from DIR"
 ac_help="$ac_help
-  --with-tk=DIR           use Tk 8.2.1 build dir from DIR"
+  --with-tk=DIR           use Tk 8.3.1 build dir from DIR"
 
 # Initialize some variables set by options.
 # The variables have the same names as the options, with
@@ -559,7 +559,7 @@ NPTCL_RELEASE_SERIAL=1
 #     (script or configure will be done when time permit too)
 
 
-TCLTK_EXPECTED_VERSION=8.2.1
+TCLTK_EXPECTED_VERSION=8.3.1
 
 
 # The patch level is computed automatically below. no changes should be needed.
@@ -657,7 +657,7 @@ if test "${with_tcl+set}" = set; then
   withval="$with_tcl"
   TCL_BIN_DIR=$withval
 else
-  TCL_BIN_DIR="$srcdir/../../tcl8.2.1/unix"
+  TCL_BIN_DIR="$srcdir/../../tcl8.3.1/unix"
 fi
 
 if test ! -d $TCL_BIN_DIR; then
@@ -673,7 +673,7 @@ if test "${with_tk+set}" = set; then
   withval="$with_tk"
   TK_BIN_DIR=$withval
 else
-  TK_BIN_DIR="$srcdir/../../tk8.2.1/unix"
+  TK_BIN_DIR="$srcdir/../../tk8.3.1/unix"
 fi
 
 if test ! -d $TK_BIN_DIR; then
@@ -696,7 +696,7 @@ echo "$ac_t""read ok" 1>&6
 
 
 # Check that the correct version of Tcl is used
-# It is not easy (impossible?) to check for 8.2.1 *or higher*
+# It is not easy (impossible?) to check for 8.3.1 *or higher*
 # and it is most likely that this version of the plugin will not
 # work without modifications with any version other the one it
 # was initially built on anyway... (specially it will not work
@@ -775,10 +775,9 @@ RANLIB=$TCL_RANLIB
 if test "$TCL_SHARED_BUILD" != "1"; then
 	{ echo "configure: error: You need to configure tcl with --enable-shared and rebuild to build the plugin" 1>&2; exit 1; }
 fi
-# temporary disabled, because Tk8.2.1 doesn't report this correctly
-#if test "$TK_SHARED_BUILD" != "1"; then
-#	AC_MSG_ERROR(You need to configure tk with --enable-shared and rebuild to build the plugin)
-#fi
+if test "$TK_SHARED_BUILD" != "1"; then
+	{ echo "configure: error: You need to configure tk with --enable-shared and rebuild to build the plugin" 1>&2; exit 1; }
+fi
 
 # compute the -L/-l flags that will be needed to create the tclshp
 if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then

@@ -32,7 +32,7 @@ NPTCL_RELEASE_SERIAL=1
 #     (script or configure will be done when time permit too)
 
 
-TCLTK_EXPECTED_VERSION=8.2.1
+TCLTK_EXPECTED_VERSION=8.3.1
 AC_SUBST(TCLTK_EXPECTED_VERSION)
 
 # The patch level is computed automatically below. no changes should be needed.
@@ -108,8 +108,8 @@ AC_MSG_RESULT(found. will install in \"$MOZILLA_DIR\")
 AC_SUBST(MOZILLA_DIR)
 
 # Check for Tcl and Tk *build* directories
-AC_ARG_WITH(tcl, [  --with-tcl=DIR          use Tcl 8.2.1 build dir from DIR],
-	TCL_BIN_DIR=$withval, TCL_BIN_DIR="$srcdir/../../tcl8.2.1/unix")
+AC_ARG_WITH(tcl, [  --with-tcl=DIR          use Tcl 8.3.1 build dir from DIR],
+	TCL_BIN_DIR=$withval, TCL_BIN_DIR="$srcdir/../../tcl8.3.1/unix")
 if test ! -d $TCL_BIN_DIR; then
     AC_MSG_ERROR(Tcl directory $TCL_BIN_DIR doesn't exist: use configure --with-tcl=TCL_BUILD_DIR)
 fi
@@ -118,8 +118,8 @@ if test ! -f $TCL_BIN_DIR/Makefile; then
     AC_MSG_ERROR(There's no Makefile in $TCL_BIN_DIR;  perhaps you didn't specify the Tcl *build* directory (not the toplevel Tcl directory) or you forgot to configure Tcl?)
 fi
 
-AC_ARG_WITH(tk, [  --with-tk=DIR           use Tk 8.2.1 build dir from DIR],
-	TK_BIN_DIR=$withval, TK_BIN_DIR="$srcdir/../../tk8.2.1/unix")
+AC_ARG_WITH(tk, [  --with-tk=DIR           use Tk 8.3.1 build dir from DIR],
+	TK_BIN_DIR=$withval, TK_BIN_DIR="$srcdir/../../tk8.3.1/unix")
 if test ! -d $TK_BIN_DIR; then
     AC_MSG_ERROR(Tk directory $TK_BIN_DIR doesn't exist: use configure --with-tk=TK_BUILD_DIR)
 fi
@@ -139,7 +139,7 @@ AC_MSG_RESULT(read ok)
 
 
 # Check that the correct version of Tcl is used
-# It is not easy (impossible?) to check for 8.2.1 *or higher*
+# It is not easy (impossible?) to check for 8.3.1 *or higher*
 # and it is most likely that this version of the plugin will not
 # work without modifications with any version other the one it
 # was initially built on anyway... (specially it will not work
@@ -215,10 +215,9 @@ AC_SUBST(TK_LD_SEARCH_FLAGS)
 if test "$TCL_SHARED_BUILD" != "1"; then
 	AC_MSG_ERROR(You need to configure tcl with --enable-shared and rebuild to build the plugin)
 fi
-# temporary disabled, because Tk8.2.1 doesn't report this correctly
-#if test "$TK_SHARED_BUILD" != "1"; then
-#	AC_MSG_ERROR(You need to configure tk with --enable-shared and rebuild to build the plugin)
-#fi
+if test "$TK_SHARED_BUILD" != "1"; then
+	AC_MSG_ERROR(You need to configure tk with --enable-shared and rebuild to build the plugin)
+fi
 
 # compute the -L/-l flags that will be needed to create the tclshp
 if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then

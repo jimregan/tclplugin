@@ -23,8 +23,8 @@ TMPDIR	= .
 OUTDIR	= $(TMPDIR)
 TOOLS32	= c:\progra~1\devstu~1\Vc
 TOOLS32RC	= c:\progra~1\devstu~1\SharedIDE
-TK	= ..\..\tk8.2.1
-TCL	= ..\..\tcl8.2.1
+TK	= ..\..\tk8.3.1
+TCL	= ..\..\tcl8.3.1
 
 MACHINE	= IX86
 
@@ -155,7 +155,7 @@ cvarsdll   = $(cvarsmt) -D_DLL
 # Project specific targets
 ######################################################################
 
-TCLVERSION = 82
+TCLVERSION = 83
 DEF_FILE= npdll32.def
 
 # Flags for the linker:

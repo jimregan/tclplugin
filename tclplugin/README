@@ -3,22 +3,18 @@
 
 Contacts for questions, updates, etc... :
 
-         Web  : http://sunscript.sun.com/plugin/
+         Web  : http://dev.scriptics.com/software/plugin/
 
-         Email: sunscript-plugin@sunscript.sun.com
+         Email: plugin@scriptics.com
 
  { If you are not familiar with the compilation of programs
    on your platform, see the URL above for a binary (executable)
    distribution for your platform }
 
  You need to use the provided version of Tcl and Tk to
- build the plugin from source. It is based on version 8.0 
- patch level 2 (8.0p2) with some modifications needed for
- embedding inside a browser and Safe-Tcl security. You should
- not use this modified version for any other use (It has
- no added value for regular Tcl/Tk applications and could
- even have more bugs than the last stable Tcl/Tk versions: 8.0p2).
-
+ build the plugin from source. It is based on version 8.3.1,
+ but it should build equally well with any higher Tcl/Tk
+ version.
 
  Unix Build Instructions:
  ------------------------
@@ -94,9 +90,9 @@ Contacts for questions, updates, etc... :
    + HP-UX and potentially other systems
      -----------------------------------
      Netscape provided code is using and depending on prototypes
-     and other ansi features (Tcl, Tk and the Plugin compile fine with
-     both...) so you need to have an ansi compiler:
-     For hpux, use  CC="cc -Aa"
+     and other ANSI features (Tcl, Tk and the Plugin compile fine with
+     both...) so you need to have an ANSI compiler:
+     For HP/UX, use  CC="cc -Aa"
 
  Windows
  -------
@@ -123,9 +119,9 @@ Contacts for questions, updates, etc... :
  Any question or problem :
  -------------------------
 
-    http://sunscript.sun.com/plugin/ 
+    http://dev.scriptics.com/software/plugin/ 
 
-    sunscript-plugin@sunscript.sun.com
+    plugin@scriptics.com
 
  See also http://www.demailly.com/tcl/plugin/
 

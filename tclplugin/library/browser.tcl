@@ -690,6 +690,15 @@ namespace eval $::cfg::implNs {
 	    return
 	}
 
+	# convert from external encoding to utf-8 using charset arg..
+	if {[interp eval $name [list info exists embed_args(charset)]]} {
+	    set enc [interp eval $name [list set embed_args(charset)]]
+	    set encs [encoding names]
+	    if {[lsearch -exact $encs $enc] > -1} {
+		set chunk [encoding convertfrom $encoding $chunk]
+	    }
+	}
+
 	IAppend $name stream,$stream,data $chunk
 	log $name "stored data for $stream in stream,$stream,data attr"
 
@@ -711,7 +720,7 @@ namespace eval $::cfg::implNs {
 	    log $name "unknown stream $stream at end" ERROR
 	    return
 	}
-	    
+
 	set handler [iget $name stream,$stream,endHandler]
 	if {[iexists $name stream,$stream,data]} {
 	    set data [iget $name stream,$stream,data]

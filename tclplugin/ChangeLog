@@ -1,3 +1,24 @@
+2004-05-18  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* installer/install.sh, installer/install.tcl,
+	* mac/MW_NpHeader.pch, mac/README, mac/Tcl_Plugin.exp,
+	* mac/macProjects.sea.bin, mac/npMacResource.r, mac/npconfig.h,
+	* mac/npmac.c, mac/npmac.h, mac/npmaccmds.c, mac/npmacplatf.c,
+	* mac/tclMacAlloc.c (removed): removed old 2.0 installer and mac
+	subdir that were no longer supported.
+
+	* library/common.tcl: remove tkLazyInit - Tk will be loaded.
+
+	* library/installed.cfg: remove plug(sharedLibraryDir) refs
+
+	* library/plugmain.tcl: inline NpExec - it was used to modify
+	LD_LIBRARY_PATH at runtime, which is ineffective.
+
+	* library/remoted.tcl: require at least Tcl/Tk 8.2 for the
+	external process (may force 8.4).
+	Remove vwait at end, it was ineffective since this was launched
+	with Tk loaded.
+
 2004-05-17  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* Makefile.in:        Update to version 3.0.0.3 (3.0a3).

@@ -371,3 +371,76 @@ void
 NpPlatformShutdown()
 {
 }
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * NpWinDllDir --
+ *
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	None.
+ *
+ *----------------------------------------------------------------------
+ */
+
+EXTERN void *
+NpWinLoadDll(char *libname)
+{
+    char path[MAX_PATH], vers[MAX_PATH];
+    long size = MAX_PATH;
+    DWORD result;
+    HKEY regKey;
+    void *handle = NULL;
+#define TCL_REG_DIR_KEY "Software\\ActiveState\\ActiveTcl"
+
+    result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, TCL_REG_DIR_KEY, 0,
+	    KEY_READ, &regKey);
+    if (result != ERROR_SUCCESS) {
+	NpLog("Could not access registry \"%s\"\n",
+		(int) TCL_REG_DIR_KEY, 0, 0);
+	return NULL;
+    }
+
+    result = RegQueryValueEx(regKey, "CurrentVersion", NULL, NULL,
+	    vers, (DWORD*)&size);
+    RegCloseKey(regKey);
+    if (result != ERROR_SUCCESS) {
+	NpLog("Could not access registry \"%s\" CurrentVersion\n",
+		(int) TCL_REG_DIR_KEY, 0, 0);
+	return NULL;
+    }
+
+    strcpy(path, TCL_REG_DIR_KEY);
+    strcat(path, "\\");
+    strcat(path, vers);
+
+    result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, path, 0, KEY_READ, &regKey);
+    if (result != ERROR_SUCCESS) {
+	NpLog("Could not access registry \"%s\"\n", (int) path, 0, 0);
+	return NULL;
+    }
+
+    size = MAX_PATH;
+    result = RegQueryValueEx(regKey, NULL, NULL, NULL, path, (DWORD*)&size);
+    RegCloseKey(regKey);
+    if (result != ERROR_SUCCESS) {
+	NpLog("Could not access registry \"%s\" Default\n",
+		(int) TCL_REG_DIR_KEY, 0, 0);
+	return NULL;
+    }
+
+    NpLog("Found current Tcl installation at \"%s\"\n", (int) path, 0, 0);
+
+    strcat(path, "\\bin\\");
+    strcat(path, libname);
+
+    handle = (void *) LoadLibrary(path);
+    if (!handle) {
+	NpLog("NpWinLoadDll: could not find dll '%s'\n", (int) path, 0, 0);
+    }
+    return handle;
+}

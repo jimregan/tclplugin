@@ -31,6 +31,8 @@
 #    define	F_OK	0
 #  endif
 
+EXTERN void *NpWinLoadDll(char *libname);
+
 #elif defined(MAC_TCL)
 
 #  include <stdio.h>

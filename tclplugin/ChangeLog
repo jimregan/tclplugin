@@ -1,3 +1,15 @@
+2003-01-17  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* configure:    Add LIB_RUNTIME_DIR which is compiled in to try
+	* configure.in: and find the Tcl/Tk libs by direct path at runtime.
+	* Makefile.in:  Only enabled on Unix at the moment.
+
+	* generic/np.h:       Replace NpWinLoadDll with NpLoadLibrary that
+	* generic/npInterp.c: returns handle to the Tcl/Tk libs, using a
+	* unix/npUnix.c:      platform dependent search mechanism.
+	* win/npWin.c:
+	* win/npWinPlat.c:
+
 2003-01-16  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* win/pluginhostctrl.dll: updated ActiveX control that correctly

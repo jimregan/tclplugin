@@ -31,8 +31,6 @@
 #    define	F_OK	0
 #  endif
 
-EXTERN void *NpWinLoadDll(char *libname);
-
 #elif defined(MAC_TCL)
 
 #  include <stdio.h>
@@ -234,6 +232,8 @@ extern void		NpPlatformNew _ANSI_ARGS_((NPP instance));
 extern void		NpPlatformSetWindow _ANSI_ARGS_((NPP This,
 			    NPWindow *window));
 extern void		NpPlatformShutdown _ANSI_ARGS_((void));
+extern int		NpLoadLibrary _ANSI_ARGS_((void *tclHandle,
+			    void *tkHandle));
 
 /*
  * nptoken.c

@@ -21,18 +21,6 @@ package provide plugin::common 1.0
 # We require logging (we will initialize it from here):
 package require pluglog 1.1
 
-# tkInit --
-#
-# Override tkInitScript.h tkInit for the plugin.
-# If it exists and thus will find directly the Tk where it is expected
-# without being potentially confused by the TK_LIBRARY env var...
-#
-proc tkInit {} {
-    ::pluglog::log {} "direct tkInit! -> $::tk_library"
-    uplevel \#0 [list source [file join $::tk_library tk.tcl]]
-    #rename tkInit {}
-}
-
 # If no widget have been created, we withdraw the unneeded .
 if {![llength [winfo children .]]} {
     wm withdraw .

@@ -8,7 +8,7 @@
  *
  * Copyright (c) 1996-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
- * Copyright (c) 2002 ActiveState Corporation.
+ * Copyright (c) 2002-2004 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -84,13 +84,13 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
  * (the 3 strings are computed from the 4 internal numbers)
  */
 #define NPTCL_VERSION		"3.0"
-#define NPTCL_PATCH_LEVEL	"3.0a1"
-#define NPTCL_INTERNAL_VERSION	"3.0.0.1"
+#define NPTCL_PATCH_LEVEL	"3.0a2"
+#define NPTCL_INTERNAL_VERSION	"3.0.0.2"
 
 #define NPTCL_MAJOR_VERSION	3
 #define NPTCL_MINOR_VERSION	0
 #define NPTCL_RELEASE_LEVEL	0
-#define NPTCL_RELEASE_SERIAL	1
+#define NPTCL_RELEASE_SERIAL	2
 
 #ifdef BUILD_nptcl
 #undef TCL_STORAGE_CLASS
@@ -131,6 +131,10 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 
 #define	NPTCL_INSTANCE		"npInstance"
 #define NPTCL_STREAM		"npStream"
+
+#ifndef NP_LOG
+#define NP_LOG		((char *) NULL)
+#endif
 
 EXTERN void		NpLog _ANSI_ARGS_(TCL_VARARGS(CONST char *, format));
 EXTERN void		NpStartLog _ANSI_ARGS_((CONST char *filename));
@@ -222,8 +226,11 @@ extern void		NpPlatformNew _ANSI_ARGS_((NPP instance));
 extern void		NpPlatformSetWindow _ANSI_ARGS_((NPP This,
 			    NPWindow *window));
 extern void		NpPlatformShutdown _ANSI_ARGS_((void));
-extern int		NpLoadLibrary _ANSI_ARGS_((void *tclHandle,
-			    void *tkHandle));
+#ifdef WIN32
+extern int		NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle);
+#else
+extern int		NpLoadLibrary(void **tclHandle, void **tkHandle);
+#endif
 
 /*
  * nptoken.c

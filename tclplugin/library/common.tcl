@@ -23,77 +23,25 @@ package provide setup 1.0
 
 package require pluglog 1.1
 
-# tkInit : plugin aware Tk will use that proc to initialize themselves
-# if it exists and thus will find directly the Tk where it is expected
+# tkInit --
+#
+# Override tkInitScript.h tkInit for the plugin.
+# If it exists and thus will find directly the Tk where it is expected
 # without being potentially confused by the TK_LIBRARY env var...
-
+#
 proc tkInit {} {
-    global tk_library
-    ::pluglog::log {} "direct tkInit! -> $tk_library"
-    uplevel #0 [list source [file join $tk_library tk.tcl]]
-#   rename tkInit {}
+    ::pluglog::log {} "direct tkInit! -> $::tk_library"
+    uplevel \#0 [list source [file join $::tk_library tk.tcl]]
+    #rename tkInit {}
 }
 
-# Setup the tkLazyInit :
-#
-# Our caller should be running in a tcl shell which has Tk available
-# for loading through the "package require Tk" command but in which
-# Tk is not loaded by default (loading of Tk is delayed until the
-# need arises).
-#
-# To ensure that Tk will be properly loaded when it is needed, the rest of
-# the code relies on the existance of a "tkLazyInit" procedure. This loads
-# and initializes Tk only if that was not already done (ie. lazily and only
-# once).
-#
-# We define "tkLazyInit" below. We detect whether Tk has been already
-# initialized for this executable (if we are running inside a wish for
-# instance) and in that case we implement an empty "tkLazyInit" proc.
-#
-# Nb: "package require Tk" would do almost everything right by itself
-# but it insists on creating '.' which we may not need in all cases.
-# Then, when we don't need to display anything and don't need '.', we 
-# we need to remember to withdraw it etc. All of this is taken care of
-# in the definition of tkLazyInit.
-
-if {[info command wm] == "wm"} {
-    # Tk is already there, so define an empty lazy init procedure.
-
-    proc tkLazyInit {} {}
-
-    # If no widget have been created, we withdraw the unneeded .
-
-    if {[winfo children .] == ""} {
-	wm withdraw .
-    }
-
-    # Set our nice name (to be seen by other apps (inspect, tkcon,...))
-
-    tk appname $::Name
-
-} else {
-    # No Tk, let's define a tkLazyInit *if* one is not defined already:
-
-    if {[info proc tkLazyInit] == ""} {
-	set ::TkInitialized 0;
-
-	proc tkLazyInit {} {
-	    if {$::TkInitialized} {
-		# already done, nothing to do
-		return
-	    }
-	    ::pluglog::log {} "Actually loading Tk ([info level -1])"
-	    # This actually loads / initialize Tk
-	    package require Tk 8.0
-	    # Withdraw the "." untill someone actually need it
-	    wm withdraw .
-	    # Set our nice name (to be seen by other apps like inspect, tkcon)
-	    tk appname $::Name
-	    set ::TkInitialized 1
-	}
-    }
+# If no widget have been created, we withdraw the unneeded .
+if {![llength [winfo children .]]} {
+    wm withdraw .
 }
 
+# Set our nice name (to be seen by other apps (inspect, tkcon,...))
+tk appname $::Name
 
 # Setup and eventually start logging facility:
 
@@ -112,9 +60,6 @@ proc SetupLogging {} {
 	::pluglog::setup $env(TCL_PLUGIN_LOGFILE)
     } elseif {([info exists env(TCL_PLUGIN_LOGWINDOW)]) \
 	    && ($env(TCL_PLUGIN_LOGWINDOW) != 0)} {
-	# We need Tk for logging to a window :
-	tkLazyInit
-
 	::pluglog::setup window "Log: $::Name"
     }
 }
@@ -129,9 +74,6 @@ proc SetupConsole {} {
     ::pluglog::log SetupConsole "Console setup"
     if {[info exists env(TCL_PLUGIN_CONSOLE)] \
 	    && ($env(TCL_PLUGIN_CONSOLE) != 0)} {
-	# Load Tk if not done already:
-	tkLazyInit
-
 	if {($env(TCL_PLUGIN_CONSOLE) == 1) || \
 		($env(TCL_PLUGIN_CONSOLE) == "")} {
 	    set consoleFile [file join $plugin(library) tkcon.tcl]
@@ -168,21 +110,7 @@ proc SetupConsole {} {
 # Notify user of a critical error:
 
 proc NotifyError {name msg} {
-
     ::pluglog::log $name $msg ERROR
-
-    # Load tk if not done already:
-
-    tkLazyInit
-
-    # If the main window . is iconified, our message box would not show up
-    # (more like a tk bug to have application grab and iconfied dialog)
-    # Also sometimes, the window is iconified but wm state returns withdraw!
-    # even with an update inserted.... so we explictly check for ".c"...
-
-    if {[wm state .]=="iconic" || [winfo exists .c]} {
-	wm deiconify .
-    }
 
     tk_messageBox -icon error -title "Error: $::Name"\
 	    -message "$name: $msg" -type ok

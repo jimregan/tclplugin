@@ -3,6 +3,7 @@
 #
 # by Laurent Demailly
 #
+# RCS:  @(#) $Id$
 
 lappend auto_path ..
 

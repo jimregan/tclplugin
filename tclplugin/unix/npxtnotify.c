@@ -5,11 +5,13 @@
  *	Xt intrinsics.
  *
  * Copyright (c) 1997 by Sun Microsystems, Inc.
+ * Copyright (c) 2000 by Scriptics Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
  * SCCS: @(#) npxtnotify.c 1.25 98/01/06 13:23:32
+ * RCS:  @(#) $Id$
  */
 
 #include <tclInt.h>

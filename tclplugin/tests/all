@@ -3,6 +3,7 @@
 # in this directory.
 #
 # SCCS: @(#) all 1.8 97/08/01 11:07:14
+# RCS:  @(#) $Id$
 
 if {$tcl_platform(os) == "Win32s"} {
     set files [glob *.tes]

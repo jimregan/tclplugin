@@ -1,5 +1,6 @@
 /*
  * SCCS: @(#) acconfig.h 1.1 97/07/02 16:41:47
+ * RCS:  @(#) $Id$
  */
 
 /* Define if you want debugging compiled in

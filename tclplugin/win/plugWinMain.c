@@ -4,11 +4,13 @@
  *	Main entry point for wish and other Tk-based applications.
  *
  * Copyright (c) 1995 Sun Microsystems, Inc.
+ * Copyright (c) 2000 by Scriptics Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
  * SCCS: @(#) plugWinMain.c 1.1 97/12/02 15:46:26
+ * RCS:  @(#) $Id$
  */
 
 #undef USE_TCL_STUBS

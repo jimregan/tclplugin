@@ -67,6 +67,7 @@ exec tclsh8.0 "$0" ${1+"$@"}
 #                 package names, etc... -- dl.
 #
 # SCCS: @(#) plugin-man2html.tcl 1.2 98/01/22 18:13:35
+# RCS:  @(#) $Id$
 #
 
 set Version "0.14p" ; # this converter version

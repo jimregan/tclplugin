@@ -5,13 +5,14 @@
 # Used to generate pkgIndex.tcl so packages are loaded directly when
 # required and thus also works with namespace imports...
 #
-# SCCS: @(#) pkg_mkIndexDirect.tcl 1.2 98/02/26 15:16:59
-#
 # Copyright (c) 1998 Sun Microsystems, Inc.
+# Copyright (c) 2000 by Scriptics Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
+# SCCS: @(#) pkg_mkIndexDirect.tcl 1.2 98/02/26 15:16:59
+# RCS:  @(#) $Id$
 
 # pkg_mkIndex --
 # This procedure creates a package index in a given directory.  The

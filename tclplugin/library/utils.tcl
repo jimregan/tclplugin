@@ -4,11 +4,13 @@
 #       (used by the Tcl plugin but could be useful anywhere).
 #
 # Copyright (c) 1997 Sun Microsystems, Inc.
+# Copyright (c) 2000 by Scriptics Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: %Z% %M% %I% %E% %U%
+# SCCS: @(#) %Z% %M% %I% %E% %U%
+# RCS:  @(#) $Id$
 
 # Nb: if the version below is changed to reflect changes in APIs
 #     the version number of plugtcl should be changed too because

@@ -12,11 +12,13 @@
  * Please contact us directly for questions, comments and enhancements.
  *
  * Copyright (c) 1995-1997 Sun Microsystems, Inc.
+ * Copyright (c) 2000 by Scriptics Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
  * SCCS: @(#) nptoken.c 1.6 97/09/26 07:28:48
+ * RCS:  @(#) $Id$
  */
 
 #include	"np.h"

@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; -*- */
 /*
- *  npupp.h $Revision$
+ *  npupp.h Revision: 1.37
  *  function call mecahnics needed by platform specific glue code.
  */
 

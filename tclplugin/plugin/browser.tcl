@@ -12,11 +12,13 @@
 # Please contact us directly for questions, comments and enhancements.
 #
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
+# Copyright (c) 2000 by Scriptics Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
 # SCCS: @(#) browser.tcl 1.75 98/01/20 19:35:58
+# RCS:  @(#) $Id$
 
 # we provide browser functionalities:
 

@@ -13,6 +13,7 @@
  *
  * Copyright (c) 1983 Regents of the University of California.
  * Copyright (c) 1996-1997 Sun Microsystems, Inc.
+ * Copyright (c) 2000 by Scriptics Corporation.
  *
  * Portions contributed by Chris Kingsley, Jack Jansen and Ray Johnson
  *.
@@ -20,6 +21,7 @@
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
  * SCCS: @(#) @(#) tclMacAlloc.c 1.1 97/12/16 18:36:15
+ * RCS:  @(#) $Id$
  */
 
 #include "tclMacInt.h"

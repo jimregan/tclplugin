@@ -11,6 +11,7 @@
  *	YOU WILL NOT NEED TO EDIT THIS FILE.
  *      (BULLSHIT !)
  *----------------------------------------------------------------------
+ * RCS:  @(#) $Id$
  */
 
 #define XP_UNIX 1

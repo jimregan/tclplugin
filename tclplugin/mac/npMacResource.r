@@ -4,11 +4,13 @@
  * Resources definitions for the netscape plugin/
  *
  * Copyright (c) 1996 Sun Microsystems, Inc.
+ * Copyright (c) 2000 by Scriptics Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
  * SCCS: @(#) npMacResource.r 1.6 98/01/15 18:56:12
+ * RCS:  @(#) $Id$
  */
 
 /*

@@ -9,8 +9,10 @@
 # auto_path or have been loaded already.
 #
 # Copyright (c) 1997 by Sun Microsystems, Inc.  All rights reserved.
+# Copyright (c) 2000 by Scriptics Corporation.
 #
 # SCCS: @(#) trust.test 1.4 97/09/26 07:03:46
+# RCS:  @(#) $Id$
 #
 
 if {[string compare test [info procs test]] == 1} then {source defs}

@@ -6,11 +6,13 @@
  *
  * Copyright (c) 1993 The Regents of the University of California.
  * Copyright (c) 1994-1997 Sun Microsystems, Inc.
+ * Copyright (c) 2000 by Scriptics Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * SCCS:  @(#) tclAppInit.c 1.3 97/09/17 14:12:04
+ * SCCS: @(#) tclAppInit.c 1.3 97/09/17 14:12:04
+ * RCS:  @(#) $Id$
  */
 
 #include "np.h"

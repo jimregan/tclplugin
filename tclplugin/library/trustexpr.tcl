@@ -2,13 +2,15 @@
 #
 # Plugin Trust modules utility functions
 #
-# SCCS: SCCS: @(#) trustexpr.tcl 1.1 97/06/24 13:25:46
+# SCCS: @(#) trustexpr.tcl 1.1 97/06/24 13:25:46
+# RCS:  @(#) $Id$
 #
 # Author:  Laurent Demailly     (Laurent.Demailly@sun.com, dl@mail.box.eu.org)
 #
 # Please contact us directly for questions, comments and enhancements.
 #
 # Copyright (c) 1997 by Sun Microsystems, Inc.
+# Copyright (c) 2000 by Scriptics Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.

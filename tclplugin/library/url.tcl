@@ -14,8 +14,10 @@
 # Please contact us directly for questions, comments and enhancements.
 #
 # Copyright (c) 1997 Sun Microsystems, Inc.
+# Copyright (c) 2000 by Scriptics Corporation.
 #
 # SCCS: @(#) url.tcl 1.21 97/12/02 19:26:34
+# RCS:  @(#) $Id$
 
 # We provide URL parsing functionality:
 

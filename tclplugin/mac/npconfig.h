@@ -8,12 +8,15 @@
  * Please contact us for questions, comments and enhancements.
  *
  * Copyright (c) 1997 Sun Microsystems, Inc.
+ * Copyright (c) 2000 by Scriptics Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
  * SCCS: @(#) npconfig.h 1.8 98/01/15 18:58:40
+ * RCS:  @(#) $Id$
  */
+
 #ifndef _NPCONFIG
 #define _NPCONFIG
  

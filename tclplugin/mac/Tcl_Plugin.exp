@@ -1,4 +1,6 @@
 # SCCS: @(#) Tcl_Plugin.exp 1.1 97/12/03 14:57:50
+# RCS:  @(#) $Id$
+#
 ##gOldPortPtr
 ##gDialogRecord
 ##gPluginList

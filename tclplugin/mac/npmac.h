@@ -8,11 +8,13 @@
  * Please contact me directly for questions, comments and enhancements.
  *
  * Copyright (c) 1997 Sun Microsystems, Inc.
+ * Copyright (c) 2000 by Scriptics Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
  * SCCS: @(#) npmac.h 1.2 97/12/16 18:01:58
+ * RCS:  @(#) $Id$
  *
  */
 

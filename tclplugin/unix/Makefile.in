@@ -13,6 +13,7 @@
 # Makefile to create a fat (containing tcl+tk) version of the tclplugin -- dl
 #
 # SCCS: @(#) Makefile.in 1.95 98/02/26 15:19:28
+# RCS:  @(#) $Id$
 #
 
 VERSION=@VERSION@

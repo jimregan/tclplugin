@@ -1,4 +1,7 @@
-/* SCCS: @(#) npconfig.post.in 1.4 97/12/04 10:11:12 */
+/*
+ * SCCS: @(#) npconfig.post.in 1.4 97/12/04 10:11:12
+ * RCS:  @(#) $Id$
+ */
 
 /*
  * Tcl Plugin version identifiers

@@ -12,11 +12,13 @@
 # Please contact us directly for questions, comments and enhancements.
 #
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
+# Copyright (c) 2000 by Scriptics Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
 # SCCS: @(#) remoted.tcl 1.82 98/01/15 14:54:04
+# RCS:  @(#) $Id$
 
 # Called with the following arguments:
 # argv[0] == port number to connect to on the local host.

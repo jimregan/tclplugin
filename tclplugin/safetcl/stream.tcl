@@ -12,11 +12,13 @@
 # Please contact us directly for questions, comments and enhancements.
 #
 # Copyright (c) 1995-1997 Sun Microsystems, Inc.
+# Copyright (c) 2000 by Scriptics Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
 # SCCS: @(#) stream.tcl 1.2 97/10/06 18:30:15
+# RCS:  @(#) $Id$
 
 # We provide the "stream" feature set and security checks:
 

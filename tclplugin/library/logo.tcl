@@ -12,11 +12,13 @@
 # Please contact us directly for questions, comments and enhancements.
 #
 # Copyright (c) 1997 Sun Microsystems, Inc.
+# Copyright (c) 2000 by Scriptics Corporation.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
 # SCCS: @(#) logo.tcl 1.1 97/09/30 16:03:10
+# RCS:  @(#) $Id$
 
 # we provide the logo
 

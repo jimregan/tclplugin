@@ -35,6 +35,8 @@
 // a 68K plugin compiled by Metrowerks will expect the result in
 // A0.  The following pragma forces Metrowerks to use D0 instead.
 //
+// RCS:  @(#) $Id$
+//
 #ifdef __MWERKS__
 #ifndef powerc
 #pragma pointers_in_D0

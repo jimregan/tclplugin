@@ -1,10 +1,12 @@
 '\"
 '\" Copyright (c) 1995-1997 Sun Microsystems, Inc.
+'\" Copyright (c) 2000 by Scriptics Corporation.
 '\"
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
 '\" SCCS: @(#) home.n 1.6 98/01/22 18:04:47"
+'\" RCS:  @(#) $Id$
 '\" 
 .so man.macros
 .TH "home" n 2.0 Tcl "Safe-Tcl"

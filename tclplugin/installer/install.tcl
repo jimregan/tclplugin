@@ -11,8 +11,10 @@
 # Please contact us directly for questions, comments and enhancements.
 #
 # Copyright (c) 1995-1997 Sun Microsystems, Inc.
+# Copyright (c) 2000 by Scriptics Corporation.
 #
 # SCCS: @(#) install.tcl 1.41 98/01/16 10:12:38
+# RCS:  @(#) $Id$
 
 set supportEmail "plugin@scriptics.com"
 set supportUrl   "http://www.scriptics.com/plugin/"

@@ -1,19 +1,34 @@
 2000-05-14  David Gravereaux <davygrvy@pobox.com>
+	* unix/npconfig.post.in:
+	* unix/tclAppInit.c:
+	* win/resource.h:
+		not needed anymore
+
 	* generic/npversion.h:
 		file npversion.h was initially added on branch daves_thread_experiments.
+
+	* unix/npconfig.h.in:
+		adjusted to not have the old npconfig.post.in appended to it.
+
+	* win/npwinplatform.c:
+		removed references to win32s
 
 	* generic/npversion.h:
 	* win/npconfig.h:
 	* win/npdll32.rc:
-		Simplified version identifiers and the Win32 resource script.
-
-	* generic/npversion.h:
-		I decided to reserve version "2.2a1" for my changes
+		Simplified version identiers and the Win32 resource script.
 
 	* generic/npversion.h:
 	* win/npdll32.rc:
-		centralized some more version info.  minor trims.
+		centralized some more version info.  minor trims.  I decided to reserve
+		version "2.2a1" for my changes
 
+	* win/npWinFindTcl.cpp:
+		file npWinFindTcl.cpp was initially added on branch daves_thread_experiments.
+
+	* win/npWinFindTcl.cpp:
+	* win/npdll32.rc:
+		small lint
 
 2000-05-13  David Gravereaux <davygrvy@pobox.com>
 	* config/home.cfg:

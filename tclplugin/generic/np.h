@@ -8,7 +8,7 @@
  *
  * Copyright (c) 1996-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
- * Copyright (c) 2002-2004 ActiveState Corporation.
+ * Copyright (c) 2002-2005 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -20,6 +20,10 @@
 #define _NP
 
 #include <tcl.h>
+
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h> /* for getenv */
+#endif
 
 #if (TCL_MAJOR_VERSION < 8) \
 	|| ((TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION < 4))
@@ -68,8 +72,8 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
  * (the 3 strings are computed from the 4 internal numbers)
  */
 #define NPTCL_VERSION		"3.0"    /* == PACKAGE_VERSION */
-#define NPTCL_PATCH_LEVEL	"3.0a4"
-#define NPTCL_INTERNAL_VERSION	"3.0.0.4"
+#define NPTCL_PATCH_LEVEL	"3.0a5"
+#define NPTCL_INTERNAL_VERSION	"3.0.0.5"
 
 #define NPTCL_MAJOR_VERSION	3
 #define NPTCL_MINOR_VERSION	0

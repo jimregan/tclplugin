@@ -15,6 +15,10 @@ regsvr32 pluginhostctrl.dll
 You must have administrator privileges to install a new control on
 operating systems such as Windows NT, 2000 & XP.
 
+The original Mozilla PluginHostCtrl ActiveX Class used a CLASSID of
+DBB2DE32-61F1-4F7F-BEB8-A37F5BC24EE2
+but we changed this in order to make bug fixes to
+14E78123-A693-4F27-B6EE-DDDE18F93D3A
 
 Usage: Embedding Tclets in Web Pages
 ====================================
@@ -22,7 +26,7 @@ Usage: Embedding Tclets in Web Pages
 Insert some HTML like this into your content:
   <OBJECT
 	ID="PluginHostCtrl"
-	CLASSID="CLSID:DBB2DE32-61F1-4F7F-BEB8-A37F5BC24EE2"
+	CLASSID="CLSID:14E78123-A693-4F27-B6EE-DDDE18F93D3A"
 	WIDTH="475"
 	HEIGHT="575"
   >

@@ -35,7 +35,7 @@ Usage: Embedding Tclets in Web Pages
 Insert some HTML like this into your content:
   <OBJECT
 	ID="PluginHostCtrl"
-	CLASSID="CLSID:DBB2DE32-61F1-4F7F-BEB8-A37F5BC24EE2"
+	CLASSID="CLSID:14E78123-A693-4F27-B6EE-DDDE18F93D3A"
 	WIDTH="475"
 	HEIGHT="575"
   >

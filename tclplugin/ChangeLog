@@ -1,5 +1,11 @@
 2003-01-10  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* win/pluginhostctrl.dll: Change ActiveX PluginHostControl ClassID
+	* win/README.txt:         from DBB2DE32-61F1-4F7F-BEB8-A37F5BC24EE2
+	* tools/README.binary:    to   14E78123-A693-4F27-B6EE-DDDE18F93D3A
+	This will allow us to make changes without disturbing the original
+	ActiveX Control functionality.
+	
 	* configure: regen
 	* aclocal.m4: make not finding mozilla dir a warning, not an error
 

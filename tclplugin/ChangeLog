@@ -1,5 +1,7 @@
 2004-02-11  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* library/console.tcl: correct WWW embedding reference
+
 	* doc/plugin.n:          rename 'log' package 'pluglog' to avoid
 	* installer/install.tcl: conflict with other packages.
 	* library/browser.tcl, library/common.tcl, library/installed.cfg

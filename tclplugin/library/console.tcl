@@ -3482,6 +3482,7 @@ if {[info exists ::Name]} {
     wm iconify .
     #wm geometry . +10+10
 }
-if {$Console(WWW)} {
+if {[info exists ::Widget::Console::class]
+    && $::Widget::Console::class(WWW)} {
     . configure -width [getattr width] -height [getattr height]
 }

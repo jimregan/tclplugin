@@ -142,7 +142,7 @@ NpUnregisterToken(Tcl_Interp *interp, void *token, char *tableName)
     }
     hPtr = Tcl_FindHashEntry(hTblPtr, token);
     if (hPtr == NULL) {
-        sprintf(panicBuf, "missing token %s in table %s in NpUnregisterToken",
+        sprintf(panicBuf, "missing token %p in table %s in NpUnregisterToken",
                 token, tableName);
         NpPanic(panicBuf);
     }

@@ -1,3 +1,12 @@
+2000-05-14  David Gravereaux <davygrvy@pobox.com>
+	* generic/npversion.h:
+		file npversion.h was initially added on branch daves_thread_experiments.
+
+	* generic/npversion.h:
+	* win/npconfig.h:
+	* win/npdll32.rc:
+		Simplified version identifiers and the Win32 resource script.
+
 2000-05-13  David Gravereaux <davygrvy@pobox.com>
 	* config/home.cfg:
 	* config/inside.cfg:

@@ -1,5 +1,8 @@
 2003-01-16  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* win/pluginhostctrl.dll: updated ActiveX control that correctly
+	handles relative URLs in src=.
+
 	* generic/np.h:
 	* win/npWinPlat.c (NpWinLoadDll): add this hack that checks the
 	registry for a Tcl dll on Windows in case the user doesn't have

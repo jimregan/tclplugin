@@ -9,6 +9,8 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 
+AC_PREREQ(2.13)
+
 #------------------------------------------------------------------------
 # TEA_PATH_TCLCONFIG --
 #
@@ -907,7 +909,8 @@ dnl AC_CHECK_TOOL(AR, ar, :)
 
 	    # AIX v<=4.1 has some different flags than 4.2+
 	    if test "$system" = "AIX-4.1" -o "`uname -v`" -lt "4" ; then
-		LIBOBJS="$LIBOBJS tclLoadAix.o"
+		#LIBOBJS="$LIBOBJS tclLoadAix.o"
+		AC_LIBOBJ([tclLoadAix])
 		DL_LIBS="-lld"
 	    fi
 
@@ -1138,7 +1141,7 @@ dnl AC_CHECK_TOOL(AR, ar, :)
 	    # is kind of overkill but it works.
 	    # Disable inlining only when one of the
 	    # files in compat/*.c is being linked in.
-	    if test x"${LIBOBJS}" != x ; then
+	    if test x"${USE_COMPAT}" != x ; then
 	        EXTRA_CFLAGS="${EXTRA_CFLAGS} -fno-inline"
 	    fi
 
@@ -2173,7 +2176,9 @@ AC_DEFUN(TEA_BUGGY_STRTOD, [
 	    AC_MSG_RESULT([ok])
 	else
 	    AC_MSG_RESULT([buggy])
-	    LIBOBJS="$LIBOBJS fixstrtod.o"
+	    #LIBOBJS="$LIBOBJS fixstrtod.o"
+	    AC_LIBOBJ([fixstrtod])
+	    USE_COMPAT=1
 	    AC_DEFINE(strtod, fixstrtod)
 	fi
     fi

@@ -1097,7 +1097,12 @@ namespace eval $::cfg::implNs {
 		# Remove 'ToLaunch' content so we don't evaluate things twice
 		IUnset $slave ToLaunch
 		# Prepare for launch (when idle)
-		::pluglog::log $slave "schedule tclet $slave script"
+		::pluglog::log $slave \
+		    "Convert CR/CRLF to LF and schedule tclet $slave script"
+		# The script we receive requires LF conversion still.
+		# Order in the map is important.  This may affect binary
+		# data stored in a script.
+		set script [string map [list "\r\n" "\n" "\r" "\n"] $script]
 		BgSpawn $slave 0 $script
 	    } else {
 		::pluglog::log $slave \

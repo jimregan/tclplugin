@@ -1,5 +1,12 @@
 2004-02-11  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* library/browser.tcl (EventuallyLaunch): add CRLF/CR => LF
+	conversion back.  Apparently the browser doesn't do this for us,
+	so if we are served a Windows or Mac file, we have to take care of
+	it.  This could affect binary data embedded in scripts.
+	Remove AddIdleTask and DoIdle that were evidently there to handle
+	a time when 'after' couldn't handle binary data.
+
 	* library/console.tcl: correct WWW embedding reference
 
 	* doc/plugin.n:          rename 'log' package 'pluglog' to avoid

@@ -1,0 +1,84 @@
+Tcl/Tk Browser Plugin BINARY release
+====================================
+
+    http://www.tcl.tk/software/plugin/
+    http://tcl.ActiveState.com/software/plugin/
+    http://tclplugin.sourceforge.net/
+
+    tclplugin-core at lists.sourceforge.net
+
+Version 3 of the Tcl plugin was redeveloped by ActiveState.  It is based on
+Tcl 8.4, but it should build equally well with any higher Tcl/Tk version.
+
+This directory should contain the following:
+
+	README.txt          This file
+	1 np*.{so,dll}      The platform-dependent dynamically loaded library
+	nptcl<version>/     Directory for the plugin runtime library files
+	pluginhostctrl.dll  Windows ActiveX NPAPI host control (Windows only)
+	install.tcl         Tk install script for the plugin
+
+The np*.{so,dll} must go in the client browser's "plugins" directory.
+The nptcl<version>/ directory must be copied into the requisite
+(Active)Tcl 8.4+ runtime library directory, and
+nptcl<version>/installed.cfg must be edited to have ::plugin(executable)
+set to the path to wish8.4+.
+
+For Windows, pluginhostctrl.dll may be placed anywhere, and an admin
+priveleged user must run:
+	regsvr32 pluginhostctrl.dll
+This registers the ActiveX control with Windows.
+
+Usage: Embedding Tclets in Web Pages
+====================================
+
+Insert some HTML like this into your content:
+  <OBJECT
+	ID="PluginHostCtrl"
+	CLASSID="CLSID:DBB2DE32-61F1-4F7F-BEB8-A37F5BC24EE2"
+	WIDTH="475"
+	HEIGHT="575"
+  >
+    <PARAM name="pluginspage" value="http://www.tcl.tk/software/plugin/"/>
+    <PARAM name="type" value="application/x-tcl"/>
+    <PARAM name="src" value="http://www.tcl.tk/software/plugin/tktetris.tcl"/>
+
+    <EMBED
+	  TYPE="application/x-tcl"
+	  PLUGINSPAGE="http://www.tcl.tk/software/plugin/"
+	  FRAMEBORDER="NO"
+	  WIDTH="475"
+	  HEIGHT="575"
+	  SRC="http://www.tcl.tk/software/plugin/tktetris.tcl"
+    >
+    </EMBED>
+  </OBJECT>
+
+** THE CLSID FOR THE TCL PLUGIN MAY CHANGE IN THE FUTURE **
+The CLSID attribute tells IE to create an instance of the plugin hosting
+control, the width and height specify the dimensions in pixels.
+
+The following <EMBED> attributes have <PARAM> tag equivalents:
+
+* <PARAM name="type" ...> is equivalent to TYPE
+  Specifies the MIME type of the plugin. The control uses this value to
+  determine which plugin it should create to handle the content.
+
+* <PARAM name="src" ...> is equivalent to SRC
+  Specifies an URL for the initial stream of data to feed the plugin.
+  If you havent't specified a "type" PARAM, the control will attempt to use
+  the MIME type of this stream to create the correct plugin.  At this time,
+  you must use a fully qualified URL as the Mozilla ActiveX plugin host
+  control doesn't correctly fully qualify URLs.
+
+* <PARAM name="pluginspage" ...> is equivalent to PLUGINSPAGE
+  Specifies a URL where the plugin may be installed from. The default
+  plugin will redirect you to this page when you do not have the correct
+  plugin installed.
+
+You may also supply any custom plugin parameters as additional <PARAM>
+elements.
+
+The IE ActiveX plugin host controller will act on the <OBJECT> tag, and
+NPAPI compatible clients will act on the <EMBED> tag.  For Unix users,
+the <OBJECT> stuff is innocuous and will be ignored.

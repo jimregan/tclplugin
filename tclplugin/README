@@ -1,8 +1,9 @@
-	Welcome to the Tcl Plugin SOURCE release
-        ========================================
+Tcl/Tk Browser Plugin SOURCE release
+====================================
 
     http://www.tcl.tk/software/plugin/ 
     http://tcl.ActiveState.com/software/plugin/
+    http://tclplugin.sourceforge.net/
 
     tclplugin-core at lists.sourceforge.net
 
@@ -13,112 +14,45 @@
 Version 3 of the Tcl plugin was redeveloped by ActiveState.  It is based on
 Tcl 8.4, but it should build equally well with any higher Tcl/Tk version.
 
-THE FOLLOWING INSTRUCTIONS ARE OUT OF DATE ...
+BUILD INSTRUCTIONS:
+-------------------
+  A prerequisite to building the plugin is a non-statically built Tcl/Tk
+  *8.4.1 or greater* set of binaries.  An installation of ActiveTcl will
+  suffice.
 
- Unix Build Instructions:
- ------------------------
- The configuration and Makefile provided here allows you
- to build a standalone 'fat' shared library for the plugin
- it will include all the tcl and tk .o's so the plugin
- is installable and usable without needing to install
- Tcl and Tk beforehand.
- 
- You need first to make (the modified) Tcl and Tk's .o files,
- and both must be configured using --enable-shared (then just do
- "make" not "make install")
+  The following instructions apply for Unix and Windows (using the cygwin
+  environment on Windows).
 
- When you've done this :
+  1. Create a directory to contain the interim objects, like so:
+     mkdir -p ~/build/plugin/
+     cd ~/build/plugin/
 
- cd to the plugin unix/ directory (or to any directory if you plan to use
- VPATH feature to build for several targets or from a read-only distribution)
- and use 
-        configure 
-	    --with-tcl=<path to tcl8 *build* dir>
-	    --with-tk=<path to tk8 *build* dir>
+  2. In the build directory /path/to/plugin/sources/configure with:
             --with-mozilla=<path where you want to install the plugin>
+	and:
+	    --prefix=/path/to/installed/(Active)Tcl8.4+
+	or:
+	    --with-tcl=<path to tcl8.4 *build* dir>
+	    --with-tk=<path to tk8.4 *build* dir>
+     The --prefix option is preferred.
 
- {If you have installed Netscape 3/4 to the default location or have 
-  set the MOZILLA_HOME environment variable, configure will find out
-  automatically ! 
-  If you want a personal install, use --with-mozilla=$HOME/.netscape }
+     If you want a personal install, use:
+	    --with-mozilla=$HOME/.netscape (for Netscape4)
+	or  --with-mozilla=$HOME/.mozille (for Netscape7 or Mozilla)
 
- Read the system specific notes below if they apply to your system
+  3. make
+  4. make install
+     This will place the plugin runtime libraries in:
+	    /path/to/tcl/lib/nptcl<version>
+     And the plugin dll binary in the client browser's plugin directory.
+     On Unix, /path/to/tcl/lib/nptcl<version>/installed.cfg must have the
+     ::plugin(executable) var set to an 8.4+ wish binary.
 
- then
-         make
- then  
-         make install
-     to directly install for the configured host
-  or
-         make staging
-     to create a 'binary distribution' for the configured platform
-     (You use/ship the resulting .tar.gz on any host with the same
-      architecture and OS or install it from the created directory 
-      using ./install.sh there and the Tcl/Tk installer)
- 
- System specific notes:
- ---------------------
-   Configure should pick up most of the system specifics and you
-   usually don't have to modify anything by hand, except :
+  On Windows, the Tcl/Tk dlls must be on the PATH and on Unix they must
+  be in the LD_LIBRARY_PATH or equivalent (LIBPATH or SHLIB_PATH).
+  It may be possible to do without the LD_LIBRARY_PATH limitation on
+  Unix, but Mozilla seems to overload LD_LIBRARY_PATH against us.
 
-   + SunOS 4
-     -------
-     It is STRONGLY recommended that you compiled
-     tcl with -DUSEGETWD to avoid
-	 "can't source <> into tkp0" / interrupted system call
-     repeated transient errors.
+=== MAC OS X ===
 
-   In addition, again for SunOS 4, in order to build the fat binary
-   distribution, you MUST use
-
-     make SHLIB_LD_LIBS='-Bstatic -lX11 -lm -lc' \
-	  XTLIB=/usr/openwin/lib/libXt.a
-
-    or edit the configure generated Makefile
-
-   + Linux
-     -----
-     - On some Linux configuration and with Netscape 3 (not with 4)
-       you might need to link the shared library with SHLIB_LD_LIBS=-lm
-
-     - You might encounter loading problem with netscape (undefined
-       __xstat ...) depending on your (g)libc configuration (for instance
-       we are still trying to figure out how to compile and get a working
-       plugin from source on RedHat 5.0...)
-
-   + HP-UX and potentially other systems
-     -----------------------------------
-     Netscape provided code is using and depending on prototypes
-     and other ANSI features (Tcl, Tk and the Plugin compile fine with
-     both...) so you need to have an ANSI compiler:
-     For HP/UX, use  CC="cc -Aa"
-
- Windows
- -------
-    We have only tested the plugin with VC++ so far, 
-    so you'd better use the makefile.vc files in the Tcl, Tk and 
-    Plugin win/ directories.
-
-    You need first to make (the modified) Tcl and Tk's .o files.
- 
-    Then you need to chdir to the win/ directory
-
-    We don't have yet a self contained installer for Windows
-    but you'll find a Wise installer file to do the install.
-
-    If you need to manually install... Look at the plugin.wise
-    script to find out what it does, or use the binary 
-    distribution and look at the installed files (c:\tclplug...)
-
- Mac
- ---
     See the README in the Mac directory for more information.
-
-
- Any question or problem :
- -------------------------
-
-    http://www.tcl.tk/software/plugin/ 
-    http://tcl.ActiveState.com/software/plugin/ 
-
-    tclplugin-core@lists.sourceforge.net

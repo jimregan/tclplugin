@@ -1,3 +1,26 @@
+2002-12-23  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* README:                    Updated READMEs with build and install
+	* win/README.txt (new):      instructions.
+	* tools/README.binary (new):
+
+	* Makefile.in: updated installer to provide fully working NPAPI
+	plugin following 'make install'
+
+	* tools/install.tcl: stub for plugin installer (does nothing now).
+
+	* win/pluginhostctrl.dll: precompiled DLL of ActiveX NPAPI host
+	control for MS/IE users.
+
+	* generic/npInterp.c (NpCreateMainInterp): up reqs to really
+	require Tcl 8.4 or better.
+
+	* configure:    add runtime library path on Unix.  Mozilla
+	* configure.in: confounds our ability to use this, but it may
+	work for other browsers.
+
+	* library/browser.tcl: use http v2 from the core for url posting
+
 2002-12-20  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* Makefile.in (install): install runtime libraries correctly, add

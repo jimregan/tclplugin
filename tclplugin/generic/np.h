@@ -91,8 +91,12 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 
 /*
  * Netscape APIs (needs system specific headers)
+ * AIX predefines certain types that we must redefine.
  */
 
+#ifdef _AIX
+#define _PR_AIX_HAVE_BSD_INT_TYPES 1
+#endif
 #include "npapi.h"
 
 /*

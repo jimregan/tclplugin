@@ -1,15 +1,15 @@
 '\"
 '\" Copyright (c) 1995-1996 Sun Microsystems, Inc.
 '\" Copyright (c) 2000 by Scriptics Corporation.
+'\" Copyright (c) 2004 by ActiveState Corporation.
 '\"
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
-'\" SCCS: @(#) plugin.n 1.19 98/01/22 15:11:50
 '\" RCS:  @(#) $Id$
 '\" 
 .so man.macros
-.TH "Plugin Architecture" n 2.0 Tcl "Tcl Built-In Commands"
+.TH "Plugin Architecture" n 3.0 Tcl "Tcl Built-In Commands"
 .BS
 '\" Note:  do not modify the .SH NAME line immediately below!
 .SH NAME
@@ -94,7 +94,7 @@ This request causes the master to perform any required security checks.
 After the security checks are done, the master installs aliases in the
 Tclet that allow it to use the new features.
 For an explanation of aliases and multiple interpreters, see the
-\fBinterp\fR manual page that comes with the Tcl 8.0 distribution.
+\fBinterp\fR manual page that comes with the Tcl distribution.
 .PP
 When a Tclet finishes execution, its interpreter is destroyed and all state
 associated with the Tclet is discarded.
@@ -111,9 +111,31 @@ Tclets are embedded in a web page using the HTML \fBembed\fR statement, as
 shown below:
 .PP
 .CS
-<embed src=source.tcl width=100 height=100 ...>
+<OBJECT
+   ID="PluginHostCtrl"
+   CLASSID="CLSID:14E78123-A693-4F27-B6EE-DDDE18F93D3A"
+   WIDTH="338"
+   HEIGHT="216"
+>
+   <PARAM name="type" value="application/x-tcl"/>
+   <PARAM name="pluginspage" value="http://www.tcl.tk/software/plugin/"/>
+   <PARAM name="src"  value="http://www.tcl.tk/software/plugin/puzzle.tcl"/>
+   <EMBED
+      TYPE="application/x-tcl"
+      PLUGINSPAGE="http://www.tcl.tk/software/plugin/"
+      FRAMEBORDER="NO"
+      WIDTH="338"
+      HEIGHT="216"
+      SRC="http://www.tcl.tk/software/plugin/puzzle.tcl"
+   >
+   </EMBED>
+</OBJECT>
 .CE
 .PP
+The \fBEMBED\fR tag within the \fBOBJECT\fR tag is necessary to have
+the plugin recognized in both Netscape Plugin API (NPAPI, eg Mozilla,
+Netscape, Opera, ...) and Internet Explorer ActiveX environements (when
+the accompanying ActiveX NPAPI host controller is installed).
 The \fBwidth\fR and \fBheight\fR arguments are required if the Tclet is
 visible, and may be ommitted if the Tclet is hidden.
 The \fBwidth\fR and \fBheight\fR arguments tell the
@@ -122,9 +144,9 @@ the plugin.
 The Tclet can not control the size of its window and must accept the size
 given in the \fBembed\fR statement.
 .PP
-The value supplied in the \fBsrc\fR argument can be any URL; as shown in
-the example above, it is a relative URL, and this directs the browser to
-retrieve the Tcl source file \fBsource.tcl\fR from the same server and the
+The value supplied in the \fBsrc\fR argument can be any URL.  If it is a
+relative URL, and this directs the browser to
+retrieve the Tcl source file from the same server and the
 same directory as the HTML page containing the \fBembed\fR statement.
 An \fBsrc\fR argument must be supplied if the Tclet is stored in a separate
 file; for small Tclets, the Tclet can be given in\-line as the value of a
@@ -161,7 +183,7 @@ their features in a safe manner, by invoking the \fBpolicy\fR command.
 The \fBpolicy\fR manual page described how Tclets request to use a policy.
 .PP
 On Unix and Win32 platforms it is possible to execute Tclets in a separate
-process; the executable must be based on Tk 8.0p2 for this to work properly.
+process; the executable must be based on Tk 8.0+ for this to work properly.
 The environment variable \fBTCL_PLUGIN_WISH\fR determines which executable
 is used to execute Tclets. This is fully described in the section
 \fBENVIRONMENT VARIABLES\fR.
@@ -205,7 +227,7 @@ existing directory, the plugin library is found by appending the version
 number of the plugin (e.g. \fB2.0\fR) and \fBplugin\fR.
 If the environment variable is not set, the plugin looks in the system
 registry for the value \fBDirectory\fR under the key
-\fBHKEY_LOCAL_MACHINE\\Software\\Sun\\Tcl Plugin\\2.0\fR and uses the
+\fBHKEY_LOCAL_MACHINE\\Software\\ActiveState\\ActiveTcl\fR and uses the
 stored value to compute the name of the library directory by appending the
 version number of the plugin and \fBplugin\fR.
 If the \fBTCL_PLUGIN_DIR\fR environment variable is not set and the
@@ -242,16 +264,6 @@ Contains Tcl code to implement the various features supplied by the plugin
 to Tcl scripts, such as the ability to write HTML streams and fetch URLs.
 This is a peer directory of \fBplugin(library)\fR.
 .TP
-\fBtcl8.0\fR
-This peer directory contains a copy of the \fBTcl 8.0\fR Tcl library.
-These files are included with the plugin installation so that the plugin
-can be used without requiring the user to have installed Tcl 8.0.
-.TP
-\fBtk8.0\fR
-This peer directory contains a copy of the \fBTk 8.0\fR Tcl library.
-These files are likewise included to allow the plugin to be used when the
-user does not have Tk 8.0 installed.
-.TP
 \fBconfig\fR
 This peer directory contains configuration files that control the behavior
 of the plugin, such as which security policies and features are enabled.
@@ -286,7 +298,7 @@ If set to \fB1\fR, Tclets are executed in the address space of a \fBwish\fR
 supplied with the plugin installation.
 If the variable is set to anything else, it is takes as the full path to an
 executable that will be used as an external process to run Tclets. The
-executable must be based on Tcl and Tk 8.0 or later.
+executable must be based on Tcl/Tk 8.0 or later.
 .TP
 \fBTCL_PLUGIN_CONSOLE\fR
 If set to \fB1\fR, a console using Jeff Hobb's \fBtkCon\fR application will
@@ -613,14 +625,13 @@ need to redefine \fBbgerror\fR and eventually remove the binding
 .PP
 The plugin creates a console connected to the master interpreter if the
 environment variable \fBTCL_PLUGIN_CONSOLE\fR is set. If its value is
-\fB1\fR, the console will be created by using the \fBTkCon\fR
-application authored by Jeff Hobbs.
+\fB1\fR, the console will be created by using a console megawidget
+authored by Jeff Hobbs.
 If the environment variable is explicitly set to \fB0\fR, no console window
 is created.
 .PP
-By default, the console is created using \fBtkCon\fR, a sophisticated
-console application written by Jeff Hobbs.
-For more information, see the \fBtkCon\fR documentation on the web, at
+By default, the console is created using.
+For more information, see the \fBtkcon\fR documentation on the web, at
 \fBhttp://tkcon.sourceforge.net/\fR.
 If the environment variable is set to a value other than \fB0\fR or
 \fB1\fR, the value is used as the name of a file to \fBsource\fR to
@@ -735,4 +746,4 @@ of logging interactively.
 safe(n)
 .SH KEYWORDS
 browser, console, downloaded code, feature, interpreters, logging, master
-interpreter, Safe Base, security policy, Tclet, tkCon
+interpreter, Safe Base, security policy, Tclet, tkcon

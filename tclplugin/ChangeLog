@@ -1,3 +1,37 @@
+2004-02-02  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* doc/Announce.txt (removed): updated docs to clean up old refs
+	* doc/FAQ (removed):
+	* doc/INSTALL.unix (removed):
+	* doc/README:
+	* doc/README.txt:
+	* doc/changes:
+	* doc/new (removed): renamed to features-2.0.txt
+	* doc/plugin.n:
+
+	* library/browser.tcl (WriteStream): add the ability to specify an
+	encoding in the embed_args for the incoming stream. (takeshi)
+
+	* generic/np.h: update to 3.0a2
+
+	* doc/plugin.n:
+	* generic/npTcl.c (NPP_Initialize): allow TCL_PLUGIN_DLL_LOGFILE
+	env var to specify file for dll's logging calls.
+
+	* generic/npInterp.c (NpCreateMainInterp): add more logged error
+	handling.
+
+	* unix/npUnix.c (NpLoadLibrary): use defaultLibraryDir
+	correct args to be void** to pass handles correctly.
+	allow TCL_PLUGIN_DLL to specify libtcl to use on Unix.
+
+	* unix/npUnixPlat.c (NpPlatformMsg): add fflush of stderr
+
+	* win/npWin.c (NpLoadLibrary): use defaultLibraryDir
+
+	* generic/npToken.c (NpUnregisterToken): correct printf token to %p
+
+
 2003-02-18  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* win/npWin.c (NpLoadLibrary): try and access HKEY_CURRENT_USER if

@@ -254,3 +254,4 @@ default action upon linkDown. (DL)
 
 ---- New (source only) Release Tcl Plugin 2.0 - March 11 1998 ----
 
+All additional changes are specified in the toplevel ChangeLog

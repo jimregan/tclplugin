@@ -1,3 +1,10 @@
+2005-03-18  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* Makefile.in (AR): use @AR@
+	* configure, configure.in, tclconfig/tcl.m4: update to TEA 3.2
+
+	* library/plugmain.tcl: extra warning info
+
 2005-01-09  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* win/npWin.c (NpLoadLibrary): add attempt to load plugin from the

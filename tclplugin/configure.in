@@ -16,12 +16,14 @@ AC_CONFIG_AUX_DIR(tclconfig)
 # This will define a ${TEA_PLATFORM} variable == "unix" or "windows".
 #--------------------------------------------------------------------
 
-TEA_INIT([3.1])
+TEA_INIT([3.2])
 
 AC_CONFIG_AUX_DIR(tclconfig)
 
 TEA_PATH_TCLCONFIG
 TEA_LOAD_TCLCONFIG
+TEA_PATH_TKCONFIG
+TEA_LOAD_TKCONFIG
 
 TEA_PREFIX
 
@@ -90,9 +92,9 @@ if test "${TEA_PLATFORM}" = "windows" ; then
     # We could do this with a .def file, but this is a bit easier
     # These functions need exporting, but they are part of the NPAPI that
     # has some strict declarations that you don't want to play with.
-    SHLIB_LD_FLAGS="${SHLIB_LD_FLAGS} -export:NP_GetEntryPoints,@1"
-    SHLIB_LD_FLAGS="${SHLIB_LD_FLAGS} -export:NP_Initialize,@2"
-    SHLIB_LD_FLAGS="${SHLIB_LD_FLAGS} -export:NP_Shutdown,@3"
+    SHLIB_LD="${SHLIB_LD} -export:NP_GetEntryPoints,@1"
+    SHLIB_LD="${SHLIB_LD} -export:NP_Initialize,@2"
+    SHLIB_LD="${SHLIB_LD} -export:NP_Shutdown,@3"
     LIB_RUNTIME_DIR=${TCL_EXEC_PREFIX}/bin
     TCL_LIB_FILE=${TCL_DLL_FILE}
 else
@@ -103,8 +105,7 @@ else
     # This should enable us to have the TCL_LIB_FILE located at runtime
     # with the -R path ... might not be necessary.
     LIB_RUNTIME_DIR=${TCL_EXEC_PREFIX}/lib
-    eval TCL_LD_SEARCH_FLAGS=${TCL_LD_SEARCH_FLAGS}
-    SHLIB_LD_FLAGS="${SHLIB_LDFLAGS} ${TCL_LD_SEARCH_FLAGS}"
+    SHLIB_LD="${SHLIB_LD} ${LD_SEARCH_FLAGS}"
 fi
 AC_SUBST(LIB_RUNTIME_DIR)
 AC_SUBST(TCL_LIB_FILE)

@@ -1,7 +1,7 @@
 /*
  * npdll32.rc --
  *
- *	Version resource script for MicroSoft's resource compiler.  Pertinent
+ *	Version resource script for Microsoft's resource compiler.  Pertinent
  *	values are read from generic/npversion.h
  *
  * Copyright (c) 1996-1997 Sun Microsystems, Inc.
@@ -37,13 +37,13 @@ BEGIN
 	BLOCK "040904e4"
 	BEGIN
 	    VALUE "CompanyName",	"Scriptics Corporation\0"
-	    VALUE "FileDescription",	"Tcl Plugin " NPTCL_PATCH_LEVEL " Executes tclets found in Web pages.  See " NPTCL_HOMEPAGE " for more details.\0"
+	    VALUE "FileDescription",	"Tcl Plugin " NPTCL_VERSION " is a netscape plugin that executes tclets found in Web pages.  See " NPTCL_HOMEPAGE " for more details.\0"
 	    VALUE "FileVersion",	NPTCL_PATCH_LEVEL "\0"
 	    VALUE "InternalName",	"Tcl Plugin " NPTCL_PATCH_LEVEL "\0"
 	    VALUE "LegalCopyright",	"Copyright (c) 2000 by Scriptics Corporation\0"
 	    VALUE "LegalTrademarks",	"None.  Under BSD license\0"
 	    VALUE "OriginalFilename",	"nptcl32.dll\0"
-	    VALUE "ProductName",	"Tcl Plugin " NPTCL_PATCH_LEVEL "\0"
+	    VALUE "ProductName",	"Tcl Plugin " NPTCL_VERSION "\0"
 	    VALUE "ProductVersion",	NPTCL_PATCH_LEVEL "\0"
 	    VALUE "MIMEType",		"application/x-tcl\0"
 	    VALUE "FileExtents",	"tcl\0"

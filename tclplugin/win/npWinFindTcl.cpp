@@ -20,8 +20,10 @@
 #include <algorithm>
 #include <windows.h>
 
-// I don't care to know about name truncation in the debug data
-#pragma warning(disable:4786)
+#ifdef _MSC_VER
+    // I don't care to know about name truncation in the debug data
+#   pragma warning(disable:4786)
+#endif
 
 // locally shared variables restricted to this module
 static char *_minVer;

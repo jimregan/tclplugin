@@ -43,7 +43,5 @@
 
 #undef HAVE_UNISTD_H
 
-/*
- * Below this point are inserted by configure the version number
- * informations and the endif NP_CONFIG (coming from npconfig.post.in)
- */
+
+#endif /* #ifndef NP_CONFIG */

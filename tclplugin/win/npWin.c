@@ -145,3 +145,13 @@ NpLoadLibrary(HMODULE *tclHandle, char *dllName, int dllNameSize)
     }
     return TCL_OK;
 }
+
+/*
+ * DLL entry point
+ */
+
+BOOL WINAPI
+DllMain(HINSTANCE hDLL, DWORD dwReason, LPVOID lpReserved)
+{
+    return 1;
+}

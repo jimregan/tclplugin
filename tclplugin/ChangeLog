@@ -1,5 +1,15 @@
 2002-12-20  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* Makefile.in (install): install runtime libraries correctly, add
+	notes about what to do with dll.
+
+	* configure:
+	* tclconfig/tcl.m4: better *Config.sh detection
+
+	* library/installed.cfg: add dummy lines for vars that need setting
+
+	* library/browser.tcl: correctly destroy logo splash
+
 	* library/console.tcl: update console megawidget to v2.
 
 2002-12-19  Jeff Hobbs  <jeffh@ActiveState.com>

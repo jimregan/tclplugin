@@ -220,13 +220,21 @@ doc:
 
 install: all install-binaries install-libraries install-doc
 
-install-binaries: binaries install-lib-binaries install-bin-binaries
-	@mkdir -p $(DESTDIR)$(pkglibdir)
-	$(INSTALL_DATA) pkgIndex.tcl $(DESTDIR)$(pkglibdir)
-	$(INSTALL_DATA) $(srcdir)/license.txt $(DESTDIR)$(pkglibdir)
-	$(INSTALL_DATA) $(srcdir)/README.txt $(DESTDIR)$(pkglibdir)
+install-binaries: binaries
+	@echo "place $($(PACKAGE)_LIB_FILE) in browser plugins directory"
+	@echo "edit $(DESTDIR)$(pkglibdir)/installed.cfg"
+	@echo "     set ::plugin(executable) to latest 8.4 wish binary"
+	@echo "     set ::plugin(sharedLibraryDir) as necessary"
 
 install-libraries: libraries
+	@echo "Installing plugin libraries to $(DESTDIR)$(pkglibdir)"
+	@list='. config safetcl utils'; for p in $$list; do \
+	  mkdir -p $(DESTDIR)$(pkglibdir)/$$p; \
+	  for i in `ls -dr $(srcdir)/library/$$p/*.* 2>/dev/null`; do \
+	    $(INSTALL_DATA) $$i $(DESTDIR)$(pkglibdir)/$$p/; \
+	  done \
+	done
+	@$(INSTALL_DATA) $(srcdir)/license.terms $(DESTDIR)$(pkglibdir)
 
 install-doc: doc
 

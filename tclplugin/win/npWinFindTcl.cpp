@@ -1,7 +1,7 @@
 /* 
  * npWinFindTcl.cpp --
  *
- *	Discovers the whereabouts of a certain tclXX.dll
+ *	Discovers the installed path to a certain tclXX(d).dll
  *
  * AUTHOR:	David Gravereaux <davygrvy@pobox.com>
  *
@@ -57,7 +57,8 @@ static bool fileLess (std::string &, std::string &);
  *	This char * does not need to be freed by the caller.
  *
  *  bad stuff:
- *	none.
+ *	might over-ride development environment and use the installed one
+ *	instead.  might have to 'install' tclXXd.dll to debug this extension.
  *
  *-------------------------------------------------------------------------
  */

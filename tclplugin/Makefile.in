@@ -97,6 +97,9 @@ TCL_BIN_DIR	= @TCL_BIN_DIR@
 TK_SRC_DIR	= @TK_SRC_DIR@
 TK_BIN_DIR	= @TK_BIN_DIR@
 
+TCL_LIB_FILE	= @TCL_LIB_FILE@
+LIB_RUNTIME_DIR	= @LIB_RUNTIME_DIR@
+
 # Not used by sample, but retained for reference of what Tcl required
 TCL_LIBS	= @TCL_LIBS@
 TK_LIBS		= @TK_LIBS@
@@ -129,7 +132,8 @@ INCLUDES	= -I. -I"`@CYGPATH@ $(srcdir)/generic`" \
 EXTRA_CFLAGS	= $(MEM_DEBUG_FLAGS) @EXTRA_CFLAGS@
 
 DEFS		= $(TCL_DEFS) @DEFS@ $(EXTRA_CFLAGS) \
-		  -DTCL_LIB_FILE=\"@TCL_LIB_FILE@\"
+		  -DLIB_RUNTIME_DIR=\"${LIB_RUNTIME_DIR}\" \
+		  -DTCL_LIB_FILE=\"${TCL_LIB_FILE}\"
 
 CONFIG_CLEAN_FILES = Makefile
 

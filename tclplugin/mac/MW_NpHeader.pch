@@ -105,8 +105,7 @@
  * These defines turn on the logging.  
  */
  
-#define NP_LOG
-#define NP_LOG_FILENAME "Tcl Plugin Log"
+/* #define NP_LOG "Tcl Plugin Log" */
 
 /*
  * Place any includes below that will are needed by the majority of the

@@ -132,18 +132,9 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 #define	NPTCL_INSTANCE		"npInstance"
 #define NPTCL_STREAM		"npStream"
 
-#ifdef NP_LOG
-#ifndef NP_LOG_FILENAME
-#   define NP_LOG_FILENAME "nplog.txt"
-#endif
 EXTERN void		NpLog _ANSI_ARGS_(TCL_VARARGS(CONST char *, format));
 EXTERN void		NpStartLog _ANSI_ARGS_((CONST char *filename));
 EXTERN void		NpStopLog _ANSI_ARGS_((void));
-#else
-#define NpLog(...)
-#define NpStartLog(f)
-#define NpStopLog()
-#endif
 
 /*
  * For the Mac, we need to make sure the Tcl_Evals are all

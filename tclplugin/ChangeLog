@@ -1,3 +1,12 @@
+2003-02-11  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* configure:
+	* aclocal.m4:
+	* generic/np.h:        simplify NpLog to always be defined, but
+	* generic/npLog.c:     only functions after NpStartLog is called.
+	* mac/MW_NpHeader.pch:
+	* unix/tclAppInit.c:
+
 2003-02-09  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* configure:

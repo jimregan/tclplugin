@@ -80,7 +80,7 @@ Tcl_AppInit(interp)
      * Start the optional debugging log (never stopped)
      */
 #ifdef NP_LOG
-    NpStartLog(NP_LOG_EXTFILENAME);
+    NpStartLog(NP_LOG);
 #endif
 
     /*

@@ -13,8 +13,6 @@
 
 #include "np.h"
 
-#ifdef	NP_LOG
-
 #include <time.h>
 
 /*
@@ -46,12 +44,14 @@ static FILE *logFile = NULL;
 EXTERN void
 NpLog TCL_VARARGS_DEF(CONST char *,arg1)
 {
-    va_list argList;
-    CONST char *format;
+    if (logFile != NULL) {
+	va_list argList;
+	CONST char *format;
 
-    format = TCL_VARARGS_START(CONST char *,arg1,argList);
-    NpLogVA(format, argList);
-    va_end (argList);
+	format = TCL_VARARGS_START(CONST char *,arg1,argList);
+	NpLogVA(format, argList);
+	va_end (argList);
+    }
 }
 
 /*
@@ -88,10 +88,6 @@ NpLogVA (format, argList)
     arg6 = va_arg(argList, char *);
     arg7 = va_arg(argList, char *);
     arg8 = va_arg(argList, char *);
-
-    if (logFile == NULL) {
-	return;
-    }
 
     (void) fprintf(logFile, "[%lu] ", (unsigned long) time(NULL));
     (void) fprintf(logFile, format, arg1, arg2, arg3, arg4, arg5, arg6,
@@ -153,5 +149,3 @@ NpStopLog()
         logFile = NULL;
     }
 }
-
-#endif	/* NP_LOG */    

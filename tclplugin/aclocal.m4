@@ -33,16 +33,15 @@ AC_DEFUN(TCLPLUGIN_LOG, [
     else
 	if test "$log_ok" = "yes"; then
 	    if test "${TEA_PLATFORM}" = "unix"; then
-		NP_LOG_FILENAME=\"/tmp/nptcl.log\"
+		NP_LOG=\"/tmp/nptcl.log\"
 	    else
-		NP_LOG_FILENAME=\"C:/temp/nptcl.log\"
+		NP_LOG=\"C:/temp/nptcl.log\"
 	    fi
 	else
-	    NP_LOG_FILENAME=\"$log_ok\"
+	    NP_LOG=\"$log_ok\"
 	fi
-	AC_DEFINE(NP_LOG)
-	AC_DEFINE_UNQUOTED(NP_LOG_FILENAME, ${NP_LOG_FILENAME})
-	AC_MSG_RESULT([yes (${NP_LOG_FILENAME})])
+	AC_DEFINE_UNQUOTED(NP_LOG, ${NP_LOG})
+	AC_MSG_RESULT([yes (${NP_LOG})])
     fi
 ])
 

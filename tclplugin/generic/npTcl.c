@@ -100,7 +100,7 @@ NpInit(Tcl_Interp *interp)
      * Install hash tables for instance tokens and stream tokens.
      */
 
-    NpLog(">>> NpInit(%p)\n", (int) interp, 0, 0);
+    NpLog(">>> NpInit(%p)\n", interp);
     NpInitTokenTables(interp);
 
     /*
@@ -110,7 +110,7 @@ NpInit(Tcl_Interp *interp)
      * (To call the NPN_... APIs)
      */
 
-    NpLog("NpInit: PnInit(%p)\n", (int) interp, 0, 0);
+    NpLog("NpInit: PnInit(%p)\n", interp);
     if (PnInit(interp) != TCL_OK) {
         NpPlatformMsg(Tcl_GetStringResult(interp), "NpInit (Pn functions)");
         return TCL_ERROR;
@@ -120,13 +120,13 @@ NpInit(Tcl_Interp *interp)
      * Common part of the initialization whether in netscape or as tclshp
      */
 
-    NpLog("NpInit: Plugin_Init(%p, %d)\n", (int) interp, 1, 0);
+    NpLog("NpInit: Plugin_Init(%p, %d)\n", interp, 1);
     if (Plugin_Init(interp, 1 /* inBrowser */) != TCL_OK) {
 	/* Error reporting has been done already */
 	return TCL_ERROR;
     }
 
-    NpLog(">>> NpInit finished OK\n", 0, 0, 0);
+    NpLog(">>> NpInit finished OK\n");
     return TCL_OK;
 }
 
@@ -151,7 +151,9 @@ NPP_Initialize()
 {
     Tcl_Interp *interp;
 
-    NpStartLog(NP_LOG_FILENAME);
+#ifdef NP_LOG
+    NpStartLog(NP_LOG);
+#endif
 
     nptcl_stack		= 0;
     nptcl_instances	= 0;

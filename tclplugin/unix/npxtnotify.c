@@ -9,7 +9,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * SCCS: @(#) npxtnotify.c 1.24 97/11/10 17:39:45
+ * SCCS: @(#) npxtnotify.c 1.25 98/01/06 13:23:32
  */
 
 #include <tclInt.h>
@@ -81,10 +81,10 @@ static int initialized = 0;
 
 static int		FileHandlerEventProc _ANSI_ARGS_((Tcl_Event *evPtr,
 			    int flags));
-static void		FileProc _ANSI_ARGS_((caddr_t clientData,
+static void		FileProc _ANSI_ARGS_((XtPointer clientData,
 			    int *source, XtInputId *id));
 static void		InitNotifier _ANSI_ARGS_((void));
-static void		TimerProc _ANSI_ARGS_((caddr_t clientData,
+static void		TimerProc _ANSI_ARGS_((XtPointer clientData,
 			    XtIntervalId *id));
 
 /*
@@ -361,7 +361,7 @@ Tcl_SetTimer(timePtr)
 
 static void
 TimerProc(data, id)
-    caddr_t data;		/* Not used. */
+    XtPointer data;		/* Not used. */
     XtIntervalId *id;
 {
 #ifdef	NP_DEBUG
@@ -571,7 +571,7 @@ Tcl_DeleteFileHandler(fd)
 
 static void
 FileProc(clientData, fd, id)
-    caddr_t clientData;
+    XtPointer clientData;
     int *fd;
     XtInputId *id;
 {

@@ -8,7 +8,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) utils.tcl 1.3 97/12/02 14:41:42
+# SCCS: %Z% %M% %I% %E% %U%
 
 # Nb: if the version below is changed to reflect changes in APIs
 #     the version number of plugtcl should be changed too because

@@ -215,4 +215,42 @@ Macintosh plugin. (JI)
 determination and other improvements to the windows installer
 script. (DL)
 
+12/8/97 (tk bug fix) on Windows, using "winfo pathname" before "." was mapped
+was crashing. (DL)
+
 ---- Released Tcl Plugin 2.0b5 - Dec 5th 1997 ----
+
+12/12/97 (bug fix) The NPX_PLUGIN_PATH was in fact not searched
+properly. (DL)
+
+Jan/1/98 (portability bug fix) Using the proper Xt types to allow
+compilation on some unix platforms. (DL)
+
+Jan/13/98 (workaround) Changes in initialization path to try to
+get at least minimally working plugin with any 8.0 user specified
+wish. THIS IS NOT THE RECOMMENDED NOR SUPPORTED CONFIGURATION.
+You should use the tclshp/wish built specifically for the plugin. (DL)
+
+Jan/15/98 (change) the policy mechanism does not install a featureDir
+directory in the auto_path anymore, because it is not needed in
+Tcl or the Plugin as the parent of that directory is already in
+the auto_path. (DL)
+
+Jan/15/98 (fix) For non plugin specific external wish, the shared
+library path should not be changed and on windows, the current
+directory must be changed. (DL)
+
+Jan/16/98 (improvements) In the manual pages. (JYL)
+
+Jan/21/98 (fix) Improved Windows installer to detect when NS3 is not
+installed. Improved unix installer portability. (DL)
+
+---- Released Tcl Plugin 2.0 - Jan 21th 1998 ----
+
+Jan/22/98 (fix) Manual Pages lints. Html version generation. (DL)
+
+Feb/26/98 (improvement) Rpi package: added delete method call as the 
+default action upon linkDown. (DL)
+
+---- New (source only) Release Tcl Plugin 2.0 - March 11 1998 ----
+

@@ -16,7 +16,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) browser.tcl 1.73 97/12/02 19:43:09
+# SCCS: @(#) browser.tcl 1.75 98/01/20 19:35:58
 
 # we provide browser functionalities:
 
@@ -38,7 +38,7 @@ package require wait 1.1
 # (v1.2 of policies imply at least 1.1 of safefeature which includes
 #  checkArgs)
 
-package require policy 1.2
+package require policy 1.3
 
 # We need the base64 logo
 
@@ -389,8 +389,20 @@ namespace eval $::cfg::implNs {
 
 	    set oldwin [iget $name window]
 	    if {[string compare $oldwin $win] != 0} {
-		log $name "Window changed: used to be $oldwin, now $win" \
-		    WARNING
+		# On Unix (at least) Netscape (specially NS3)
+		# tend to "change" the X window sometimes
+		# (particularly when you resize but sometimes at
+		#  early stages of page loading too :/)
+		# Ideally we should reparent Tk's . to that new window
+		# or, as this is not currently possible with Tk's embedding
+		# start a new interpreter and transfer the tclet there
+		# (the tclet would need to use the persistent storage to
+		# save it's state in that case, by binding on .'s destruction)
+		# but that would mean transferring the complicated startup
+		# state in the master too. Difficult with the current
+		# implementation. To be solved later.
+		log $name "Window changed: used to be $oldwin, now $win\
+			(probable tk destruction problem upcoming)" WARNING
 	    }
 
 	    # Check if something actually changed
@@ -1049,8 +1061,11 @@ namespace eval $::cfg::implNs {
 	} else {
 	    # First remove what we've eventually put at "NewWindow" time
 	    if {[iget $name hasLogo]} {
-		interp eval $name {destroy .l}
 		ISet $name hasLogo 0
+		if {[catch {interp eval $name {destroy .l}} msg]} {
+		    log $name "removing splash screen failure (tk destroyed) :\
+			    $msg" ERROR
+		}
 	    }
 	    # We workaround non binary cleaness of after and try to
 	    # use our installed bgerror.

@@ -1,7 +1,6 @@
 # common.tcl --
 #
-#	Plugin main and remoted common parts (setup), which are not browser
-#       specific either
+#	Plugin main and remoted common parts (setup).
 #
 # CONTACT:      sunscript-plugin@sunscript.sun.com
 #
@@ -16,7 +15,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) common.tcl 1.10 97/12/04 14:18:30
+# SCCS: @(#) common.tcl 1.14 98/01/15 19:34:44
 
 # we provide browser functionalities:
 
@@ -26,9 +25,20 @@ package provide setup 1.0
 
 package require log 1.1
 
-# Setup the lazyTkInit :
+# tkInit : plugin aware Tk will use that proc to initialize themselves
+# if it exists and thus will find directly the Tk where it is expected
+# without being potentially confused by the TK_LIBRARY env var...
 
-# Our caller should be run on in a tcl shell which has Tk available
+proc tkInit {} {
+    global tk_library
+    log {} "direct tkInit! -> $tk_library"
+    uplevel #0 [list source [file join $tk_library tk.tcl]]
+#   rename tkInit {}
+}
+
+# Setup the tkLazyInit :
+#
+# Our caller should be running in a tcl shell which has Tk available
 # for loading through the "package require Tk" command but in which
 # Tk is not loaded by default (loading of Tk is delayed until the
 # need arises).
@@ -213,6 +223,6 @@ proc SetupConfig {} {
 	log {} "$msg: probable plugin configuration problem" ERROR
     }
 
-    CheckAge
+#   CheckAge
 
 }

@@ -12,7 +12,7 @@
 #
 # Makefile to create a fat (containing tcl+tk) version of the tclplugin -- dl
 #
-# SCCS: @(#) Makefile.in 1.94 97/12/05 18:56:01
+# SCCS: @(#) Makefile.in 1.95 98/02/26 15:19:28
 #
 
 VERSION=@VERSION@
@@ -496,7 +496,7 @@ sdist:
 	rm -rf $(DISTDIR1)
 	( cd $(TOP_DIR)/unix ; $(AUTOCONF) )
 	-@for i in "" generic unix win win/res mac plugin library safetcl \
-		config doc tests installer ; \
+		config doc tests installer tools ; \
 	do \
 	  echo "making $(DISTDIR2)/$$i"; \
 	  mkdir -p $(DISTDIR2)/$$i;\

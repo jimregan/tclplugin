@@ -8,7 +8,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * SCCS: @(#) npMacResource.r 1.3 97/12/04 10:09:48
+ * SCCS: @(#) npMacResource.r 1.6 98/01/15 18:56:12
  */
 
 /*
@@ -23,7 +23,35 @@
 #define RESOURCE_INCLUDED
 #include "tcl.h"
 #include "tk.h"
+#include "npconfig.h"
 
+#if (NPTCL_RELEASE_LEVEL == 0)
+#   define RELEASE_LEVEL alpha
+#elif (NPTCL_RELEASE_LEVEL == 1)
+#   define RELEASE_LEVEL beta
+#elif (NPTCL_RELEASE_LEVEL == 2)
+#   define RELEASE_LEVEL final
+#endif
+
+#if (NPTCL_RELEASE_LEVEL == 2)
+#   define MINOR_VERSION (NPTCL_MINOR_VERSION * 16) + NPTCL_RELEASE_SERIAL
+#else
+#   define MINOR_VERSION NPTCL_MINOR_VERSION * 16
+#endif
+
+resource 'vers' (1) {
+	NPTCL_MAJOR_VERSION, MINOR_VERSION,
+	RELEASE_LEVEL, 0x00, verUS,
+	NPTCL_PATCH_LEVEL,
+	NPTCL_PATCH_LEVEL ", by Jim Ingham © Sun Microsystems"
+};
+
+resource 'vers' (2) {
+	NPTCL_MAJOR_VERSION, MINOR_VERSION,
+	RELEASE_LEVEL, 0x00, verUS,
+	NPTCL_PATCH_LEVEL,
+	"Tcl Plugin " NPTCL_INTERNAL_VERSION " © 1997-8"
+};
 
 /*
  * The following resource tells what MIME type and file extension
@@ -33,8 +61,8 @@
  */
 
 resource 'STR#' (126, "Plugin Information") {
-	{	"http://sunscript.sun.com/plugin/",
-	    "Tcl Plugin 2.0b5"
+	{	"Tcl Plugin " NPTCL_PATCH_LEVEL " (" NPTCL_INTERNAL_VERSION ").  Executes tclets found in Web pages.  See the <a href=http://sunscript.sun.com/plugin/>Tcl Plugin</a> for more details.",
+	    "Tcl Plugin 2.0"
 	};
 };
 
@@ -53,12 +81,14 @@ resource 'STR#' (127, "Mime Type descriptions") {
  * Uncomment this to get logging in the plugin
  */
  
+/*
 resource 'STR#' (130, "Tcl Environment Variables") {
-	{	"TCL_PLUGIN_LOGFILE = {Tcl Plugin Log res}",
-	    "TCL_PLUGIN_CONSOLE = 1"
-	    "TCL_PLUGIN_LOGWINDOW = 1"
+	{	"TCL_PLUGIN_LOGFILE={Tcl Plugin Tcl-code Log}",
+                "TCL_PLUGIN_CONSOLE=0",
+                "TCL_PLUGIN_LOGWINDOW=0"
 	};
 };
+*/
 
 /* 
  * The mechanisim below loads Tcl source into the resource fork of the

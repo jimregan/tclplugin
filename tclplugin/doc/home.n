@@ -4,7 +4,7 @@
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
-'\" SCCS: @(#) home.n 1.5 97/11/13 23:44:20"
+'\" SCCS: @(#) home.n 1.6 98/01/22 18:04:47"
 '\" 
 .so man.macros
 .TH "home" n 2.0 Tcl "Safe-Tcl"
@@ -89,10 +89,8 @@ consumption by the \fBpersist\fR feature when used in this policy.
 If the section is absent, the default settings are used.
 
 .SH "SEE ALSO"
-.PP
 plugin(n), safe(n), policy(n), config(n), url(n), persist(n), network(n)
 
 .SH KEYWORDS
-.PP
 Safe\-Tcl, access, policy, feature, network, URL, socket, persistent local
 storage

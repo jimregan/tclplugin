@@ -16,7 +16,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * SCCS: @(#) npconfig.h 1.8 97/12/04 10:06:18
+ * SCCS: @(#) npconfig.h 1.9 98/01/13 17:49:33
  */
 
 #ifndef _NPCONFIG
@@ -40,12 +40,12 @@
  * (the 3 strings are computed from the 4 internal numbers)
  */
 #define NPTCL_VERSION "2.0"
-#define NPTCL_PATCH_LEVEL "2.0b5"
-#define NPTCL_INTERNAL_VERSION "2.0.105"
+#define NPTCL_PATCH_LEVEL "2.0"
+#define NPTCL_INTERNAL_VERSION "2.0.200"
  
 #define NPTCL_MAJOR_VERSION 2
 #define NPTCL_MINOR_VERSION 0
-#define NPTCL_RELEASE_LEVEL 1
-#define NPTCL_RELEASE_SERIAL 5
+#define NPTCL_RELEASE_LEVEL 2
+#define NPTCL_RELEASE_SERIAL 0
 
 #endif /* _NPCONFIG */

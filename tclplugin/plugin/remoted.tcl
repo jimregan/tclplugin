@@ -16,7 +16,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) remoted.tcl 1.81 97/12/04 11:43:24
+# SCCS: @(#) remoted.tcl 1.82 98/01/15 14:54:04
 
 # Called with the following arguments:
 # argv[0] == port number to connect to on the local host.
@@ -100,6 +100,8 @@ proc remotedInit {} {
     }
 
     lappend auto_path $tk_library
+
+    log {} "AutoPath = $auto_path"
 
     # The correct value has been set by our caller:
     if {![info exists ::cfg::Tmp]} {

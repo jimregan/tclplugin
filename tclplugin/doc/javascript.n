@@ -4,7 +4,7 @@
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
-'\" SCCS: @(#) javascript.n 1.4 97/10/10 12:56:16
+'\" SCCS: @(#) javascript.n 1.5 98/01/22 18:04:47
 '\" 
 .so man.macros
 .TH "javascript" n 2.0 Tcl "Safe-Tcl"
@@ -87,12 +87,10 @@ In the Tcl plugin, all mime types are allowed.
 Edit this section to describe a smaller set of mime types.
 
 .SH "SEE ALSO"
-.PP
 plugin(n), safe(n), config(n), policy(n), url(n), stream(n), network(n),
 persist(n)
 
 .SH KEYWORDS
-.PP
 Safe\-Tcl, alias, socket, URL, persistent local storage, JavaScript,
 electronic mail
 

@@ -7,9 +7,9 @@ Contacts for questions, updates, etc... :
 
          Email: sunscript-plugin@sunscript.sun.com
 
- (If you are not familiar with the compilation of programs
-  on your platform, see the URL above for a binary (executable)
-  distribution for your platform)
+ { If you are not familiar with the compilation of programs
+   on your platform, see the URL above for a binary (executable)
+   distribution for your platform }
 
  You need to use the provided version of Tcl and Tk to
  build the plugin from source. It is based on version 8.0 
@@ -47,6 +47,8 @@ Contacts for questions, updates, etc... :
   automatically ! 
   If you want a personal install, use --with-mozilla=$HOME/.netscape }
 
+ Read the system specific notes below if they apply to your system
+
  then
          make
  then  
@@ -64,7 +66,9 @@ Contacts for questions, updates, etc... :
    Configure should pick up most of the system specifics and you
    usually don't have to modify anything by hand, except :
 
-   When using SunOS 4 : It is STRONGLY recommended that you compiled
+   + SunOS 4
+     -------
+     It is STRONGLY recommended that you compiled
      tcl with -DUSEGETWD to avoid
 	 "can't source <> into tkp0" / interrupted system call
      repeated transient errors.
@@ -77,9 +81,22 @@ Contacts for questions, updates, etc... :
 
     or edit the configure generated Makefile
 
-   On some Linux configuration and with Netscape 3 (not with 4)
-    you might need to link the shared library with LIBS=-lm
- 
+   + Linux
+     -----
+     - On some Linux configuration and with Netscape 3 (not with 4)
+       you might need to link the shared library with SHLIB_LD_LIBS=-lm
+
+     - You might encounter loading problem with netscape (undefined
+       __xstat ...) depending on your (g)libc configuration (for instance
+       we are still trying to figure out how to compile and get a working
+       plugin from source on RedHat 5.0...)
+
+   + HP-UX and potentially other systems
+     -----------------------------------
+     Netscape provided code is using and depending on prototypes
+     and other ansi features (Tcl, Tk and the Plugin compile fine with
+     both...) so you need to have an ansi compiler:
+     For hpux, use  CC="cc -Aa"
 
  Windows
  -------
@@ -100,14 +117,15 @@ Contacts for questions, updates, etc... :
 
  Mac
  ---
-    There is a pre-alpha (!) source release but it
-    is not yet very useful nor supported, please wait a bit more...
+    See the README in the Mac directory for more information.
 
 
- Any question or problems :
- --------------------------
+ Any question or problem :
+ -------------------------
 
     http://sunscript.sun.com/plugin/ 
 
     sunscript-plugin@sunscript.sun.com
+
+ See also http://www.demailly.com/tcl/plugin/
 

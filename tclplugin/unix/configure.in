@@ -6,7 +6,7 @@ dnl 		Process this file with autoconf to produce a configure script.
 AC_INIT(../generic/nptcl.c)
 AC_CONFIG_HEADER(npconfig.h)
 
-# SCCS: @(#) configure.in 1.33 97/12/04 15:15:19
+# SCCS: @(#) configure.in 1.34 98/01/13 17:42:58
 
 ##### Section that needs to be updated for each new release ######
 
@@ -19,8 +19,8 @@ NPTCL_MINOR_VERSION=0
 # is 2.1b2, NPTCL_RELEASE_SERIAL is 2.  It restarts at 1 whenever the
 # release level is changed, except for the final release which is 0
 # (the first patch will start at 1).
-NPTCL_RELEASE_LEVEL=1
-NPTCL_RELEASE_SERIAL=5
+NPTCL_RELEASE_LEVEL=2
+NPTCL_RELEASE_SERIAL=0
 
 # nb: don't forget to update win/npconfig.h and mac/npconfig.h to reflect
 #     the version strings produced by this configure script in npconfig.h
@@ -31,7 +31,7 @@ NPTCL_RELEASE_SERIAL=5
 #     (script or configure will be done when time permit too)
 
 
-TCLTK_EXPECTED_VERSION=8.0p2Plugin1
+TCLTK_EXPECTED_VERSION=8.0p2Plugin2
 AC_SUBST(TCLTK_EXPECTED_VERSION)
 
 # The patch level is computed automatically below. no changes should be needed.

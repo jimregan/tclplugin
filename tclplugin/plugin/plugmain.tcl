@@ -15,7 +15,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# SCCS: @(#) plugmain.tcl 1.81 97/12/04 13:54:21
+# SCCS: @(#) plugmain.tcl 1.87 98/01/20 20:15:29
 
 
 # Set our base name (used for error reporting):
@@ -32,19 +32,28 @@ package require setup 1.0
 
 SetupLogging
 
-log {} "Plugin(library) = $plugin(library)"
+log {} "Plugin(library) = $plugin(library) -\
+	patchLevel = $plugin(patchLevel) -\
+	pkgVersion = $plugin(pkgVersion) -\
+	tcl_patchLevel = $tcl_patchLevel"
 
 # We need the safe::loadTk command. However, we don't want to require that
 # Tk be initialized just to obtain access to this function, so instead, we 
-# add tk_library to the # auto_path to make sure it will be found by unknown.
+# add tk_library to the auto_path (if it's not already in there because
+# tk has been loaded for logging for instance) to make sure it will be 
+# found by unknown.
 
-lappend auto_path $tk_library
+if {[lsearch -exact $auto_path $tk_library] < 0} {
+    lappend auto_path $tk_library
+}
 
 log {} "AutoPath = $auto_path"
 
 # Initialiaze the configuration (install time / raw parameters):
 
 SetupConfig
+
+log {} "Plugin(release) = $plugin(release)"
 
 # Compute what directory to use for temporary files:
 # If it has not been set already in the config
@@ -112,8 +121,15 @@ proc npInit {} {
 	inprocInit
 	return
     }
+
+    # Is the external wish 'our' wish and thus needs setting the
+    # shared library path.
+
+    set ourWish 0 
+
     if {("$wish" == "1") || (![file executable $wish])} {
 	set wish $::plugin(executable)
+	set ourWish 1
 	if {![file executable $wish]} {
 	    log {} \
 		"revert to in-process execution, can't use \"$wish\"" \
@@ -123,7 +139,7 @@ proc npInit {} {
 	}
     }
 
-    log {} "Will attempt to use \"$wish\""
+    log {} "Will attempt to use \"$wish\" ($ourWish)"
 
     # Save the current environment so that we can restore it after init. We
     # set env(TCL_PLUGIN_WISH) but it does not accumulate so we are OK.
@@ -149,7 +165,8 @@ proc npInit {} {
     package require rpi 1.0;
     set srv [::rpi::newServer 0 localhost]
 
-    if {[catch {NpExec $wish [file join $plugin(library) remoted.tcl] \
+    if {[catch {NpExec $ourWish $wish\
+	    [file join $plugin(library) remoted.tcl] \
 	    [::rpi::iget $srv Port]} msg]} {
         log {} "External wish \"$wish\" startup error: $msg - falling back to inprocess" ERROR
 
@@ -185,46 +202,59 @@ proc npInit {} {
 # the user to start the debugger running on the sub-process. If not, it
 # calls exec with the passed arguments.
 
-proc NpExec {executable script port} {
+proc NpExec {ourWish executable script port} {
     global env tcl_platform plugin
 
-    # If we are on a Unix box, LD_LIBRARY_PATH needs to be updated to
-    # enable the external executable to find its shared libraries.
-    #
-    # If we are on Windows, likewise update the Path or PATH env var.
+    if {$ourWish} {
+	# If we are on a Unix box, LD_LIBRARY_PATH needs to be updated to
+	# enable the external executable to find its shared libraries.
+	# If we are on Windows, likewise update the PATH env var.
+	# (the Path one, if any is handled by traces/init.tcl)
 
-    if {"$tcl_platform(platform)" == "unix"} {
-	if {[info exists env(LD_LIBRARY_PATH)]} {
-	    set env(LD_LIBRARY_PATH) \
-		"$plugin(sharedLibraryDir):$env(LD_LIBRARY_PATH)"
-	} else {
-	    set env(LD_LIBRARY_PATH) $plugin(sharedLibraryDir)
+	if {"$tcl_platform(platform)" == "unix"} {
+	    if {[info exists env(LD_LIBRARY_PATH)]} {
+		set env(LD_LIBRARY_PATH) \
+			"$plugin(sharedLibraryDir):$env(LD_LIBRARY_PATH)"
+	    } else {
+		set env(LD_LIBRARY_PATH) $plugin(sharedLibraryDir)
+	    }
+	    log {} "LD_LIBRARY_PATH1=($env(LD_LIBRARY_PATH))"
+	} elseif {"$tcl_platform(platform)" == "windows"} {
+	    if {[info exists env(PATH)]} {
+		set env(PATH) "$plugin(sharedLibraryDir);$env(PATH)"
+	    } else {
+		set env(PATH) $plugin(sharedLibraryDir)
+	    }
+	    log {} "PATH1=($env(PATH))"
 	}
-    } elseif {"$tcl_platform(platform)" == "windows"} {
-	if {[info exists env(PATH)]} {
-	    set env(PATH) "$plugin(sharedLibraryDir);$env(PATH)"
-	} elseif {[info exists env(Path)]} {
-	    set env(Path) "$plugin(sharedLibraryDir);$env(Path)"
-	} else {
-	    set env(Path) $plugin(sharedLibraryDir)
+    } else {
+	# On Windows, when not using our wish, we have to be sure
+	# That we will not use our copies of the DLL which could
+	# conflict with vanilla wish80, so we try to *remove*
+	# plugin(sharedLibraryDir) from the path.
+	# Netscape on windows change the current directory to
+	# the plugins/ directory. So we would pick the
+	# plugin specific DLLs for the external wish
+	# to avoid that we have to change the directory
+	if {"$tcl_platform(platform)" == "windows"} {
+	    set restorePwd [pwd]
+	    log {} "pwd0=($restorePwd)"
+	    cd ..
+	    if {[info exists env(PATH)]} {
+		log {} "PATH0=($env(PATH))"
+		# ... eventually check the path, practically it is not
+		# changed to include the plugins/ directory...
+	    }
 	}
-    }
-
-    if {([info exists env(TCL_PLUGIN_DEBUG)]) && \
-	    ("$tcl_platform(platform)" == "unix")} {
-	# This is (not)nicely smashing one's .gdbinit ...
-	set fd [open [file join $env(HOME) .gdbinit] w]
-	puts $fd "set args $script $port $tclversion"
-	puts $fd "exec-file $executable"
-	close $fd
-	log {} "Not exec'ed but written suitable ~/.gdbinit instead -- start gdb" WARNING;
-	return
     }
 
     log {} "about to exec \"$executable $script $port\""
 
     set ::WishPid [exec $executable $script $port &]
     log {} "Exec ok (pid $::WishPid)";
+    if {[info exist restorePwd]} {
+	cd $restorePwd
+    }
 }
 
 

@@ -107,6 +107,16 @@
 	safety fixes and merge back into the main trunk when I feel happy
 	with my	changes.
 
+
+	* Created the "daves_thread_experiments" branch.
+
+	** On "daves_thread_experiments": **
+	* win/jri32.def:
+	* win/plugWinMain.c:
+	* win/stdafx.cpp:
+	* win/stdafx.h:	removed these files because they're not needed.
+
+
 2000-05-11   David Gravereaux <davygrvy@pobox.com>
 	* README:
 	* changes:

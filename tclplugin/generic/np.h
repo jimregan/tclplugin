@@ -177,6 +177,8 @@ EXTERN int		Plug_Init _ANSI_ARGS_((Tcl_Interp *interp,
 	                    int inBrowserFlag));
 EXTERN int		PnInit _ANSI_ARGS_((Tcl_Interp *interp));
 EXTERN int		PnSafeInit _ANSI_ARGS_((Tcl_Interp *interp));
+EXTERN int		PnTkInit _ANSI_ARGS_((Tcl_Interp *interp));
+EXTERN int		PnTkSafeInit _ANSI_ARGS_((Tcl_Interp *interp));
 
 
 EXTERN int streams;

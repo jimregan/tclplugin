@@ -42,13 +42,6 @@ typedef struct ContainerInfo {
 static ContainerInfo *firstContainerPtr = NULL;
 
 /*
- * Look for this key in the registry to find the library where the
- * plugin initialization scripts are installed.
- */
-
-#define TCL_PLUGIN_DIR_KEY	"Software\\Sun\\Tcl Plugin\\2.0"
-
-/*
  * Static functions in this file:
  */
 
@@ -154,8 +147,8 @@ NpPlatformInit(Tcl_Interp *interp, int inBrowser)
             if (result != ERROR_SUCCESS) {
                 Tcl_AppendResult(interp, "The Tcl Plugin appears to not be",
                         " installed properly. Please check your registry.",
-                        " It should have a key",
-                        " HKEY_CURRENT_USER\\Software\\Sun\\Tcl Plugin\\2.0",
+                        " It should have a key HKEY_CURRENT_USER\\",
+                        TCL_PLUGIN_DIR_KEY,
                         " but I didn't find such a key.",
                         (char *) NULL);
                 return TCL_ERROR;
@@ -169,8 +162,8 @@ NpPlatformInit(Tcl_Interp *interp, int inBrowser)
             if (result != ERROR_SUCCESS) {
                 Tcl_AppendResult(interp, "The Tcl Plugin appears to not be",
                         " installed properly. Please check your registry.",
-                        " It should have a key",
-                        " HKEY_LOCAL_MACHINE\\Software\\Sun\\Tcl Plugin\\2.0",
+                        " It should have a key HKEY_LOCAL_MACHINE\\",
+                        TCL_PLUGIN_DIR_KEY,
                         " but I didn't find such a key.",
                         (char *) NULL);
                 return TCL_ERROR;

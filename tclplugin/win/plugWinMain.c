@@ -11,6 +11,9 @@
  * SCCS: @(#) plugWinMain.c 1.1 97/12/02 15:46:26
  */
 
+#undef USE_TCL_STUBS
+#undef USE_TK_STUBS
+
 #include <tk.h>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

@@ -10,7 +10,7 @@ WHAT:		Tcl Plugin 2.0 Final Release,
 	The Tcl Plugin is free for any use, including commercial use
 	and inclusion in commercial products.
 
-HOW:		http://sunscript.sun.com/plugin/download.html
+HOW:		http://www.scriptics.com/plugin/download.html
 
 	Go to our web site's download page to obtain your copy of the
 	Tcl Plugin. Mirror sites also have copies of our web site, so

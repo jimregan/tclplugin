@@ -59,9 +59,6 @@ namespace eval $::cfg::implNs {
     # default url fetching timeout
     variable timeout 120000
 
-    # private Idle tasks list
-    variable IdleTasks {}
-
     # State variables for each slave are internally stored as arrays
     # called "S${slave}", only the following 5 functions should
     # access those arrays directly:
@@ -1036,7 +1033,7 @@ namespace eval $::cfg::implNs {
     #           is 0 : we execute tclet code wrapped around bgerror checking
 
     proc BgEval {slave direct cmd} {
-	::pluglog::log $slave "Actually Executing code in tclet"
+	::pluglog::log $slave "BgEval START tclet $slave: $cmd"
 	if {$direct} {
 	    set expr $cmd
 	} else {
@@ -1050,33 +1047,34 @@ namespace eval $::cfg::implNs {
 		}
 	    }
 	    # Try to use our installed bgerror.
-	    set expr {set plugin(ret) [}
-	    append expr [list catch [list uplevel #0 $cmd] plugin(res)]
-	    # only launch the error console if there is really an
-	    # "error" (=1) return code
-	    append expr {]; if {$plugin(ret)==1} {bgerror $plugin(res)};}
+	    set expr [subst {
+		set plugin(ret) \[catch {uplevel \#0 [list $cmd]} plugin(res)\]
+		# only launch the error console if there is really an
+		# "error" (=1) return code
+		if {\$plugin(ret)==1} { bgerror \$plugin(res) }
+		return -code \$plugin(ret) \
+		    -errorinfo \$::errorInfo \$plugin(res)
+	    }]
 	    # still, we return what we got.
-	    append expr {return -code $plugin(ret)\
-			     -errorinfo $::errorInfo $plugin(res)}
 	}
 	set ret [catch {interp eval $slave $expr} res]
 	if {$ret} {
 	    ::pluglog::log $slave \
-		"Slave eval ($direct) return code $ret ($cmd): $res" ERROR
+		"Slave $slave eval ($direct) return code $ret ($cmd): $res" \
+		ERROR
 	} else {
-	    ::pluglog::log $slave "Done Executing tclet code: $res"
+	    ::pluglog::log $slave "BgEval DONE tclet $slave ($cmd): $res"
 	}
     }
 
     # Will evaluate "cmd" in the slave when idle:
 
     proc BgSpawn {slave direct cmd} {
-	::pluglog::log IDLE "Call in $slave on IDLE: \"$cmd\""
+	::pluglog::log $slave "Call on IDLE: \"$cmd\""
 	after idle [list [namespace current]::BgEval $slave $direct $cmd]
     }
 
-    # If the waiting counter is 0 or less, actually launch the
-    # code :
+    # If the waiting counter is 0 or less, actually launch the code:
 
     proc EventuallyLaunch {slave} {
 	if {[iget $slave waiting] <=0} {
@@ -1098,7 +1096,7 @@ namespace eval $::cfg::implNs {
 		IUnset $slave ToLaunch
 		# Prepare for launch (when idle)
 		::pluglog::log $slave \
-		    "Convert CR/CRLF to LF and schedule tclet $slave script"
+		    "Convert CR/CRLF to LF and schedule script for eval"
 		# The script we receive requires LF conversion still.
 		# Order in the map is important.  This may affect binary
 		# data stored in a script.

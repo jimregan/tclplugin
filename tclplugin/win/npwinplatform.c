@@ -97,10 +97,8 @@ NpPlatformInit(Tcl_Interp *interp, int inBrowser)
 {
     char tmpBuf[BUFMAXLEN];
     char *ptr;
-    OSVERSIONINFO osInfo;
     DWORD result;
     HKEY regKey;
-    int isWin32s;		/* True if we are running under Win32s. */
     Tcl_DString ds;
     long size = MAX_PATH;
 
@@ -129,68 +127,41 @@ NpPlatformInit(Tcl_Interp *interp, int inBrowser)
     if (ptr == NULL) {
 
 	/*
-         * Find out what kind of system we are running on.
-         */
-
-        osInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-        GetVersionEx(&osInfo);
-
-        isWin32s = (osInfo.dwPlatformId == VER_PLATFORM_WIN32s);
-
-	/*
-	 * Open the registry and look for the TCL_PLUGIN_DIR_KEY key. Note that
-	 * Windows 3.1 only supports HKEY_CLASSES_ROOT and single valued
-	 * keys.
+	 * Open the registry and look for the TCL_PLUGIN_DIR_KEY key.
 	 */
 
-	if (isWin32s) {
-	    result =
-                RegOpenKey(HKEY_CLASSES_ROOT, TCL_PLUGIN_DIR_KEY, &regKey);
-            if (result != ERROR_SUCCESS) {
-                Tcl_AppendResult(interp, "The Tcl Plugin appears to not be",
-                        " installed properly. Please check your registry.",
-                        " It should have a key HKEY_CURRENT_USER\\",
-                        TCL_PLUGIN_DIR_KEY,
-                        " but I didn't find such a key.",
-                        (char *) NULL);
-                return TCL_ERROR;
-            }
-	    Tcl_DStringSetLength(&ds, MAX_PATH);
-	    result = RegQueryValue(regKey, "Directory", Tcl_DStringValue(&ds),
-                    &size);
-	} else {
-	    result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, TCL_PLUGIN_DIR_KEY, 0,
+	result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, TCL_PLUGIN_DIR_KEY, 0,
 		KEY_READ, &regKey);
-            if (result != ERROR_SUCCESS) {
-                Tcl_AppendResult(interp, "The Tcl Plugin appears to not be",
-                        " installed properly. Please check your registry.",
-                        " It should have a key HKEY_LOCAL_MACHINE\\",
-                        TCL_PLUGIN_DIR_KEY,
-                        " but I didn't find such a key.",
-                        (char *) NULL);
-                return TCL_ERROR;
-            }
-	    Tcl_DStringSetLength(&ds, MAX_PATH);
-	    result = RegQueryValueEx(regKey, "Directory", NULL, NULL,
-		Tcl_DStringValue(&ds), (DWORD*)&size);
+        if (result != ERROR_SUCCESS) {
+	    Tcl_AppendResult(interp, "The Tcl Plugin appears to not be",
+		" installed properly. Please check your registry.",
+		" It should have a key HKEY_LOCAL_MACHINE\\",
+		TCL_PLUGIN_DIR_KEY,
+		" but I didn't find such a key.",
+		(char *) NULL);
+	    return TCL_ERROR;
 	}
+
+	Tcl_DStringSetLength(&ds, MAX_PATH);
+	result = RegQueryValueEx(regKey, "Directory", NULL, NULL,
+	    Tcl_DStringValue(&ds), (DWORD*)&size);
 
 	if (result == ERROR_SUCCESS) {
 	    RegCloseKey(regKey);
 	    Tcl_DStringSetLength(&ds, size);
-            ptr = Tcl_DStringValue(&ds);
+	    ptr = Tcl_DStringValue(&ds);
 
-            /*
-             * See if the registered value that we found actually points
-             * at an existing directory. If not, ignore the value.
-             */
-            
-            if (access(ptr, 0) != 0) {
-                ptr = (char *) NULL;
+	    /*
+	     * See if the registered value that we found actually points
+	     * at an existing directory. If not, ignore the value.
+	     */
+
+	    if (access(ptr, 0) != 0) {
+		ptr = (char *) NULL;
             }
 	} else {
 	    Tcl_DStringSetLength(&ds, 0);
-            ptr = (char *) NULL;
+	    ptr = (char *) NULL;
 	}
     }
               
@@ -199,12 +170,12 @@ NpPlatformInit(Tcl_Interp *interp, int inBrowser)
      */
     
     if (ptr == NULL) {
-        Tcl_DStringFree(&ds);
-        Tcl_AppendResult(interp,
-                "could not find Tcl plugin library; please check that the",
-                " plugin is properly installed",
-                (char *) NULL);
-        return TCL_ERROR;
+	Tcl_DStringFree(&ds);
+	Tcl_AppendResult(interp,
+	    "could not find Tcl plugin library; please check that the",
+	    " plugin is properly installed",
+	    (char *) NULL);
+	return TCL_ERROR;
     }
 
     /*

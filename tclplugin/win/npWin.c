@@ -74,8 +74,14 @@ NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle)
     result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, TCL_REG_DIR_KEY, 0,
 	    KEY_READ, &regKey);
     if (result != ERROR_SUCCESS) {
-	NpLog("Could not access registry \"%s\"\n", TCL_REG_DIR_KEY);
-	return TCL_ERROR;
+	NpLog("Could not access registry \"HKLM\\%s\"\n", TCL_REG_DIR_KEY);
+
+	result = RegOpenKeyEx(HKEY_CURRENT_USER, TCL_REG_DIR_KEY, 0,
+		KEY_READ, &regKey);
+	if (result != ERROR_SUCCESS) {
+	    NpLog("Could not access registry \"HKCU\\%s\"\n", TCL_REG_DIR_KEY);
+	    return TCL_ERROR;
+	}
     }
 
     result = RegQueryValueEx(regKey, "CurrentVersion", NULL, NULL,

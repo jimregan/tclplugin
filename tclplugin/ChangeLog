@@ -1,3 +1,12 @@
+2003-02-18  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/npWin.c (NpLoadLibrary): try and access HKEY_CURRENT_USER if
+	HKEY_LOCAL_MACHINE access fails for ActiveTcl version key.
+	[Bug #673454]
+
+	* configure (regen):
+	* tclconfig/tcl.m4: update from TEA
+
 2003-02-11  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* configure:

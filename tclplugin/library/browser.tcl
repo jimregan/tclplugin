@@ -5,8 +5,6 @@
 #
 # CONTACT:      tclplugin-core@lists.sourceforge.net
 #
-# ORIGINAL AUTHORS:      Jacob Levy              Laurent Demailly
-#
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
 # Copyright (c) 2002 ActiveState Corporation.
@@ -16,9 +14,8 @@
 #
 # RCS:  @(#) $Id$
 
-# we provide browser functionalities:
-
-package provide browser 1.0
+# We require http::formatQuery
+package require http 2
 
 # We require logging
 package require log 1.0
@@ -32,7 +29,6 @@ package require wait 1.1
 # we need error handling from policy (and safe base loading):
 # (v1.2 of policies imply at least 1.1 of safefeature which includes
 #  checkArgs)
-
 package require policy 1.3
 
 # We need the base64 logo
@@ -40,6 +36,9 @@ package require plugin::logo 1.0
 
 # We use misc utilities
 package require tcl::utils 1.0
+
+# we provide browser functionalities:
+package provide browser 1.0
 
 # Note: the code below is separated into sections and might
 #       be split into separate files at some point for additional
@@ -159,8 +158,7 @@ namespace eval $::cfg::implNs {
 
     proc LogAlias {slave args} {
 	# remove all special chars
-	set str [join $args]
-	regsub -nocase -all "\[^ -~\]+" $str {_} str
+	regsub -nocase -all "\[^ -~\]+" [join $args] {_} str
 	log $slave $str "SLAVE"
     }
 
@@ -415,8 +413,7 @@ namespace eval $::cfg::implNs {
     # Virtual Window 'resize' event
 
     proc ResizeWindow {name win winGeom x y width height ct cl cb cr} {
-	# This *should* be handled by embedding but
-	# apparently is not (yet?).
+	# This *should* be handled by embedding but apparently is not (yet?).
 
 	log $name [info level 0] NOTICE
 	ISet $name windowGeometry $winGeom
@@ -999,7 +996,7 @@ namespace eval $::cfg::implNs {
 	global plugin
 	variable userAgent
 	variable apiVersion
-	
+
 	set userAgent [pnExecute UserAgent $name {}]
 	set vl [pnExecute ApiVersion $name {}]
 
@@ -1058,11 +1055,9 @@ namespace eval $::cfg::implNs {
 			    $msg" ERROR
 		}
 	    }
-	    # We workaround non binary cleaness of after and try to
-	    # use our installed bgerror.
+	    # Try to use our installed bgerror.
 	    set expr {set plugin(ret) [}
-	    append expr [list catch\
-		    [list uplevel #0 [LfConvert $cmd]] plugin(res)]
+	    append expr [list catch [list uplevel #0 $cmd] plugin(res)]
 	    # only launch the error console if there is really an 
 	    # "error" (=1) return code
 	    append expr {]; if {$plugin(ret)==1} {bgerror $plugin(res)};}
@@ -1204,15 +1199,6 @@ namespace eval $::cfg::implNs {
 	}
     }
 
-    # Binary clean line feed conversion. We unfortunately need this
-    # because the Tcl core currently breaks if we give it a line like
-    # '\'+'<white spaces>'+'<newline>'. This will not work for everything
-    # (ie if you have binary data with "\r" inside they will be changed).
-
-    proc LfConvert {str} {
-	return [string map [list "\r\n" "\n" "\r" "\n"] $str]
-    }
-
     #### Url fetching/posting (for the url feature) utility/helper functions:
 
     # This procedure does the actual work of fetching the URL:
@@ -1231,7 +1217,6 @@ namespace eval $::cfg::implNs {
     }
 
     # This procedure does the actual work of posting to a URL:
-
     proc PostURL {name url data fromFile \
 		  newCallBack writeCallBack endCallBack} {
 	if {[iexists $name stream,handler:$url]} {
@@ -1245,40 +1230,7 @@ namespace eval $::cfg::implNs {
 	pnExecute PostURL $name [list $url {} $data $fromFile]
     }
 
-    # Those helper functions should move to some cgi package
-
-    # Encode name/value pairs
-    # based on http2.0's FormatQuery and dl's cgi hacks
-
-    proc EncodeAll {listOfArgs} {
-	set res {}
-	set sep ""
-	foreach arg $listOfArgs {
-	    append res $sep [EncodeOne $arg]
-	    if {[string equal $sep "="]} {
-		set sep &
-	    } else {
-		set sep =
-	    }
-	}
-	return $res
-    }
-
-    # Encode to x-www-urlencoded, accepts binary input
-
-    proc EncodeOne {str} {
-	set res {}
-	foreach chunk [split $str \0] {
-	    regsub -all "\[^+ \na-zA-Z0-9\]" $chunk\
-		    {%[format %.2x [scan \\& %c v; set v]]} chunk
-	    lappend res [subst $chunk]
-	}
-	set res [join $res %00]
-	return [string map [list + "%2b" " " + "\n" "%0a"] $res]
-    }
-
     # Temporary file for posts
-
     proc TempFile {name data} {
 	set fname [file join $::cfg::Tmp $name]
 	log $name "creating temp file $fname"
@@ -1288,7 +1240,7 @@ namespace eval $::cfg::implNs {
 	return $fname
     }
 
-
+    # This should all be rewritten to leverage the http package.
     # This function encodes the given data if "raw" isn't requested.
     # As it seems that data transmitted directly does not work
     # properly in most cases, we always use an intermediate file
@@ -1297,20 +1249,16 @@ namespace eval $::cfg::implNs {
 
     proc EncodeIt {name data raw} {
 	if {!$raw} {
-	    set data [EncodeAll $data]
+	    set data [eval [list ::http::formatQuery] $data]
 	    set data [join [list \
 		    "Content-type: application/x-www-form-urlencoded" \
-		    "Content-length: [string length $data]" \
-		    "" \
-		    "$data"] \
-		    "\n"]
+		    "Content-length: [string length $data]" "" $data] "\n"]
 	}
 	# Always use the file option
 	set data [TempFile $name $data]
 	set fromFile 1
 	return [list $data $fromFile]
     }
-
 
     # Helper procedure that computes wrapped callbacks, potentially blocks
     # and calls the worker function to actually fetch the data:

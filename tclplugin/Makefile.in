@@ -1,5 +1,5 @@
 #
-# Makefile for Tcl/Tk plugin
+# Makefile for Tcl browser plugin
 #
 # RCS:  @(#) $Id$
 #
@@ -94,15 +94,12 @@ STLIB_LD	= @STLIB_LD@
 TCL_DEFS	= @TCL_DEFS@
 TCL_SRC_DIR	= @TCL_SRC_DIR@
 TCL_BIN_DIR	= @TCL_BIN_DIR@
-TK_SRC_DIR	= @TK_SRC_DIR@
-TK_BIN_DIR	= @TK_BIN_DIR@
 
 TCL_LIB_FILE	= @TCL_LIB_FILE@
 LIB_RUNTIME_DIR	= @LIB_RUNTIME_DIR@
 
 # Not used by sample, but retained for reference of what Tcl required
 TCL_LIBS	= @TCL_LIBS@
-TK_LIBS		= @TK_LIBS@
 
 #========================================================================
 # TCLLIBPATH seeds the auto_path in Tcl's init.tcl so we can test our
@@ -111,9 +108,8 @@ TK_LIBS		= @TK_LIBS@
 # require for testing here (like TCLX_LIBRARY).
 #========================================================================
 
-EXTRA_PATH	= $(top_builddir):$(TCL_BIN_DIR):$(TK_BIN_DIR)
+EXTRA_PATH	= $(top_builddir):$(TCL_BIN_DIR)
 TCLSH_ENV	= TCL_LIBRARY=`@CYGPATH@ $(TCL_SRC_DIR)/library` \
-		  TK_LIBRARY=`@CYGPATH@ $(TK_SRC_DIR)/library` \
 		  LD_LIBRARY_PATH="$(EXTRA_PATH):$(LD_LIBRARY_PATH)" \
 		  LIBPATH="$(EXTRA_PATH):${LIBPATH}" \
 		  SHLIB_PATH="$(EXTRA_PATH):${SHLIB_PATH}" \
@@ -124,10 +120,7 @@ WISH_PROG	= @WISH_PROG@
 TCLSH		= $(TCLSH_ENV) $(TCLSH_PROG)
 WISH		= $(TCLSH_ENV) $(WISH_PROG)
 
-# The local includes must come first, because the TK_XINCLUDES can be
-# just a comment
-INCLUDES	= -I. -I"`@CYGPATH@ $(srcdir)/generic`" \
-		  @TCL_INCLUDES@ @TK_INCLUDES@ @TK_XINCLUDES@
+INCLUDES	= -I. -I"`@CYGPATH@ $(srcdir)/generic`" @TCL_INCLUDES@
 
 EXTRA_CFLAGS	= $(MEM_DEBUG_FLAGS) @EXTRA_CFLAGS@
 

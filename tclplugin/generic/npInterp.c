@@ -26,24 +26,20 @@ static Tcl_Interp *npInterp = (Tcl_Interp *) NULL;
 #ifdef WIN32
 
 #ifdef USE_TCL_STUBS
-static HMODULE tclHandle      = NULL;
-static HMODULE tkHandle       = NULL;
 #endif
 
 #include <windows.h>
 #define dlsym(handle, symbol)	GetProcAddress((HINSTANCE) handle, symbol)
 #define dlclose(path)		((void *) FreeLibrary((HMODULE) path))
+#define snprintf _snprintf
 
 #else
 
 #include <dlfcn.h>
 
-#ifdef USE_TCL_STUBS
-static void *tclHandle      = NULL;
-static void *tkHandle       = NULL;
 #endif
 
-#endif
+static HMODULE tclHandle      = NULL;
 
 
 /*
@@ -67,17 +63,15 @@ NpCreateMainInterp()
 {
     static Tcl_Interp * (* createInterp)() = NULL;
     static void (* findExecutable)(char *) = NULL;
-    static int (*tkInit)(Tcl_Interp *)     = NULL;
-    static int (*tkSafeInit)(Tcl_Interp *) = NULL;
+    static int (* tclKit_AppInit)(Tcl_Interp *) = NULL;
     /*
      * We want the Tcl_InitStubs func static to ourselves - before Tcl
      * is loaded dyanmically and possibly changes it.
      */
     static CONST char *(*initstubs)(Tcl_Interp *, CONST char *, int)
 	= Tcl_InitStubs;
-#ifdef WIN32
-    char name[MAX_PATH];
-#endif
+    char dllName[MAX_PATH];
+    dllName[0] = 0;
 
     NpLog("ENTERING NpCreateMainInterp\n");
 
@@ -94,52 +88,67 @@ NpCreateMainInterp()
 #ifndef WIN32
 	char *error;
 #endif
+	/*
+	 * First see if some other part didn't already load Tcl.
+	 */
+	createInterp = (Tcl_Interp * (*)()) dlsym(tclHandle,
+		"Tcl_CreateInterp");
 
-	if (NpLoadLibrary(&tclHandle, &tkHandle) != TCL_OK) {
-	    NpPlatformMsg("Failed to load Tcl/Tk dlls!", "NpCreateMainInterp");
+	if ((createInterp == NULL)
+		&& (NpLoadLibrary(&tclHandle, dllName, MAX_PATH)
+			!= TCL_OK)) {
+	    NpPlatformMsg("Failed to load Tcl dll!", "NpCreateMainInterp");
 	    return NULL;
 	}
+	NpLog("NpCreateMainInterp: Using dll '%s'\n", dllName);
 
 	createInterp = (Tcl_Interp * (*)()) dlsym(tclHandle,
 		"Tcl_CreateInterp");
+	if (createInterp == NULL) {
 #ifndef WIN32
-	if ((createInterp == NULL) && ((error = dlerror()) != NULL)) {
-	    NpPlatformMsg(error, "NpCreateMainInterp");
+	    if ((error = dlerror()) != NULL) {
+		NpPlatformMsg(error, "NpCreateMainInterp");
+	    }
+#endif
 	    return NULL;
 	}
-#endif
 	findExecutable = (void (*)(char *)) dlsym(tclHandle,
 		"Tcl_FindExecutable");
 
-	tkInit     = (int (*)(Tcl_Interp *)) dlsym(tkHandle, "Tk_Init");
-#ifndef WIN32
-	if ((tkInit == NULL) && ((error = dlerror()) != NULL)) {
-	    NpPlatformMsg(error, "NpCreateMainInterp");
-	    return NULL;
+	tclKit_AppInit = (int (*)(Tcl_Interp *)) dlsym(tclHandle,
+		"TclKit_AppInit");
+	if ((tclKit_AppInit != NULL) && (dllName[0] != '\0')) {
+	    char * (* tclKit_SetKitPath)(char *);
+	    /*
+	     * We need to see if this has TclKit_SetKitPath
+	     */
+	    NpLog("NpCreateMainInterp: SetKitPath(%s)\n", dllName);
+	    tclKit_SetKitPath = (char * (*)(char *)) dlsym(tclHandle,
+		    "TclKit_SetKitPath");
+	    if (tclKit_SetKitPath != NULL) {
+		tclKit_SetKitPath(dllName);
+	    }
 	}
-#endif
-	tkSafeInit = (int (*)(Tcl_Interp *)) dlsym(tkHandle, "Tk_SafeInit");
     }
 #else
     createInterp   = Tcl_CreateInterp;
     findExecutable = Tcl_FindExecutable;
-    tkInit	   = Tk_Init;
-    tkSafeInit	   = Tk_SafeInit;
 #endif
 
+    if (dllName[0] == 0) {
 #ifdef WIN32
-    name[0] = '\0';
-#ifdef USE_TCL_STUBS
-    GetModuleFileNameA((HINSTANCE) tclHandle, name, MAX_PATH);
-#else
-    GetModuleFileNameA(NULL, name, MAX_PATH);
+	GetModuleFileNameA((HINSTANCE) tclHandle, dllName, MAX_PATH);
+#elif defined(HAVE_DLADDR)
+	Dl_info info;
+	if (dladdr(createInterp, &info)) {
+	    NpLog("NpCreateMainInterp: using dladdr '%s' => '%s'\n",
+		    dllName, info.dli_fname);
+	    snprintf(dllName, MAX_PATH, info.dli_fname);
+	}
 #endif
-    NpLog("Tcl_FindExecutable(%s)\n", name);
-    findExecutable(name);
-#else
-    NpLog("Tcl_FindExecutable(NULL)\n");
-    findExecutable(NULL);
-#endif
+    }
+    NpLog("Tcl_FindExecutable(%s)\n", dllName);
+    findExecutable((dllName[0] == '\0') ? NULL : dllName);
 
     NpLog("Tcl_CreateInterp()\n");
     npInterp = createInterp();
@@ -150,7 +159,7 @@ NpCreateMainInterp()
     }
 
     /*
-     * Until Tcl_InitStubs is called, we cannot make any Tcl/Tk API
+     * Until Tcl_InitStubs is called, we cannot make any Tcl API
      * calls without grabbing them by symbol out of the dll.
      * This will be Tcl_PkgRequire for non-stubs builds.
      */
@@ -161,32 +170,26 @@ NpCreateMainInterp()
 	return NULL;
     }
 
-    NpLog("Tcl_Init(%p)\n", npInterp);
-    if (Tcl_Init(npInterp) != TCL_OK) {
+    if (tclKit_AppInit == NULL) {
+	tclKit_AppInit = Tcl_Init;
+    }
+
+    NpLog("tcl_Init(%p)\n", npInterp);
+    if (tclKit_AppInit(npInterp) != TCL_OK) {
 	CONST84 char *msg = Tcl_GetVar(npInterp, "errorInfo", TCL_GLOBAL_ONLY);
-	NpLog(">>> NpCreateMainInterp Tcl_Init error: %s\n", msg);
+	NpLog(">>> NpCreateMainInterp tcl_Init error:\n%s\n", msg);
 	NpPlatformMsg("Failed to create initialize Tcl!",
 		"NpCreateMainInterp");
 	return NULL;
     }
 
-    NpLog("Tk_Init(%p)\n", npInterp);
-    if (tkInit(npInterp) != TCL_OK) {
-	CONST84 char *msg = Tcl_GetVar(npInterp, "errorInfo", TCL_GLOBAL_ONLY);
-	NpLog(">>> NpCreateMainInterp Tk_Init error: %s\n", msg);
+    NpLog("package require Tk\n", npInterp);
+    if (Tcl_PkgRequire(npInterp, "Tk", "8.4", 0) == NULL) {
+	NpPlatformMsg(Tcl_GetStringResult(npInterp),
+		"NpCreateMainInterp Tcl_PkgRequire(Tk)");
+	NpPlatformMsg("Failed to create initialize Tk", "NpCreateMainInterp");
+	return NULL;
     }
-
-    /*
-     * Allow our interp to load Tk on demand
-     * We must pass NULL as the first argument or loading in this
-     * interp will not do anything !
-     */
-
-    Tcl_StaticPackage(NULL, "Tk", tkInit, tkSafeInit);
-#if 0
-    NpLog("NpInit: Tk_InitConsoleChannels\n");
-    Tk_InitConsoleChannels(npInterp);
-#endif
 
     /*
      * From now until shutdown we need this interp alive, hence we
@@ -262,10 +265,6 @@ NpDestroyMainInterp()
     Tcl_Finalize();
 
 #ifdef USE_TCL_STUBS
-    if (tkHandle) {
-	dlclose(tkHandle);
-	tkHandle = NULL;
-    }
     if (tclHandle) {
 	dlclose(tclHandle);
 	tclHandle = NULL;

@@ -19,7 +19,12 @@
 #ifndef _NP
 #define _NP
 
-#include <tk.h>
+#include <tcl.h>
+
+#if (TCL_MAJOR_VERSION < 8) \
+	|| ((TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION < 4))
+#error "Tcl Browser Plugin requires Tcl 8.4+"
+#endif
 
 #ifdef WIN32
 
@@ -44,8 +49,6 @@
 #	include <unistd.h>
 #  endif
 
-#  include <tkInt.h>
-#  include <tkMacInt.h>
 #  include <Quickdraw.h>
 
 #  include <Threads.h>
@@ -65,11 +68,16 @@ EXTERN ThreadID gMainThread;    /* The ThreadID of the thread we started in */
 
 #  define HIBYTE(i) (i >> 8)
 #  define LOBYTE(i) (i & 0xff)
+#  define HMODULE void *
 
 #  if HAVE_UNISTD_H
 #	include <sys/types.h>
 #	include <unistd.h>
 #  endif
+
+#ifndef MAX_PATH
+#define MAX_PATH 1024
+#endif
 
 /*
  * Shared functions:
@@ -84,13 +92,13 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
  * (the 3 strings are computed from the 4 internal numbers)
  */
 #define NPTCL_VERSION		"3.0"
-#define NPTCL_PATCH_LEVEL	"3.0a2"
-#define NPTCL_INTERNAL_VERSION	"3.0.0.2"
+#define NPTCL_PATCH_LEVEL	"3.0a3"
+#define NPTCL_INTERNAL_VERSION	"3.0.0.3"
 
 #define NPTCL_MAJOR_VERSION	3
 #define NPTCL_MINOR_VERSION	0
 #define NPTCL_RELEASE_LEVEL	0
-#define NPTCL_RELEASE_SERIAL	2
+#define NPTCL_RELEASE_SERIAL	3
 
 #ifdef BUILD_nptcl
 #undef TCL_STORAGE_CLASS
@@ -98,7 +106,7 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 #endif /* BUILD_nptcl */
 
 /*
- * Tcl/Tk 8.4 introduced better CONST-ness in the APIs, but we use CONST84 in
+ * Tcl 8.4 introduced better CONST-ness in the APIs, but we use CONST84 in
  * some cases for compatibility with earlier Tcl headers to prevent warnings.
  */
 #ifndef CONST84
@@ -226,11 +234,8 @@ extern void		NpPlatformNew _ANSI_ARGS_((NPP instance));
 extern void		NpPlatformSetWindow _ANSI_ARGS_((NPP This,
 			    NPWindow *window));
 extern void		NpPlatformShutdown _ANSI_ARGS_((void));
-#ifdef WIN32
-extern int		NpLoadLibrary(HMODULE *tclHandle, HMODULE *tkHandle);
-#else
-extern int		NpLoadLibrary(void **tclHandle, void **tkHandle);
-#endif
+extern int		NpLoadLibrary(HMODULE *tclHandle,
+				char *dllFilename, int dllFilenameSize);
 
 /*
  * nptoken.c

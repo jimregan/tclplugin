@@ -108,81 +108,82 @@ NP_GetValue(void *future, NPPVariable variable, void *value)
  */
 
 EXTERN int
-NpLoadLibrary(void **tclHandle, void **tkHandle)
+NpLoadLibrary(HMODULE *tclHandle, char *dllName, int dllNameSize)
 {
-    char *pos, libname[512];
-    char *loadfile = NULL;
-    void *handle = NULL;
+    char *envdll, libname[MAX_PATH];
+    HMODULE handle = (HMODULE) NULL;
 
     *tclHandle = NULL;
-    *tkHandle  = NULL;
 
     /*
      * Try a user-supplied Tcl dll to start with.
      */
-    loadfile = getenv("TCL_PLUGIN_DLL");
-    if (loadfile != NULL) {
-	NpLog("Attempt to load Tcl dll '%s'\n", loadfile);
-	handle = dlopen(loadfile, RTLD_NOW | RTLD_GLOBAL);
+    envdll = getenv("TCL_PLUGIN_DLL");
+    if (envdll != NULL) {
+	NpLog("Attempt to load Tcl dll (TCL_PLUGIN_DLL) '%s'\n", envdll);
+	handle = dlopen(envdll, RTLD_NOW | RTLD_GLOBAL);
+	if (handle) {
+	    memcpy(libname, envdll, MAX_PATH);
+	}
     }
 
     if (!handle) {
-	if (strlen(TCL_LIB_FILE) < 3) {
-	    NpPlatformMsg("Invalid base Tcl library filename provided!",
-		    "NpCreateMainInterp");
-	    return TCL_ERROR;
-	}
-
-	/* Try based on full path. */
-	snprintf(libname, 511, "%s/%s", defaultLibraryDir, TCL_LIB_FILE);
-	NpLog("Attempt to load Tcl dll '%s'\n", libname);
+	/*
+	 * Try based on full path.
+	 */
+	snprintf(libname, MAX_PATH, "%s/%s", defaultLibraryDir, TCL_LIB_FILE);
+	NpLog("Attempt to load Tcl dll (default) '%s'\n", libname);
 	handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
-	if (!handle) {
-	    /* Try based on anywhere in the path. */
-	    strcpy(libname, TCL_LIB_FILE);
-	    NpLog("Attempt to load Tcl dll '%s'\n", libname);
+    }
+
+    if (!handle) {
+	/*
+	 * Try based on anywhere in the path.
+	 */
+	strncpy(libname, TCL_LIB_FILE, MAX_PATH);
+	NpLog("Attempt to load Tcl dll (libpath) '%s'\n", libname);
+	handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
+    }
+
+    if (!handle) {
+	/*
+	 * Try different versions anywhere in the path.
+	 */
+	char *pos;
+
+	pos = strstr(libname, "tcl")+4;
+	if (*pos == '.') {
+	    pos++;
+	}
+	*pos = '9'; /* count down from '8' to '4'*/
+	while (!handle && (--*pos > '3')) {
+	    NpLog("Attempt to load Tcl dll (default_ver) '%s'\n", libname);
 	    handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
 	}
-	if (!handle) {
-	    /* Try different versions anywhere in the path. */
-	    pos = strstr(libname, "tcl")+4;
-	    if (*pos == '.') {
-		pos++;
-	    }
-	    *pos = '9'; /* count down from '8' to '4'*/
-	    while (!handle && (--*pos > '3')) {
-		NpLog("Attempt to load Tcl dll '%s'\n", libname);
-		handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
-	    }
-	}
     }
+
     if (!handle) {
 	NpPlatformMsg("Failed to load Tcl dll!", "NpCreateMainInterp");
 	return TCL_ERROR;
     }
+
     *tclHandle = handle;
+    if (dllNameSize > 0) {
+#ifdef HAVE_DLADDR
+	/*
+	 * Use dladdr if possible to get the real libname we are loading.
+	 * Grab any symbol - we just need one for reverse mapping
+	 */
+	int (* tcl_Init)(Tcl_Interp *) =
+	    (int (*)(Tcl_Interp *)) dlsym(handle, "Tcl_Init");
+	Dl_info info;
 
-    /*
-     * Derive the name of Tk's library from Tcl's.
-     * Should work on all platforms (we hope ...).
-     */
-    pos = libname + strlen(libname) - strlen(TCL_LIB_FILE);
-    pos = strstr(pos, "tcl")+1;
-    if (pos) {
-	*pos++ = 'k';
-	while (*pos) {
-	    *pos++ = pos[1];
-	}
+	if (tcl_Init && dladdr(tcl_Init, &info)) {
+	    NpLog("using dladdr '%s' => '%s'\n", libname, info.dli_fname);
+	    snprintf(dllName, dllNameSize, info.dli_fname);
+	} else
+#endif
+	    snprintf(dllName, dllNameSize, libname);
     }
-    NpLog("Attempt to load Tk dll '%s'\n", libname);
-    handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
-    if (!handle) {
-	dlclose(tclHandle);
-	*tclHandle = NULL;
-	NpPlatformMsg("Failed to load Tk dll!", "NpCreateMainInterp");
-	return TCL_ERROR;
-    }
-    *tkHandle = handle;
-
     return TCL_OK;
 }

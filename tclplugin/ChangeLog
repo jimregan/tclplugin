@@ -1,3 +1,14 @@
+2004-05-17  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* Makefile.in:        Update to version 3.0.0.3 (3.0a3).
+	* configure:          Remove direct Tk linkage, require Tcl 8.4+.
+	* configure.in:       Rely on dynamic 'package require Tk' to work
+	* generic/np.h:       for loading Tk.
+	* generic/npInterp.c: Allow TCL_PLUGIN_DLL env check on Windows.
+	* mac/npconfig.h:     Add some support for dll-based kits (needs
+	* unix/npUnix.c:      work - not currently functional).
+	* win/npWin.c:        
+
 2004-02-12  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* library/browser.tcl: minor log comment cleanup

@@ -155,27 +155,28 @@ proc npInit {} {
     # We are going to try External process:
 
     package require rpi 1.0
-    set srv [::rpi::newServer 0 localhost]
+    set srv    [::rpi::newServer 0 localhost]
+    set port   [::rpi::iget $srv Port]
+    set script [file join $plugin(library) remoted.tcl]
 
-    if {[catch {NpExec $wish [file join $plugin(library) remoted.tcl] \
-		    [::rpi::iget $srv Port]} msg]} {
+    ::pluglog::log npInit "exec'ing '$wish $script $port'"
+    if {[catch {exec $wish $script $port &} msg]} {
         ::pluglog::log npInit "External wish \"$wish\" startup error:\
 		$msg - falling back to inprocess" ERROR
 
 	# Restore environement
-
 	array set env $localEnv
 
 	# Shutdown the server
-
 	::rpi::delete $srv
 
 	# Fall back to inproc
-
 	inprocInit
 
 	return
     }
+    set ::WishPid $msg
+    ::pluglog::log npInit "Exec ok (pid $::WishPid)"
 
     # Restore the environment to what it was when we started.
 
@@ -186,45 +187,6 @@ proc npInit {} {
 
     set plugin(server) $srv
 }
-
-# This procedure determines if the environment variable TCL_PLUGIN_DEBUG is
-# set. If so, and we are on Unix, it writes a ~/.gdbinit file and waits for
-# the user to start the debugger running on the sub-process. If not, it
-# calls exec with the passed arguments.
-
-proc NpExec {executable script port} {
-    global env tcl_platform plugin
-
-    if {[info exists plugin(sharedLibraryDir)]} {
-	# If we are on a Unix box, LD_LIBRARY_PATH needs to be updated to
-	# enable the external executable to find its shared libraries.
-	# If we are on Windows, likewise update the PATH env var.
-	# (the Path one, if any is handled by traces/init.tcl)
-
-	if {$tcl_platform(platform) == "unix"} {
-	    if {[info exists env(LD_LIBRARY_PATH)]} {
-		set env(LD_LIBRARY_PATH) \
-		    "$plugin(sharedLibraryDir):$env(LD_LIBRARY_PATH)"
-	    } else {
-		set env(LD_LIBRARY_PATH) $plugin(sharedLibraryDir)
-	    }
-	    ::pluglog::log NpExec "LD_LIBRARY_PATH1=($env(LD_LIBRARY_PATH))"
-	} elseif {$tcl_platform(platform) == "windows"} {
-	    if {[info exists env(PATH)]} {
-		set env(PATH) "$plugin(sharedLibraryDir);$env(PATH)"
-	    } else {
-		set env(PATH) $plugin(sharedLibraryDir)
-	    }
-	    ::pluglog::log NpExec "PATH1=($env(PATH))"
-	}
-    }
-
-    ::pluglog::log NpExec "exec'ing '$executable $script $port'"
-
-    set ::WishPid [exec $executable $script $port &]
-    ::pluglog::log NpExec "Exec ok (pid $::WishPid)"
-}
-
 
 #
 # Netscape -> Plugin APIs :
@@ -463,7 +425,7 @@ foreach api {
 }
 
 
-# This sets up the "Execute" and "NpExecute procs which will either do a
+# This sets up the "Execute" and "NpExecute" procs which will either do a
 # remote evaluation when we use an external wish, or directly evaluate
 # the arguments if we are executing in the same process.
 

@@ -162,7 +162,8 @@ if test "${TEA_PLATFORM}" = "windows" ; then
     AC_DEFINE(_X86_)
     AC_DEFINE(WIN32_LEAN_AND_MEAN)
     LIBS="${LIBS} advapi32.lib gdi32.lib user32.lib"
-    SHLIB_LDFLAGS="${SHLIB_LDFLAGS} -def:\$(PLAT_DIR)/npdll32.def"
+    PLAT_DIR=
+    SHLIB_LDFLAGS="${SHLIB_LDFLAGS} -def:\"`${CYGPATH} ${srcdir}/win`/npdll32.def\""
     TCL_LIB_FILE=${TCL_DLL_FILE}
 else
     AC_DEFINE(XP_UNIX)

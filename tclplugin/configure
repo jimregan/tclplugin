@@ -4372,7 +4372,8 @@ EOF
 EOF
 
     LIBS="${LIBS} advapi32.lib gdi32.lib user32.lib"
-    SHLIB_LDFLAGS="${SHLIB_LDFLAGS} -def:\$(PLAT_DIR)/npdll32.def"
+    PLAT_DIR=
+    SHLIB_LDFLAGS="${SHLIB_LDFLAGS} -def:\"`${CYGPATH} ${srcdir}/win`/npdll32.def\""
     TCL_LIB_FILE=${TCL_DLL_FILE}
 else
     cat >> confdefs.h <<\EOF
@@ -4389,7 +4390,7 @@ fi
 
 
     echo $ac_n "checking for tclsh""... $ac_c" 1>&6
-echo "configure:4393: checking for tclsh" >&5
+echo "configure:4394: checking for tclsh" >&5
 
     if eval "test \"`echo '$''{'ac_cv_path_tclsh'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -4421,7 +4422,7 @@ fi
 
 
     echo $ac_n "checking for wish""... $ac_c" 1>&6
-echo "configure:4425: checking for wish" >&5
+echo "configure:4426: checking for wish" >&5
 
     if eval "test \"`echo '$''{'ac_cv_path_wish'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6

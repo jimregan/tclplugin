@@ -74,11 +74,13 @@ AC_DEFUN(TCLPLUGIN_MOZILLA_DIR, [
 	    done
 	else
 	    MOZILLA_DIR=C:/Progra~1/Mozilla
-	    for i in `ls -d C:/Progra~1/mozilla.org/Mozilla 2>/dev/null` \
+	    for i in \
+		    "`ls -d \"${APPDATA}/Mozilla\" 2>/dev/null`" \
+		    `ls -d C:/Progra~1/mozilla.org/Mozilla 2>/dev/null` \
 		    `ls -d C:/Progra~1/Mozilla 2>/dev/null` \
 		    ; do
 		if test -d "$i" ; then
-		    MOZILLA_DIR=`(cd $i; pwd)`
+		    MOZILLA_DIR=`(cd "$i"; pwd)`
 		    break
 		fi
 	    done

@@ -1,3 +1,20 @@
+2005-01-03  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/browser.tcl:
+	* library/installed.cfg: use plugin(library) instead of	plugin(topdir)
+
+	* library/pkgIndex.tcl: Use plugin::* for package names
+
+	* library/plugmain.tcl: refactor initialization.
+
+	* library/remoted.tcl: change ::Name var usage to ::plugin::NAME.
+
+	* library/common.tcl: move 'tk appname' call from global into
+	SetupLogging proc.
+
+	* library/utils/cfg.tcl: 
+	* library/utils/rpi.tcl: improved namespace usage
+
 2004-05-24  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* generic/np.h:     remove Np_NPN_* -> NPN_ defines needed for

@@ -38,7 +38,7 @@ package require plugin::logo 1.0
 package require tcl::utils 1.0
 
 # we provide browser functionalities:
-package provide browser 1.0
+package provide plugin::browser 1.0
 
 # Note: the code below is separated into sections and might
 #       be split into separate files at some point for additional
@@ -194,15 +194,14 @@ proc ${::cfg::implNs}::NewInstance {slave args} {
     # and policy mechanism:
 
     # We reduce the accessPath to a known limited safe set
-    # (note that if we loadTk in the interp, tk_library
-    #  will be added too)
+    # (note that if we loadTk in the interp, tk_library will be added too)
     # If one needs to add more to this path,
     # it can easily do it with safe::interpAddToAccessPath
     # during siteSafeInit stage
     # Note that we need to call ::safe::AddSubDirs to reproduce
     # safe tcl's behavior
-    set slave [::safe::interpCreate $slave -accessPath\
-		   [::safe::AddSubDirs [list $::tcl_library $::plugin(topdir)]]]
+    set slave [::safe::interpCreate $slave -accessPath \
+		   [::safe::AddSubDirs [list $::tcl_library $::plugin(library)]]]
 
     # Install the policy mechanism
     # (this will also install aliases and hide some potentially

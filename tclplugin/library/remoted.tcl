@@ -22,23 +22,25 @@
 package require Tcl 8.2
 package require Tk 8.2
 
-# Set our base name (used for error reporting) if it was not set yet.
-
-if {![info exists ::Name]} {
-    set ::Name "External Tcl Plugin Server"
+# Set our base name (used for error reporting)
+namespace eval ::plugin {
+    variable NAME "External Tcl Plugin Server"
 }
 
 # Compute plugin(library) from the script being loaded:
-
 set plugin(library) [file dirname [info script]]
-set plugin(topdir)  $plugin(library)
+
+# Allow plugin subdirectories to be recognized for their own packages
+if {[lsearch -exact $auto_path $plugin(library)] < 0} {
+    lappend auto_path $plugin(library)
+}
 
 # This procedure is used by commands that execute code in the spawning
 # process:
 set ::msgNum   0
 proc pnExecute {cmd key aList} {
     incr ::msgNum
-    ::rpi::invoke $::Cli "::pn$cmd $key $aList"
+    ::rpi::invoke $::Cli [concat [list ::pn$cmd $key] $aList]
 }
 
 # We redefine bgerror to log messages, because we may not have any
@@ -52,30 +54,21 @@ proc bgerror {msg} {
 proc remotedInit {} {
     global argc argv env auto_path errorInfo plugin tk_version tk_library
 
-    # Update the auto-path so that we can find other scripts in the plugin
-    # library:
-
-    if {[lsearch -exact $auto_path $plugin(topdir)] < 0} {
-	lappend auto_path $plugin(topdir)
-    }
-
     # common Setup
+    package require plugin::common 1.0
 
-    package require setup 1.0
-
-    SetupLogging
+    SetupLogging $::plugin::NAME
 
     SetupConfig
 
     # Check that we received the right argument(s):
-
     if {$argc != 1} {
 	NotifyError wishd "wrong # args ($argc): should be\n\
 		\"wish wishd.tcl port\""
 	exit
     }
 
-    ::pluglog::log {} "AutoPath = $auto_path"
+    ::pluglog::log {} "AUTO_PATH = $auto_path"
 
     # The correct value has been set by our caller:
     if {![info exists ::cfg::Tmp]} {
@@ -84,7 +77,7 @@ proc remotedInit {} {
 
     # And we also need the browser package which implements the
     # browser specific stuff:
-    package require browser 1.0
+    package require plugin::browser 1.0
 
     # Connect to our spawner:
     package require rpi 1.0

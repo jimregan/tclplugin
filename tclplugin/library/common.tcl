@@ -16,11 +16,9 @@
 # RCS:  @(#) $Id$
 
 # we provide browser functionalities:
-
-package provide setup 1.0
+package provide plugin::common 1.0
 
 # We require logging (we will initialize it from here):
-
 package require pluglog 1.1
 
 # tkInit --
@@ -40,42 +38,33 @@ if {![llength [winfo children .]]} {
     wm withdraw .
 }
 
-# Set our nice name (to be seen by other apps (inspect, tkcon,...))
-tk appname $::Name
-
 # Setup and eventually start logging facility:
-
-proc SetupLogging {} {
+proc SetupLogging {name} {
     global env
-
-    if {[info exists env(TCL_PLUGIN_TS)]} {
-	proc ::pluglog::TS {} $env(TCL_PLUGIN_TS)
-    }
 
     lappend ::pluglog::attributes SLAVE {-background green -foreground black}
 
+    # Set our nice name (to be seen by other apps (inspect, tkcon,...))
+    tk appname $name
+
     # Start logging depending on environment vars.
-    if {[info exists env(TCL_PLUGIN_LOGFILE)] \
-	    && ($env(TCL_PLUGIN_LOGFILE) != 0) } {
+    if {[info exists env(TCL_PLUGIN_LOGFILE)]} {
 	::pluglog::setup $env(TCL_PLUGIN_LOGFILE)
-    } elseif {([info exists env(TCL_PLUGIN_LOGWINDOW)]) \
-	    && ($env(TCL_PLUGIN_LOGWINDOW) != 0)} {
-	::pluglog::setup window "Log: $::Name"
+    } elseif {[info exists env(TCL_PLUGIN_LOGWINDOW)]
+	      && [string is true -strict $env(TCL_PLUGIN_LOGWINDOW)]} {
+	::pluglog::setup window "Log: $name"
     }
 }
 
 # (Eventually) Set up a console if the user wants one:
-
 proc SetupConsole {} {
     global env plugin
 
     # Create a console if the user asks for it:
-
     ::pluglog::log SetupConsole "Console setup"
-    if {[info exists env(TCL_PLUGIN_CONSOLE)] \
-	    && ($env(TCL_PLUGIN_CONSOLE) != 0)} {
-	if {($env(TCL_PLUGIN_CONSOLE) == 1) || \
-		($env(TCL_PLUGIN_CONSOLE) == "")} {
+    if {[info exists env(TCL_PLUGIN_CONSOLE)]} {
+	if {[string is true $env(TCL_PLUGIN_CONSOLE)]} {
+	    # true value or "" means use built-in
 	    set consoleFile [file join $plugin(library) tkcon.tcl]
 	    set cmd {
 		namespace eval ::tkcon {}
@@ -108,26 +97,22 @@ proc SetupConsole {} {
 
 
 # Notify user of a critical error:
-
 proc NotifyError {name msg} {
     ::pluglog::log $name $msg ERROR
 
-    tk_messageBox -icon error -title "Error: $::Name"\
+    tk_messageBox -icon error -title "Error: $::plugin::NAME"\
 	    -message "$name: $msg" -type ok
 }
 
 # Configuration setup
-
 proc SetupConfig {} {
     global plugin
 
     # Initialiaze the configuration (install time / raw parameters):
-
     package require cfg 1.0
 
     # one thing the installed.cfg is supposed to do is
     # to set a value for plugin(executable). initialize here it just in case.
-
     set plugin(executable) {}
 
     # We will register in the "plugin" slot but we use the semi generated

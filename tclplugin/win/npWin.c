@@ -16,7 +16,6 @@
 #ifndef TCL_LIB_FILE
 #   define TCL_LIB_FILE "tcl84.dll"
 #endif
-#define snprintf _snprintf
 
 /*
  * Default directory in which to look for Tcl libraries.  The

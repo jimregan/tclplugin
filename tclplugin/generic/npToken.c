@@ -22,7 +22,8 @@
  * Buffer used to print out panic messages:
  */
 
-static char panicBuf[512];
+#define PANIC_BUFSIZ 512
+static char panicBuf[PANIC_BUFSIZ];
 
 /*
  *----------------------------------------------------------------------
@@ -47,7 +48,7 @@ NpInitTokenTables(Tcl_Interp *interp)
 
     hTblPtr = (Tcl_HashTable *) ckalloc(sizeof(Tcl_HashTable));
     if (hTblPtr == (Tcl_HashTable *) NULL) {
-	sprintf(panicBuf,
+	snprintf(panicBuf, PANIC_BUFSIZ,
 		"memory allocation failed in NpInitTokenTables for %s",
 		NPTCL_INSTANCE);
 	NpPanic(panicBuf);
@@ -63,7 +64,7 @@ NpInitTokenTables(Tcl_Interp *interp)
 
     hTblPtr = (Tcl_HashTable *) ckalloc(sizeof(Tcl_HashTable)); 
     if (hTblPtr == (Tcl_HashTable *) NULL) {
-	sprintf(panicBuf,
+	snprintf(panicBuf, PANIC_BUFSIZ,
 		"memory allocation failed in NpInitTokenTables for %s",
 		NPTCL_STREAM);
 	NpPanic(panicBuf);
@@ -99,13 +100,15 @@ NpRegisterToken(ClientData clientData, Tcl_Interp *interp, char *tableName)
 
     hTblPtr = (Tcl_HashTable *) Tcl_GetAssocData(interp, tableName, NULL);
     if (hTblPtr == (Tcl_HashTable *) NULL) {
-        sprintf(panicBuf, "could not find token table \"%s\" in RegisterToken",
+        snprintf(panicBuf, PANIC_BUFSIZ,
+		"could not find token table \"%s\" in RegisterToken",
                 tableName);
         NpPanic(panicBuf);
     }
     hPtr = Tcl_CreateHashEntry(hTblPtr, (CONST84 char *) clientData, &isnew);
     if (!isnew) {
-        sprintf(panicBuf, "duplicate token key %ld in token table %s",
+        snprintf(panicBuf, PANIC_BUFSIZ,
+		"duplicate token key %ld in token table %s",
                 (long) clientData, tableName);
         NpPanic(panicBuf);
     }
@@ -136,13 +139,15 @@ NpUnregisterToken(Tcl_Interp *interp, void *token, char *tableName)
     
     hTblPtr = (Tcl_HashTable *) Tcl_GetAssocData(interp, tableName, NULL);
     if (hTblPtr == (Tcl_HashTable *) NULL) {
-        sprintf(panicBuf, "could not find token table %s in NpUnregisterToken",
+        snprintf(panicBuf, PANIC_BUFSIZ,
+		"could not find token table %s in NpUnregisterToken",
                 tableName);
         NpPanic(panicBuf);
     }
     hPtr = Tcl_FindHashEntry(hTblPtr, token);
     if (hPtr == NULL) {
-        sprintf(panicBuf, "missing token %p in table %s in NpUnregisterToken",
+        snprintf(panicBuf, PANIC_BUFSIZ,
+		"missing token %p in table %s in NpUnregisterToken",
                 token, tableName);
         NpPanic(panicBuf);
     }
@@ -186,7 +191,7 @@ NpGetAndCheckToken(Tcl_Interp *interp, Tcl_Obj *objPtr, char *tableName,
     hPtr = Tcl_FindHashEntry(hTblPtr, (CONST84 char *) longVal);
     if (hPtr == (Tcl_HashEntry *) NULL) {
 	char buf[256];
-	sprintf(buf, "invalid instance token \"%ld\" in table \"%s\"",
+	snprintf(buf, 256, "invalid instance token \"%ld\" in table \"%s\"",
 		longVal, tableName);
 	Tcl_SetResult(interp, buf, TCL_VOLATILE);
         return TCL_ERROR;

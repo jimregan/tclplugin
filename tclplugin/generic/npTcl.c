@@ -531,7 +531,7 @@ NPP_SetWindow(NPP instance, NPWindow *window)
 	char buf[256];
 	Tcl_Obj *objPtr;
 
-	sprintf(buf, "0x%x +%d+%d %dx%d",
+	snprintf(buf, 256, "0x%x +%d+%d %dx%d",
 		(int) window->window,
 		(int) window->x, (int) window->y,
 		(int) window->width, (int) window->height);
@@ -640,11 +640,11 @@ NPP_GetValue(NPP instance, NPPVariable variable, void *value)
 
     switch (variable) {
         case NPPVpluginNameString:
-            sprintf(msgBuf, "Tcl Plugin %s", NPTCL_PATCH_LEVEL);
+            snprintf(msgBuf, 512, "Tcl Plugin %s", NPTCL_PATCH_LEVEL);
             *((char **)value) = msgBuf;
             break;
         case NPPVpluginDescriptionString:
-            sprintf(msgBuf,
+            snprintf(msgBuf, 512,
 		    "TCL Plugin %s (%s). Executes tclets found in Web pages.\
 See the <a href=\"http://www.tcl.tk/software/plugin/\">Tcl Plugin</a> \
 home page for more details.",

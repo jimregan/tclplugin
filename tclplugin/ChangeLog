@@ -1,5 +1,8 @@
 2005-01-04  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* win/npWin.c, generic/np.h: 
+	* generic/npTcl.c, generic/npToken.c: change all sprintf to snprintf
+
 	* doc/plugin.n: 
 	* generic/np.h: remove old refs to TCL_PLUGIN_DIR
 

@@ -30,6 +30,8 @@
 
 #  include <windows.h>
 
+#define snprintf _snprintf
+
 #  define HAVE_UNISTD_H 1
 
 #  ifndef	F_OK

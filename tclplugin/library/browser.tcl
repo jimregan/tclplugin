@@ -1053,7 +1053,7 @@ namespace eval $::cfg::implNs {
 	    # First remove what we've eventually put at "NewWindow" time
 	    if {[iget $name hasLogo]} {
 		ISet $name hasLogo 0
-		if {[catch {interp eval $name {destroy .l}} msg]} {
+		if {[catch {interp eval $name {destroy .logo}} msg]} {
 		    log $name "removing splash screen failure (tk destroyed) :\
 			    $msg" ERROR
 		}

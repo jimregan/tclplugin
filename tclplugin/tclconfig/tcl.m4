@@ -1010,8 +1010,13 @@ dnl AC_CHECK_TOOL(AR, ar, :)
 		    esac
 		else
 		    do64bit_ok=yes
-		    EXTRA_CFLAGS="+DA2.0W"
-		    LDFLAGS="+DA2.0W $LDFLAGS"
+		    if test "`uname -m`" = "ia64" ; then
+			EXTRA_CFLAGS="+DD64"
+			LDFLAGS="+DD64 $LDFLAGS"
+		    else
+			EXTRA_CFLAGS="+DA2.0W"
+			LDFLAGS="+DA2.0W $LDFLAGS"
+		    fi
 		fi
 	    fi
 	    ;;
@@ -2518,6 +2523,10 @@ AC_DEFUN(TEA_SETUP_COMPILER, [
 
     AC_OBJEXT
     AC_EXEEXT
+
+    #--------------------------------------------------------------------
+    # Common compiler flag setup
+    #--------------------------------------------------------------------
 
     TEA_TCL_EARLY_FLAGS
     TEA_TCL_64BIT_FLAGS

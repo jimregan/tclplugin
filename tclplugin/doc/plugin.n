@@ -260,10 +260,6 @@ global Tcl array \fBenv\fR.
 \fBTCL_PLUGIN_DLL\fR
 If set, this specifies the Tcl dll to attempt to load first.
 .TP
-\fBTCL_PLUGIN_DIR\fR
-The value is used to find the runtime library for the Tcl plugin.
-This process is fully described in the section \fBFILES\fR, above.
-.TP
 \fBTCL_PLUGIN_WISH\fR
 If set to \fB0\fR, Tclets are executed in the address space of the
 hosting browser.

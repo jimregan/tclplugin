@@ -1,3 +1,15 @@
+2005-07-07  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/npUnix.c: add support/recognition of basekit dll
+	* win/npWin.c:
+
+	* tools/buildkit.tcl: script to build plugin basekit.
+	* tools/install.js: basic install.js that goes in an xpi, supplied
+	by Theado.  This one is valid on Windows (unix will require
+	another basekit).
+	* Makefile.in (plugkit, xpi): add targets for building plugkit and
+	xpi, currently only valid on Windows.
+
 2005-03-29  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* generic/npTcl.c, generic/npInit.c: add use of #ifdef OJI

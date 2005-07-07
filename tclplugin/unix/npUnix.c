@@ -4,7 +4,7 @@
  * Netscape Client Plugin API
  * - Wrapper function to interface with the Netscape Navigator
  *
- * Copyright (c) 2002 ActiveState Corporation.
+ * Copyright (c) 2002-2005 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -20,6 +20,9 @@
 #include <dlfcn.h>
 #ifndef TCL_LIB_FILE
 #  define TCL_LIB_FILE "libtcl8.4.so"
+#endif
+#ifndef TCL_KIT_DLL
+#  define TCL_KIT_DLL "tclplugin.so"
 #endif
 
 /*
@@ -126,6 +129,24 @@ NpLoadLibrary(HMODULE *tclHandle, char *dllName, int dllNameSize)
 	    memcpy(libname, envdll, MAX_PATH);
 	}
     }
+
+#ifdef HAVE_DLADDR
+    if (!handle) {
+	/*
+	 * Try based on current path by using dladdr.
+	 * Grab any symbol - we just need one for reverse mapping
+	 */
+	char (* npgetmime)(void) =
+	    (char (*)(void)) dlsym(handle, "NP_GetMIMEDescription");
+	Dl_info info;
+
+	if (npgetmime && dladdr(npgetmime, &info)) {
+	    snprintf(libname, MAX_PATH, "%s/%s", info.dli_fname, TCL_KIT_DLL);
+	    NpLog("Attempt to load Tcl dll (plugkit) '%s'\n", libname);
+	    handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
+	}
+    }
+#endif
 
     if (!handle) {
 	/*

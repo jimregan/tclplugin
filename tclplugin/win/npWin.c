@@ -1,9 +1,7 @@
-/* 
+/*
  * npWin.c --
  *
- * CONTACT:		tclplugin-core@lists.sourceforge.net
- *
- * Copyright (c) 2003-2004 ActiveState Corporation.
+ * Copyright (c) 2003-2005 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -16,6 +14,9 @@
 
 #ifndef TCL_LIB_FILE
 #   define TCL_LIB_FILE "tcl84.dll"
+#endif
+#ifndef TCL_KIT_DLL
+#  define TCL_KIT_DLL "tclplugin.dll"
 #endif
 
 /*
@@ -65,12 +66,15 @@ NpLoadLibrary(HMODULE *tclHandle, char *dllName, int dllNameSize)
     }
 
     if (!handle) {
+	/*
+	 * Try plugin basekit from plugin directory
+	 */
 	TCHAR ourPath[MAX_PATH];
 	if ((nptclInst != NULL)
 		&& GetModuleFileName(nptclInst, ourPath, MAX_PATH)
 		&& PathRemoveFileSpec(ourPath)) {
-	    snprintf(libname, MAX_PATH, "%s/%s", ourPath, TCL_LIB_FILE);
-	    NpLog("Attempt to load Tcl dll (ourpath) '%s'\n", libname);
+	    snprintf(libname, MAX_PATH, "%s/%s", ourPath, TCL_KIT_DLL);
+	    NpLog("Attempt to load basekit dll (ourpath) '%s'\n", libname);
 	    handle = LoadLibrary(libname);
 	}
     }

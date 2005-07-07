@@ -266,6 +266,27 @@ dgz:
 	(cd $(DISTDIRTOP); $(RM) $(DISTRIB_SRC).zip; zip -r9 $(DISTRIB_SRC).zip $(DISTDIRNAME))
 	@echo "### $(DISTRIB_SRC).tar.gz and .zip created."
 
+# This uses the ActiveState Tcl Dev Kit base dll kit to create a
+# platform-dependent all-in-one plugin package
+# PLUGKITMODULES are the case-sensitive (but not version-sensitive)
+# module names form the ActiveTcl distro.
+# PLUGKITFLAGS might be "-wish /path/to/end/user/wish"
+PLUGKITMODULES  = tcllib tklib tile Tktable
+PLUGKITEXCLUDES = Tktable*/html Tktable*/*.txt
+plugkit:
+	$(TCLSH) $(srcdir)/tools/buildkit.tcl \
+		-modules "$(PLUGKITMODULES)" \
+		-excludes "$(PLUGKITEXCLUDES)" $(PLUGKITFLAGS)
+
+ZIPNAME = tclplugin.xpi
+xpi: binaries
+	$(TCLSH) $(srcdir)/tools/buildkit.tcl \
+		-xpi $(ZIPNAME) \
+		-wrap $(PKG_LIB_FILE) \
+		-wrap "`@CYGPATH@ $(srcdir)/tools/install.js`" \
+		-modules "$(PLUGKITMODULES)" \
+		-excludes "$(PLUGKITEXCLUDES)" $(PLUGKITFLAGS)
+
 .PHONY: all binaries clean depend distclean doc install libraries test
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

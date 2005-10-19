@@ -16,7 +16,7 @@ AC_CONFIG_AUX_DIR(tclconfig)
 # This will define a ${TEA_PLATFORM} variable == "unix" or "windows".
 #--------------------------------------------------------------------
 
-TEA_INIT([3.2])
+TEA_INIT([3.3])
 
 AC_CONFIG_AUX_DIR(tclconfig)
 

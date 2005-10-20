@@ -323,7 +323,7 @@ PnCloseStreamCmd(
 
     if (NpGetAndCheckToken(interp, objv[2], NPTCL_STREAM,
             (ClientData *) &streamPtr) == TCL_OK) {
-        NpLog("Token for stream %s persists after call to NPN_DestroyStream",
+        NpLog("Token for stream %s persists after call to NPN_DestroyStream\n",
                 Tcl_GetString(objv[2]));
     } else {
         /*

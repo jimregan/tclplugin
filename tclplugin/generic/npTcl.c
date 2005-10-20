@@ -519,8 +519,8 @@ NPP_SetWindow(NPP instance, NPWindow *window)
 
     oldServiceMode = NpEnter("NPP_SetWindow");
 
-    NpLog("*** NPP_SetWindow instance %p window %p window->window %p\n",
-	    instance, window, window->window);
+    NpLog("*** NPP_SetWindow instance %p window %p\n",
+	    instance, window);
 
     interp = NpGetMainInterp();
 
@@ -580,7 +580,7 @@ NPP_SetWindow(NPP instance, NPWindow *window)
 	    rv = NPERR_GENERIC_ERROR;
 	}
 	Tcl_DecrRefCount(objPtr);
-    Tcl_ServiceAll();
+	Tcl_ServiceAll();
     }
 
     NpLeave("NPP_SetWindow", oldServiceMode);
@@ -777,7 +777,7 @@ NpEnter(CONST char *msg)
     oldServiceMode = Tcl_SetServiceMode(TCL_SERVICE_NONE);
     nptcl_stack++;
 
-    NpLog("ENTERED %s,\toldServiceMode == %d\t", msg, oldServiceMode);
+    NpLog("ENTERED %s,\toldServiceMode == %d\n\t", msg, oldServiceMode);
     NpLog("[[ STACK = %d, INSTANCES = %d, STREAMS = %d ]]\n",
 	    nptcl_stack, nptcl_instances, NpTclStreams(0));
 
@@ -815,7 +815,7 @@ NpLeave(CONST char *msg, int oldServiceMode)
 
     nptcl_stack--;
 
-    NpLog("LEAVING %s,\toldServiceMode == %d\t", msg, oldServiceMode);
+    NpLog("LEAVING %s,\toldServiceMode == %d\n\t", msg, oldServiceMode);
 
     NpLog("[[ STACK = %d, INSTANCES = %d, STREAMS = %d ]]\n",
 	    nptcl_stack, nptcl_instances, NpTclStreams(0));

@@ -8,6 +8,7 @@
 #	generic/np.h   (any version)
 #	win/npdll32.rc (major.minor only)
 AC_INIT([nptcl], [3.0])
+AC_DEFINE(PACKAGE_PATCHLEVEL, ["3.0.1"])
 
 AC_CONFIG_AUX_DIR(tclconfig)
 
@@ -80,36 +81,53 @@ AC_DEFINE(USE_TCL_STUBS)
 
 TEA_MAKE_LIB
 
-if test "${TEA_PLATFORM}" = "windows" ; then
-    AC_DEFINE_UNQUOTED(BUILD_nptcl)
-    CLEANFILES="pkgIndex.tcl *.lib *.dll *.exp *.ilk *.pdb *.pch"
-    TEA_ADD_SOURCES([\$(WIN_OBJECTS)])
-    TEA_ADD_LIBS([advapi32.lib gdi32.lib user32.lib shlwapi.lib])
-    AC_DEFINE(XP_WIN)
-    AC_DEFINE(_WINDOWS)
-    AC_DEFINE(_WIN32)
-    AC_DEFINE(WIN32_LEAN_AND_MEAN)
-    # We could do this with a .def file, but this is a bit easier
-    # These functions need exporting, but they are part of the NPAPI that
-    # has some strict declarations that you don't want to play with.
-    SHLIB_LD="${SHLIB_LD} -export:NP_GetEntryPoints,@1"
-    SHLIB_LD="${SHLIB_LD} -export:NP_Initialize,@2"
-    SHLIB_LD="${SHLIB_LD} -export:NP_Shutdown,@3"
-    LIB_RUNTIME_DIR=${TCL_EXEC_PREFIX}/bin
-    TCL_LIB_FILE=${TCL_DLL_FILE}
-else
-    AC_DEFINE(XP_UNIX)
-    CLEANFILES="pkgIndex.tcl"
-    TEA_ADD_SOURCES([\$(UNIX_OBJECTS)])
-    TCL_LIB_FILE=${TCL_LIB_FILE}
-    # This should enable us to have the TCL_LIB_FILE located at runtime
-    # with the -R path ... might not be necessary.
-    LIB_RUNTIME_DIR=${TCL_EXEC_PREFIX}/lib
-    SHLIB_LD="${SHLIB_LD} ${LD_SEARCH_FLAGS}"
-fi
+case "${TEA_WINDOWINGSYSTEM}" in
+    win32)
+	AC_DEFINE_UNQUOTED(BUILD_nptcl)
+	CLEANFILES="pkgIndex.tcl *.lib *.dll *.exp *.ilk *.pdb *.pch"
+	TEA_ADD_SOURCES([\$(WIN_OBJECTS)])
+	TEA_ADD_LIBS([advapi32.lib gdi32.lib user32.lib shlwapi.lib])
+	AC_DEFINE(XP_WIN)
+	AC_DEFINE(_WINDOWS)
+	AC_DEFINE(_WIN32)
+	AC_DEFINE(WIN32_LEAN_AND_MEAN)
+	# We could do this with a .def file, but this is a bit easier
+	# These functions need exporting, but they are part of the NPAPI that
+	# has some strict declarations that you don't want to play with.
+	SHLIB_LD="${SHLIB_LD} -export:NP_GetEntryPoints,@1"
+	SHLIB_LD="${SHLIB_LD} -export:NP_Initialize,@2"
+	SHLIB_LD="${SHLIB_LD} -export:NP_Shutdown,@3"
+	LIB_RUNTIME_DIR=${TCL_EXEC_PREFIX}/bin
+	TCL_LIB_FILE=${TCL_DLL_FILE}
+	;;
+    aqua)
+	AC_DEFINE(XP_MACOSX)
+	AC_DEFINE([MAC_TCL])
+	AC_DEFINE([MAC_OSX_TCL])
+	AC_DEFINE([MAC_OSX_TK])
+	TEA_ADD_INCLUDES([-I${TK_TOP_DIR_NATIVE}/macosx])
+	TEA_ADD_LIBS([-framework Carbon])
+	TEA_ADD_SOURCES([\$(MACOSX_OBJECTS)])
+	;;
+    x11)
+	AC_DEFINE(XP_UNIX)
+	CLEANFILES="pkgIndex.tcl"
+	TEA_ADD_SOURCES([\$(UNIX_OBJECTS)])
+	TCL_LIB_FILE=${TCL_LIB_FILE}
+	# This should enable us to have the TCL_LIB_FILE located at runtime
+	# with the -R path ... might not be necessary.
+	LIB_RUNTIME_DIR=${TCL_EXEC_PREFIX}/lib
+	SHLIB_LD="${SHLIB_LD} ${LD_SEARCH_FLAGS}"
+	;;
+    *)
+	AC_MSG_ERROR([Unknown TEA_WINDOWINGSYSTEM "${TEA_WINDOWINGSYSTEM}"])
+	;;
+esac
+
 AC_SUBST(LIB_RUNTIME_DIR)
 AC_SUBST(TCL_LIB_FILE)
 AC_SUBST(CLEANFILES)
+AC_DEFINE_UNQUOTED(SHLIB_SUFFIX, "${SHLIB_SUFFIX}", [Tcl DLL extension suffix])
 
 TEA_PROG_TCLSH
 TEA_PROG_WISH

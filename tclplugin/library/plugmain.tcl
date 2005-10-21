@@ -20,6 +20,7 @@ package require Tcl 8.4
 package require Tk 8.4
 
 # we provide plugin functionalities:
+# keep in sync with plugin version
 package provide plugin 3.0
 
 namespace eval ::plugin {
@@ -141,7 +142,13 @@ proc ::plugin::init_extern {} {
     set script [file join $plugin(library) remoted.tcl]
     if {[lindex [file system $script] 0] ne "native"} {
 	::pluglog::log init_extern "Must copy $plugin(library) to $::cfg::Tmp"
+	set targetdir $::cfg::Tmp/[file tail $plugin(library)]
+	catch {file delete -force $targetdir}
 	file copy $plugin(library) $::cfg::Tmp
+	if {$::tcl_platform(platform) eq "unix"} {
+	    file attributes $targetdir -permissions u+rwx,go-rwx
+	}
+	set script [file join $targetdir remoted.tcl]
     }
 
     if {0} {

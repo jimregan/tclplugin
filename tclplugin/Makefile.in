@@ -14,7 +14,8 @@
 #========================================================================
 
 WIN_OBJECTS	= npWin.$(OBJEXT) npWinPlat.$(OBJEXT) npdll32.res
-UNIX_OBJECTS	= npUnixPlat.$(OBJEXT) npUnix.$(OBJEXT)
+UNIX_OBJECTS	= npUnix.$(OBJEXT) npUnixPlat.$(OBJEXT)
+MACOSX_OBJECTS	= npMac.$(OBJEXT) npMacPlat.$(OBJEXT) npMacCmds.$(OBJEXT)
 
 PKG_SOURCES	= @PKG_SOURCES@
 PKG_OBJECTS	= @PKG_OBJECTS@ \
@@ -208,7 +209,7 @@ $(PKG_STUB_LIB_FILE): $(PKG_STUB_OBJECTS)
 	${MAKE_STUB_LIB}
 	$(RANLIB_STUB) $(PKG_STUB_LIB_FILE)
 
-VPATH = $(srcdir):$(srcdir)/generic:$(srcdir)/unix:$(srcdir)/win
+VPATH = $(srcdir):$(srcdir)/generic:$(srcdir)/unix:$(srcdir)/win:$(srcdir)/macosx
 
 .SUFFIXES: .c .cpp .rc .res .$(OBJEXT)
 
@@ -271,19 +272,21 @@ dgz:
 # PLUGKITMODULES are the case-sensitive (but not version-sensitive)
 # module names form the ActiveTcl distro.
 # PLUGKITFLAGS might be "-wish /path/to/end/user/wish"
-PLUGKITMODULES  = tcllib tklib tile Tktable
+PLUGKITMODULES  = tcllib1 tklib tile Tktable
 PLUGKITEXCLUDES = Tktable*/html Tktable*/*.txt
 plugkit:
 	$(TCLSH) $(srcdir)/tools/buildkit.tcl \
 		-modules "$(PLUGKITMODULES)" \
 		-excludes "$(PLUGKITEXCLUDES)" $(PLUGKITFLAGS)
 
-ZIPNAME = tclplugin.xpi
+# 1 means auto-generate name
+#ZIPNAME = tclplugin.xpi
+ZIPNAME = 1
 xpi: binaries
 	$(TCLSH) $(srcdir)/tools/buildkit.tcl \
 		-xpi $(ZIPNAME) \
-		-wrap $(PKG_LIB_FILE) \
-		-wrap "`@CYGPATH@ $(srcdir)/tools/install.js`" \
+		-npdll $(PKG_LIB_FILE) \
+		-version $(PACKAGE_VERSION) \
 		-modules "$(PLUGKITMODULES)" \
 		-excludes "$(PLUGKITEXCLUDES)" $(PLUGKITFLAGS)
 

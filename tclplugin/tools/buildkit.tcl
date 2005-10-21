@@ -2,7 +2,6 @@
 # The next line is executed by /bin/sh, but not tcl \
 exec tclsh "$0" ${1+"$@"}
 
-
 # Copyright (c) 2005 ActiveState Corporation.
 #
 # This will build us a tkkit if we have TDK.
@@ -19,10 +18,12 @@ set noedir  [file dirname [info nameofexecutable]]
 set libdir  [file dirname $tcl_library]
 set toollib [file dirname [info script]]
 set pluglib [file dirname [info script]]/../library
-set ext    [info sharedlibext]
+set ext     [info sharedlibext]
 
 proc usage {{fid stderr}} {
     puts $fid "$::argv0 ?options?"
+    puts $fid "\t-basedll dllkit basekit dll to base plugkit dll on"
+    puts $fid "\t-baseexe kit    basekit exe to add into plugin (required on unix)"
     puts $fid "\t-modules list   add the listed Tcl modules"
     puts $fid "\t-excludes list  glob pattern of file to exclude in modules"
     puts $fid "\t-mini bool      install minimal components (default: fat)"
@@ -33,7 +34,9 @@ proc usage {{fid stderr}} {
 }
 
 set prefix  "tclplugin"
-set basekit ""
+set srcdll  ""
+set npdll   ""
+set baseexe "" ; # only required on unix
 set mini    0 ; # use minimal components
 set dir     [pwd]
 set modules  ""
@@ -41,9 +44,18 @@ set excludes ""
 set xpi      ""
 set wrap     ""
 set zip      ""
+set version  "3.0"
 set wish     [auto_execok wish]
+set install_js $toollib/install.js.in
+
 foreach {key val} $argv {
     switch -glob -- $key {
+	"-based*" {
+	    set srcdll $val
+	}
+	"-basee*" {
+	    set baseexe $val
+	}
 	"-min*" {
 	    set mini [string is true -strict $val]
 	}
@@ -59,8 +71,14 @@ foreach {key val} $argv {
 	"-wrap*" {
 	    lappend wrap $val
 	}
+	"-npdll" {
+	    set npdll $val
+	}
 	"-xpi*" {
 	    set xpi $val
+	}
+	"-version" {
+	    set version $val
 	}
 	"-zip" {
 	    set zip $val
@@ -77,51 +95,77 @@ foreach {key val} $argv {
 
 puts "Build with ActiveTcl $ver"
 
-if {$basekit eq ""} {
-    set basekit $dir/$prefix$::ext
-    set srckit [glob -nocomplain -directory $noedir base-tcl-*[info shared]]
-    if {![file exists $srckit]} {
+if {$srcdll eq ""} {
+    set srcdll [glob -nocomplain -directory $noedir base-tcl*[info shared]]
+    if {[llength $srcdll] != 1} {
+	puts stderr "Found multilpe basedlls:\n\t[join $srcdll \n\t]"
+	puts stderr "Choose one with -basedll option"
+	exit 1
+    }
+    if {![file exists $srcdll]} {
 	puts stderr "Couldn't find base dll kit:\
 		ActiveTcl 8.4.9+ is required for operation"
 	exit 1
     }
-    puts "Using $srckit as source for $basekit"
-    if {[file exists $basekit]} {
-	puts "$basekit exists - deleting"
-	file delete -force $basekit
-    }
-    file copy $srckit $basekit
 } else {
-    if {![file exists $basekit]} {
-	puts stderr "Couldn't find '$basekit'"
+    if {![file exists $srcdll]} {
+	puts stderr "Couldn't find '$srcdll'"
 	exit 1
     }
-    puts "Updating $basekit - non-binary components only"
 }
 
-puts "Mounting - [file tail $basekit]: [file size $basekit] bytes"
-vfs::mk4::Mount $basekit $basekit
-
-#
-# Binary components
-#
-
-puts "Copying in Tk ..."
-if {$tcl_platform(platform) eq "windows"} {
-    file copy $noedir/tk84$::ext $basekit/bin/
-} else {
-    file copy $libdir/libtk8.4$::ext $basekit/lib/
+set basekit ""
+if {[file exists $baseexe]} {
+    set basekit $dir/[file tail $baseexe]
+    puts "Basekit source:  $baseexe\nBasekit target: $basekit"
+    if {[file exists $basekit]} {
+	puts "\t$basekit exists - deleting"
+	file delete -force $basekit
+    }
+    file copy $baseexe $basekit
+    puts "Mounting - [file tail $basekit]: [file size $basekit] bytes"
+    vfs::mk4::Mount $basekit $basekit
+} elseif {$::tcl_platform(platform) eq "unix"} {
+    puts stderr "The basekit exe is required on unix."
+    puts stderr "Specify with -baseexe <exekit>."
+    exit 1
 }
-file copy $libdir/tk8.4 $basekit/lib
-file delete -force $basekit/lib/tk8.4/demos
-file delete -force $basekit/lib/tk8.4/tkAppInit.c
+
+set basedll $dir/$prefix$::ext
+puts "Basedll source:  $srcdll\nBasedll target: $basedll"
+if {[file exists $basedll]} {
+    puts "\t$basedll exists - deleting"
+    file delete -force $basedll
+}
+file copy $srcdll $basedll
+
+puts "Mounting - [file tail $basedll]: [file size $basedll] bytes"
+vfs::mk4::Mount $basedll $basedll
 
 #
-# Script-only components
+# Add in components
 #
-proc nptcl {} {
-    puts "Copying in nptcl runtime ..."
-    set nptcldir $::basekit/lib/nptcl
+
+proc add_tk {kit} {
+    puts "Copying in Tk $::tcl_version to [file tail $kit] ..."
+    if {[file exists $kit/lib/tk$::tcl_version]} {
+	puts "\tTk found already in the kit"
+    } else {
+	if {$::tcl_platform(platform) eq "windows"} {
+	    file copy $::noedir/tk[string map {. {}} $::tcl_version]$::ext \
+		$kit/bin/
+	} else {
+	    file copy $::libdir/libtk$::tcl_version$::ext $kit/lib/
+	}
+	file copy $::libdir/tk$::tcl_version $kit/lib
+    }
+    file delete -force $kit/lib/tk$::tcl_version/demos
+    file delete -force $kit/lib/tk$::tcl_version/tkAppInit.c
+}
+
+proc nptcl {kit} {
+    puts "Copying in nptcl runtime to [file tail $kit] ..."
+    set nptcldir $kit/lib/nptcl
     catch {file delete -force [glob $nptcldir*]}
     foreach dir [list . config safetcl utils] {
 	set target [file join $nptcldir $dir]
@@ -131,56 +175,123 @@ proc nptcl {} {
     }
 
     puts "Modifying installed.cfg"
-    puts "   External wish: $::wish"
     set fid [open $nptcldir/installed.cfg a]
     seek $fid 0 end
     puts $fid ""
-    puts $fid [list set ::plugin(executable) $::wish]
+    set wish $::wish
+    if {[file exists $::basekit]} {
+	# Need to modify to allow for self-referencing exe
+	set wish "\$::plugin(library)/../../../[file tail $::basekit]"
+	puts $fid "set ::plugin(executable) \[file normalize \"$wish\"\]"
+    } else {
+	puts $fid [list set ::plugin(executable) $wish]
+    }
+    puts "   External wish: $wish"
     close $fid
 }
-nptcl
 
-proc add_modules {modules} {
+proc add_modules {kit modules} {
     foreach mod $modules {
-	puts "Copying in $mod ..."
-	set real [glob $::libdir/$mod*]
+	puts "Copying in $mod to [file tail $kit] ..."
+	set dirs [concat [list $::libdir] $::auto_path]
+	foreach dir $dirs {
+	    set real [glob -nocomplain $dir/$mod*]
+	    if {[llength $real]} { break }
+	}
 	if {[llength $real] != 1} {
-	    puts stderr "Did not find exactly one version of '$mod':\n\t$real"
+	    puts stderr "\nDid not find exactly one version of '$mod':\n\t$real"
 	    exit 1
 	}
-	catch {file delete -force [glob $::basekit/lib/$mod*]}
-	file copy $real $::basekit/lib
+	puts "\t([file tail $real])"
+	# We copy things into the tcl8.x dir to allow them to be recognized
+	# as safe packages
+	set kitdir $kit/lib/tcl$::tcl_version
+	catch {file delete -force [glob $kitdir/$mod*]}
+	file copy $real $kitdir
     }
 }
-add_modules $modules
 
-proc exclude_files {excludes} {
+proc exclude_files {kit excludes} {
     foreach exc $excludes {
-	catch {eval [list file delete -force] [glob $::basekit/lib/$exc]}
+	catch {eval [list file delete -force] [glob $kit/lib/$exc]}
     }
 }
-exclude_files $excludes
 
-::vfs::unmount $basekit
-puts "Done - $basekit: [file size $basekit] bytes"
+# If we have a basekit, add all the extra stuff to it, as it will be
+# used for tclets.  However, both the dll and the basekit would need
+# the nptcl plugin packages and Tk.
+add_tk $basedll
+nptcl $basedll
+if {[file exists $basekit]} {
+    add_tk $basekit
+    nptcl $basekit
+    add_modules $basekit $modules
+    exclude_files $basekit $excludes
+} else {
+    add_modules $basedll $modules
+    exclude_files $basedll $excludes
+}
+
+::vfs::unmount $basedll
+puts "Done - $basedll: [file size $basedll] bytes"
+if {[file exists $basekit]} {
+    ::vfs::unmount $basekit
+    puts "Done - $basekit: [file size $basekit] bytes"
+}
 
 proc xpi {xpi} {
-    if {$xpi ne ""} {
-
-	puts "Creating xpi '$xpi'"
-	file delete -force $xpi
-
-	if {$::zip eq ""} {
-	    set ::zip [auto_execok zip]
+    if {$xpi eq ""} { return }
+    if {$xpi eq 1} {
+	set xpi "$::prefix[string map {. {}} $::version]-"
+	if {$::tcl_platform(platform) eq "windows"} {
+	    append xpi "win32"
+	} else {
+	    # Unix currently needs a basekit exe as well
+	    append xpi "$::tcl_platform(os)"
 	}
-	if {$::zip eq ""} {
-	    puts stderr "Unable to find zip executable - cannot create xpi"
-	    exit
-	}
-
-	puts "    Zip'ing $::basekit $::wrap"
-	# -j - store just by names, no dir prefixes
-	eval [list exec $::zip -9 -j $xpi $::basekit] $::wrap
+	append xpi ".xpi"
     }
+    if {[file exists $::basekit]} {
+	lappend ::wrap $::basekit
+    }
+
+    puts "Creating XPI '$xpi'"
+    file delete -force $xpi
+
+
+    if {$::zip eq ""} {
+	set ::zip [auto_execok zip]
+    }
+    if {$::zip eq ""} {
+	puts stderr "Unable to find zip executable - cannot create xpi"
+	exit 1
+    }
+
+    puts "    Generating correct install.js ..."
+    set fid [open $::install_js]
+    set data [read $fid]
+    close $fid
+
+    set size 0
+    incr size [file size $::basedll]
+    incr size [file size $::npdll]
+    foreach file $::wrap {
+	incr size [file size $::wrap]
+    }
+    set map [list @NPAPIDLL@ [file tail $::npdll] \
+		 @TCLKITDLL@ [file tail $::basedll] \
+		 @TCLKITEXE@ [file tail $::basekit] \
+		 @TCLKIT_SIZE@ $size \
+		 @VERSION@ $::version \
+		]
+
+    set js "install.js"
+    set fid [open $js w]
+    puts -nonewline $fid [string map $map $data]
+    close $fid
+
+    puts "    Zip'ing [list $::basedll $js $::npdll] $::wrap"
+    # -j - store just by names, no dir prefixes
+    eval [list exec $::zip -9 -j $xpi $::basedll $js $::npdll] $::wrap
 }
 xpi $xpi

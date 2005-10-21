@@ -1,3 +1,34 @@
+2005-10-21  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* configure.in, configure: add PACKAGE_PATCHLEVEL of 3.0.1 with
+	package version at 3.0.  Add recogition for Aqua configure.
+	Make use of SHLIB_SUFFIX var.
+
+	* library/plugmain.tcl: correct remoted.tcl script discovery when
+	running from external wish.
+
+	* generic/npapi.h: Updated to more recent Moz version and tweaked
+	to make XP_MACOSX use Carbon/Carbon.h instead of Quickdraw.h.
+
+	* generic/np.h:       Move defining various dl* functions to np.h,
+	* unix/npUnix.c:      adding support for HP-UX and correcting the
+	* generic/npInterp.c: TCL_KIT_DLL location on unix.  Add XP_MACOSX
+	definitions (not functional).
+
+	* Makefile.in (plugkit): ensure tcllib1* modules only.  Add Mac OS
+	X object files.  Correct buildkit args to match changes.
+
+	* tools/buildkit.tcl: Allow for unix basekit exe requirement.
+
+	* tools/install.js (removed): renamed to account for the need to
+	* tools/install.js.in (new):  preprocess before being zipped.
+	Updated to ensure we refreshPlugins, calculate correct size, and
+	install the basekit exe if necessary.
+
+2005-10-20  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* configure, configure.in, tclconfig/tcl.m4: TEA 3.3 update
+
 2005-07-07  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* unix/npUnix.c: add support/recognition of basekit dll

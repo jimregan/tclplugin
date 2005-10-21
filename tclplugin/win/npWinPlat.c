@@ -130,7 +130,7 @@ NpPlatformInit(Tcl_Interp *interp, int inBrowser)
 void
 NpPlatformSetWindow(NPP instance, NPWindow *window)
 {
-    ContainerInfo *cptr;
+    ContainerInfo *cPtr;
     HWND hwnd = (HWND) window->window;
     WNDPROC curProc;
 
@@ -138,32 +138,35 @@ NpPlatformSetWindow(NPP instance, NPWindow *window)
      * Subclass the window only if it was not yet subclassed by us.
      */
 
-    curProc = (WNDPROC) GetWindowLong(hwnd, GWL_WNDPROC);
+    curProc = (WNDPROC) GetWindowLongPtr(hwnd, GWLP_WNDPROC);
     if (curProc == (WNDPROC) ContainerProc) {
         return;
     }
 
-    for (cptr = firstContainerPtr; cptr != NULL; cptr = cptr->nextPtr) {
-        if (cptr->instance == instance) {
+    for (cPtr = firstContainerPtr; cPtr != NULL; cPtr = cPtr->nextPtr) {
+        if (cPtr->instance == instance) {
             break;
         }
     }
 
-    if (cptr == (ContainerInfo *) NULL) {
-        cptr = (ContainerInfo *) ckalloc(sizeof(ContainerInfo));
-        cptr->hwnd = hwnd;
-        cptr->instance = instance;
-        cptr->nextPtr = firstContainerPtr;
-        cptr->child = NULL;
-        cptr->oldProc = curProc;
+    if (cPtr == (ContainerInfo *) NULL) {
+        cPtr = (ContainerInfo *) ckalloc(sizeof(ContainerInfo));
+        cPtr->hwnd = hwnd;
+        cPtr->instance = instance;
+        cPtr->nextPtr = firstContainerPtr;
+        cPtr->child = NULL;
+        cPtr->oldProc = curProc;
 
-        firstContainerPtr = cptr;
+        firstContainerPtr = cPtr;
     }
 
 #if 1
+    /*
+     * NPP_SetWindow calls this - is this necessary?
+     */
     Tcl_ServiceAll();
 #endif
-    (void) SetWindowLong(hwnd, GWL_WNDPROC, (DWORD) ContainerProc);
+    (void) SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR) ContainerProc);
 }
 
 /*
@@ -186,7 +189,7 @@ NpPlatformSetWindow(NPP instance, NPWindow *window)
 void
 NpPlatformDestroy(NPP instance)
 {
-    ContainerInfo *cPtr, *backPtr;
+    ContainerInfo *cPtr, *prevPtr;
     HWND hwnd;
     WNDPROC curProc;
 
@@ -194,13 +197,13 @@ NpPlatformDestroy(NPP instance)
      * Find the container.
      */
 
-    for (backPtr = (ContainerInfo *) NULL, cPtr = firstContainerPtr;
+    for (prevPtr = (ContainerInfo *) NULL, cPtr = firstContainerPtr;
          cPtr != (ContainerInfo *) NULL;
          cPtr = cPtr->nextPtr) {
         if (cPtr->instance == instance) {
             break;
         }
-        backPtr = cPtr;
+        prevPtr = cPtr;
     }
 
     /*
@@ -208,6 +211,7 @@ NpPlatformDestroy(NPP instance)
      */
 
     if (cPtr == (ContainerInfo *) NULL) {
+	NpLog("NpPlatformDestroy instance %p no hwnd found\n", instance);
         return;
     }
 
@@ -215,10 +219,10 @@ NpPlatformDestroy(NPP instance)
      * Remove the container info from the list.
      */
 
-    if (backPtr == (ContainerInfo *) NULL) {
+    if (prevPtr == (ContainerInfo *) NULL) {
         firstContainerPtr = cPtr->nextPtr;
     } else {
-        backPtr->nextPtr = cPtr->nextPtr;
+        prevPtr->nextPtr = cPtr->nextPtr;
     }
 
     /*
@@ -226,13 +230,17 @@ NpPlatformDestroy(NPP instance)
      */
 
     hwnd = cPtr->hwnd;
-    curProc = (WNDPROC) GetWindowLong(hwnd, GWL_WNDPROC);
-    if (curProc != (WNDPROC) ContainerProc) {
-        ckfree((char *) cPtr);
-        return;
+    curProc = (WNDPROC) GetWindowLongPtr(hwnd, GWLP_WNDPROC);
+    if (curProc == (WNDPROC) ContainerProc) {
+	(void) SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR) cPtr->oldProc);
+    } else {
+	NpLog("NpPlatformDestroy: "
+		"SetWindowLong(%p, WNDPROC, %p) not called (%p != %p)\n",
+		hwnd, cPtr->oldProc, curProc, ContainerProc);
     }
 
-    (void) SetWindowLong(hwnd, GWL_WNDPROC, (DWORD) cPtr->oldProc);
+    NpLog("NpPlatformDestroy instance %p hwnd %p\n", instance, hwnd);
+
     ckfree((char *) cPtr);
 }
 
@@ -253,7 +261,6 @@ NpPlatformDestroy(NPP instance)
  *
  *----------------------------------------------------------------------
  */
-#include <windowsx.h>
 
 static LRESULT CALLBACK
 ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -261,7 +268,7 @@ ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     ContainerInfo *ptr, *prevPtr = NULL;
     WNDPROC oldProc;
 
-    NpLog("CONTAINERPROC message 0x%x wParam 0x%x hwnd 0x%x\n",
+    NpLog("CONTAINERPROC message 0x%x wParam 0x%x hwnd %p\n",
 	    message, wParam, hwnd);
 
     for (ptr = firstContainerPtr; ptr != NULL; ptr = ptr->nextPtr) {
@@ -272,10 +279,16 @@ ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
 
     if (!ptr) {
-        NpPanic("Container not found in ContainerProc");
+	/*
+	 * This used to be a panic condition, but it was changed to call
+	 * DefWindowProc.  The panics occured after moving to AT 8.4.11.2
+	 * (threaded), so this may need further examination (possible
+	 * threading bug, possibly always OK to pass to DefWindowProc).
+	 */
+        NpLog("ContainerProc: hwnd %p not recognized - pass to DefWindowProc",
+		hwnd);
 
-        /* NOTREACHED */
-        exit(99);
+	return DefWindowProc(hwnd, message, wParam, lParam);
     }
 
     oldProc = ptr->oldProc;
@@ -332,8 +345,8 @@ ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	    } else {
 		firstContainerPtr = ptr->nextPtr;
 	    }
-	    ckfree((char*)ptr);
-	    SetWindowLong(hwnd, GWL_WNDPROC, (DWORD) oldProc);
+	    SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR) oldProc);
+	    ckfree((char*) ptr);
 	    break;
     }
     return CallWindowProc(oldProc, hwnd, message, wParam, lParam);

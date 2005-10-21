@@ -34,7 +34,11 @@
 
 #  include <windows.h>
 
-#define snprintf _snprintf
+#  define dlclose(path)		((void *) FreeLibrary((HMODULE) path))
+#  define DLSYM(handle, symbol, type, proc) \
+	(proc = (type) GetProcAddress((HINSTANCE) handle, symbol))
+
+#  define snprintf _snprintf
 
 #  define HAVE_UNISTD_H 1
 
@@ -42,22 +46,76 @@
 #    define	F_OK	0
 #  endif
 
-#else /* UNIX */
+#  ifndef SHLIB_SUFFIX
+#    define SHLIB_SUFFIX ".dll"
+#  endif
+
+#elif defined(XP_MACOSX) /* Mac OS X */
 
 #  include <stdio.h>
-
-#  define HIBYTE(i) (i >> 8)
-#  define LOBYTE(i) (i & 0xff)
-#  define HMODULE void *
+#  include <Carbon/Carbon.h>
 
 #  if HAVE_UNISTD_H
 #	include <sys/types.h>
 #	include <unistd.h>
 #  endif
 
-#ifndef MAX_PATH
-#define MAX_PATH 1024
-#endif
+#  ifndef SHLIB_SUFFIX
+#    define SHLIB_SUFFIX ".dylib"
+#  endif
+
+#    include <dlfcn.h>
+#  define HMODULE void *
+#  define DLSYM(handle, symbol, type, proc) \
+	(proc = (type) dlsym(handle, symbol))
+
+#  define HIBYTE(i) (i >> 8)
+#  define LOBYTE(i) (i & 0xff)
+
+#else /* UNIX */
+
+#  include <stdio.h>
+
+#  define HIBYTE(i) (i >> 8)
+#  define LOBYTE(i) (i & 0xff)
+
+#  if HAVE_UNISTD_H
+#	include <sys/types.h>
+#	include <unistd.h>
+#  endif
+
+#  if defined(__hpux)
+
+/* HPUX requires shl_* routines */
+#    include <dl.h>
+#    define HMODULE shl_t
+#    define dlopen(libname, flags)	shl_load(libname, \
+	BIND_DEFERRED|BIND_VERBOSE|DYNAMIC_PATH, 0L)
+#    define dlclose(path)		shl_unload((shl_t) path)
+#    define DLSYM(handle, symbol, type, proc) \
+	if (shl_findsym(&handle, symbol, (short) TYPE_PROCEDURE, \
+		(void *) &proc) != 0) { proc = NULL; }
+
+#  ifndef SHLIB_SUFFIX
+#    define SHLIB_SUFFIX ".sl"
+#  endif
+
+#  else
+
+#    include <dlfcn.h>
+#    define HMODULE void *
+#    define DLSYM(handle, symbol, type, proc) \
+	(proc = (type) dlsym(handle, symbol))
+
+#  ifndef SHLIB_SUFFIX
+#    define SHLIB_SUFFIX ".so"
+#  endif
+
+/*
+ * FIX: For other non-dl systems, we need alternatives here
+ */
+
+#  endif
 
 /*
  * Shared functions:
@@ -67,18 +125,22 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 
 #endif /* PLATFORM DEFS */
 
+#ifndef MAX_PATH
+#define MAX_PATH 1024
+#endif
+
 /*
  * Tcl Plugin version identifiers
  * (the 3 strings are computed from the 4 internal numbers)
  */
-#define NPTCL_VERSION		"3.0"    /* == PACKAGE_VERSION */
-#define NPTCL_PATCH_LEVEL	"3.0a5"
-#define NPTCL_INTERNAL_VERSION	"3.0.0.5"
+#define NPTCL_VERSION		PACKAGE_VERSION
+#define NPTCL_PATCH_LEVEL	PACKAGE_PATCHLEVEL
+#define NPTCL_INTERNAL_VERSION	PACKAGE_PATCHLEVEL
 
 #define NPTCL_MAJOR_VERSION	3
 #define NPTCL_MINOR_VERSION	0
 #define NPTCL_RELEASE_LEVEL	0
-#define NPTCL_RELEASE_SERIAL	4
+#define NPTCL_RELEASE_SERIAL	1
 
 #ifdef BUILD_nptcl
 #undef TCL_STORAGE_CLASS
@@ -101,6 +163,7 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 #ifdef _AIX
 #define _PR_AIX_HAVE_BSD_INT_TYPES 1
 #endif
+
 #include "npapi.h"
 
 /*

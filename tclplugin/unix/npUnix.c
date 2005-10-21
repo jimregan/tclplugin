@@ -17,12 +17,11 @@
 #include "np.h"
 #include <string.h>
 
-#include <dlfcn.h>
 #ifndef TCL_LIB_FILE
-#  define TCL_LIB_FILE "libtcl8.4.so"
+#  define TCL_LIB_FILE "libtcl8.4" SHLIB_SUFFIX
 #endif
 #ifndef TCL_KIT_DLL
-#  define TCL_KIT_DLL "tclplugin.so"
+#  define TCL_KIT_DLL "tclplugin" SHLIB_SUFFIX
 #endif
 
 /*
@@ -141,7 +140,17 @@ NpLoadLibrary(HMODULE *tclHandle, char *dllName, int dllNameSize)
 	Dl_info info;
 
 	if (npgetmime && dladdr(npgetmime, &info)) {
-	    snprintf(libname, MAX_PATH, "%s/%s", info.dli_fname, TCL_KIT_DLL);
+	    char *slash = strrchr(info.dli_fname, '/');
+	    if (slash) {
+		snprintf(libname, MAX_PATH, "%.*s/%s", slash - info.dli_fname,
+			info.dli_fname, TCL_KIT_DLL);
+	    } else {
+		/*
+		 * No directory separator - assume current directory.
+		 * Perhaps we should load anywhere on the libpath?
+		 */
+		snprintf(libname, MAX_PATH, "./%s", TCL_KIT_DLL);
+	    }
 	    NpLog("Attempt to load Tcl dll (plugkit) '%s'\n", libname);
 	    handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL);
 	}

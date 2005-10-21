@@ -23,26 +23,6 @@
 
 static Tcl_Interp *npInterp = (Tcl_Interp *) NULL;
 
-#ifdef WIN32
-
-#ifdef USE_TCL_STUBS
-#endif
-
-#include <windows.h>
-#define dlsym(handle, symbol)	GetProcAddress((HINSTANCE) handle, symbol)
-#define dlclose(path)		((void *) FreeLibrary((HMODULE) path))
-#define snprintf _snprintf
-
-#else
-
-#include <dlfcn.h>
-
-/*
- * FIX: For HP-UX or other non-dl systems, we need alternatives here
- */
-
-#endif
-
 static HMODULE tclHandle      = NULL;
 
 
@@ -92,8 +72,7 @@ NpCreateMainInterp()
 	/*
 	 * First see if some other part didn't already load Tcl.
 	 */
-	createInterp = (Tcl_Interp * (*)()) dlsym(tclHandle,
-		"Tcl_CreateInterp");
+	DLSYM(tclHandle, "Tcl_CreateInterp", Tcl_Interp * (*)(), createInterp);
 
 	if ((createInterp == NULL)
 		&& (NpLoadLibrary(&tclHandle, dllName, MAX_PATH)
@@ -103,8 +82,7 @@ NpCreateMainInterp()
 	}
 	NpLog("NpCreateMainInterp: Using dll '%s'\n", dllName);
 
-	createInterp = (Tcl_Interp * (*)()) dlsym(tclHandle,
-		"Tcl_CreateInterp");
+	DLSYM(tclHandle, "Tcl_CreateInterp", Tcl_Interp * (*)(), createInterp);
 	if (createInterp == NULL) {
 #ifndef WIN32
 	    char *error = dlerror();
@@ -114,19 +92,19 @@ NpCreateMainInterp()
 #endif
 	    return NULL;
 	}
-	findExecutable = (void (*)(char *)) dlsym(tclHandle,
-		"Tcl_FindExecutable");
+	DLSYM(tclHandle, "Tcl_FindExecutable", void (*)(char *),
+		findExecutable);
 
-	tclKit_AppInit = (int (*)(Tcl_Interp *)) dlsym(tclHandle,
-		"TclKit_AppInit");
+	DLSYM(tclHandle, "TclKit_AppInit", int (*)(Tcl_Interp *),
+		tclKit_AppInit);
 	if ((tclKit_AppInit != NULL) && (dllName[0] != '\0')) {
 	    char * (* tclKit_SetKitPath)(char *);
 	    /*
 	     * We need to see if this has TclKit_SetKitPath
 	     */
 	    NpLog("NpCreateMainInterp: SetKitPath(%s)\n", dllName);
-	    tclKit_SetKitPath = (char * (*)(char *)) dlsym(tclHandle,
-		    "TclKit_SetKitPath");
+	    DLSYM(tclHandle, "TclKit_SetKitPath", char * (*)(char *),
+		    tclKit_SetKitPath);
 	    if (tclKit_SetKitPath != NULL) {
 		tclKit_SetKitPath(dllName);
 	    }

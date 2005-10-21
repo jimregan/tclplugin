@@ -10,6 +10,12 @@
 	* generic/npapi.h: Updated to more recent Moz version and tweaked
 	to make XP_MACOSX use Carbon/Carbon.h instead of Quickdraw.h.
 
+	* win/npWinPlat.c (ContainerProc): When receiving message for
+	unknown hwnd, just pass to DefProc.  This was a panic, but we
+	aren't unsubclassing the ContainerProc call always in
+	NpPlatformDestroy because someone else has further subclassed us.
+	Make use of LongPtr calls for 64-bit compatability.
+
 	* generic/np.h:       Move defining various dl* functions to np.h,
 	* unix/npUnix.c:      adding support for HP-UX and correcting the
 	* generic/npInterp.c: TCL_KIT_DLL location on unix.  Add XP_MACOSX

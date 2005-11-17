@@ -1,3 +1,16 @@
+2005-11-17  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/plugmain.tcl (::plugin::init_extern): simplify to only
+	use the open|wish approach.  We don't need remoted.tcl to be on
+	the native fs, but we do need the plugin pkg native, so users can
+	easily modify configuration/policies after install.
+
+	* library/common.tcl (SetupConsole): fix tkcon init
+
+	* library/tkcon.tcl: update to tkcon rcs,v1.89 2005/09/12
+
+	* library/remoted.tcl: allow plugin(library) to be preset
+
 2005-10-21  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* configure.in, configure: add PACKAGE_PATCHLEVEL of 3.0.1 with

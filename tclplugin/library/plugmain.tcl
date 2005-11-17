@@ -57,6 +57,8 @@ if {![info exists plugin(patchLevel)]} {
 ::pluglog::log MAIN "PKGVERSION      = $plugin(pkgVersion)"
 ::pluglog::log MAIN "TCL_PATCHLEVEL  = $tcl_patchLevel"
 ::pluglog::log MAIN "AUTO_PATH       = $auto_path"
+::pluglog::log MAIN "INFO_NOE        = [info nameofexecutable]"
+::pluglog::log MAIN "INFO_LIB        = [info library]"
 
 # Initialiaze the configuration (install time / raw parameters):
 SetupConfig
@@ -93,7 +95,6 @@ if {[catch {file mkdir $env(TEMP)} msg]} {
 # server connect, browser version...)
 
 set plugin(ready) 0
-set plugin(uaConf) 0
 
 # The primary init proc.  It sees whether we want an external process
 # and can create one, otherwise uses (falls back to) inprocess.
@@ -139,6 +140,8 @@ proc ::plugin::init_extern {} {
     package require rpi 1.0
     set srv    [::rpi::newServer 0 localhost]
     set port   [::rpi::iget $srv Port]
+    # remoted will require ::argv and ::plugin(library) to be set
+    # based off 'info script'.
     set script [file join $plugin(library) remoted.tcl]
     if {[lindex [file system $script] 0] ne "native"} {
 	::pluglog::log init_extern "Must copy $plugin(library) to $::cfg::Tmp"
@@ -151,53 +154,20 @@ proc ::plugin::init_extern {} {
 	set script [file join $targetdir remoted.tcl]
     }
 
-    if {0} {
-	# This method would open a server and pump the data down the pipe.
-	# This should work in a fully enclosed environment, but currently
-	# doesn't work.  :(  - JH
-	::pluglog::log init_extern "Opening pipe to '$wish'"
-	set sfid [open $script]
-	set data    "set ::argv \[list -port $port\]\n"
-	append data "set ::argc \[llength \$::argv\]\n"
-	append data [read $sfid]
-	close $sfid
-	if {[catch {set fid [open "|[list $wish] << {$data}" r]} msg]} {
-	    ::pluglog::log init_extern "External wish \"$wish\" startup error:\
+    # This method would opens a pipe with args that we can still talk to.
+    # To work in a fully enclosed environment, we could pass the script
+    # over the pipe (set argc/argv/plugin(library) first).
+    ::pluglog::log init_extern "Opening pipe to '$wish'"
+    if {[catch {set fid [open "|[list $wish] $script -port $port" r+]} msg]} {
+	::pluglog::log init_extern "External wish \"$wish\" startup error:\
 		\n$msg\nFalling back to inprocess" ERROR
-	    # Shutdown the server
-	    ::rpi::delete $srv
-	    return 0
-	}
-	fconfigure $fid -blocking 0
-	set plugin(fid) $fid
-	::pluglog::log init_extern "Opened pipe (fid $fid)"
-    } elseif {1} {
-	# This method would opens a pipe with args that we can still talk to.
-	# Slightly more control than exec.
-	::pluglog::log init_extern "Opening pipe to '$wish'"
-	if {[catch {set fid [open "|[list $wish] $script -port $port" r+]} msg]} {
-	    ::pluglog::log init_extern "External wish \"$wish\" startup error:\
-		\n$msg\nFalling back to inprocess" ERROR
-	    # Shutdown the server
-	    ::rpi::delete $srv
-	    return 0
-	}
-	fconfigure $fid -blocking 0
-	set plugin(fid) $fid
-	::pluglog::log init_extern "Opened pipe (fid $fid)"
-    } else {
-	# This method execs the process - full autonomy.
-	::pluglog::log npInit "exec'ing '$wish $script -port $port'"
-	if {[catch {exec $wish $script -port $port &} msg]} {
-	    ::pluglog::log npInit "External wish \"$wish\" startup error:\
-		$msg - falling back to inprocess" ERROR
-	    # Shutdown the server
-	    ::rpi::delete $srv
-	    return 0
-	}
-	set plugin(pid) $msg
-	::pluglog::log npInit "Exec ok (pid $plugin(pid))"
+	# Shutdown the server
+	::rpi::delete $srv
+	return 0
     }
+    fconfigure $fid -blocking 0
+    set plugin(fid) $fid
+    ::pluglog::log init_extern "Opened pipe (fid $fid)"
 
     # We need to return now and we will complete the initilization
     # at NewInstance time (including the fall back to inproc)

@@ -27,8 +27,11 @@ namespace eval ::plugin {
     variable NAME "External Tcl Plugin Server"
 }
 
-# Compute plugin(library) from the script being loaded:
-set plugin(library) [file dirname [info script]]
+if {![info exists plugin(library)]} {
+    # Compute plugin(library) from the script being loaded
+    # if not already supplied
+    set plugin(library) [file dirname [info script]]
+}
 
 # Allow plugin subdirectories to be recognized for their own packages
 if {[lsearch -exact $auto_path $plugin(library)] < 0} {

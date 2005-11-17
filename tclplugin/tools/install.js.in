@@ -1,27 +1,26 @@
 ///////////////////////////////////////////////////////////////////
-// Started with the install script from the mozilla activex plugin
-// http://www.iol.ie/~locka/mozilla/plugin.htm
+//
+// Tcl plugin install.js script for XPI
+//
+// The plugin is structured as the NPAPI dll (nptclXY.dll) and a
+// sibling directory (nptcl/) that contains all other necessary
+// parts - notably the plugin library, which must be "native" to
+// allow for runtime modification and sharing with other binaries.
+//
 
 var SOFTWARE_NAME  = "Tcl/Tk Plugin";
 var VERSION        = "@VERSION@";
 var PLID_BASE      = "@mozilla.org/TclPlugin";
 var PLID           = PLID_BASE + ",version=" + VERSION;
 
-var FLDR_PLUGINS   = getFolder("Plugins");
-
 // This information is passed in by the script that generates
 // the appropriate install.js for each platform's XPI
-// TCLKITEXE may be empty if it's not needed on a specific platform
-var NPAPIDLL       = new FileToInstall("@NPAPIDLL@", FLDR_PLUGINS);
-var TCLKITDLL      = new FileToInstall("@TCLKITDLL@", FLDR_PLUGINS);
-var TCLKITEXE      = new FileToInstall("@TCLKITEXE@", FLDR_PLUGINS);
+var NPAPIDLL       = "@NPAPIDLL@";
+var NPTCLDIR       = "nptcl";
 // Specified in bytes
-var SPACE_REQD     = @TCLKIT_SIZE@;
-
-var filesToAdd     = new Array(NPAPIDLL, TCLKITDLL, TCLKITEXE);
+var SPACE_REQD     = @NPTCL_SIZE@;
 
 ///////////////////////////////////////////////////////////////////
-
 
 // Invoke initInstall to start the installation
 err = initInstall(SOFTWARE_NAME, PLID, VERSION);
@@ -35,35 +34,12 @@ if (err == BAD_PACKAGE_NAME)
 
 if (err == SUCCESS)
 {
-    // Install plugin files
-    err = verifyDiskSpace(FLDR_PLUGINS, SPACE_REQD);
-    if (err == SUCCESS)
-    {
-        for (i = 0; i < filesToAdd.length; i++)
-        {
-	    if (filesToAdd[i].name == "") { continue }
-            err = addFile(PLID, VERSION, filesToAdd[i].name,
-			  filesToAdd[i].path, null);
-            if (err != SUCCESS)
-            {
-                alert("Installation of " + filesToAdd[i].name +
-		      " failed. Error code " + err);
-                logComment("adding file " + filesToAdd[i].name +
-			   " failed. Errror code: " + err);
-                break;
-            }
-        }
-    }
-    else
-    {
-        logComment("Cancelling current browser install due to lack of space...");
-    }
+    err = doAddFiles();
 }
 else
 {
     logComment("Install failed at initInstall level with " + err);
 }
-
 
 if (err == SUCCESS)
 {
@@ -76,43 +52,112 @@ if (err == SUCCESS)
 }
 else
 {
-    cancelInstall();
+    cancelInstall(err);
 }
 
 /**
  * Function for preinstallation of plugin (FirstInstall).
- * You should not stop the install process because the function failed,
- * you still have a chance to install the plugin for the already
- * installed gecko browsers.
  *
  * @param dirPath	directory path from getFolder
- * @param spaceRequired	required space in kilobytes
+ * @param spaceRequired	required space in bytes
  * 
  **/
 function verifyDiskSpace(dirPath, spaceRequired)
 {
-    var spaceAvailable;
+    // Get the available disk space on the given path in bytes
+    var spaceAvailable = fileGetDiskSpaceAvailable(dirPath);
 
-    // Get the available disk space on the given path
-    spaceAvailable = fileGetDiskSpaceAvailable(dirPath);
- 
-    // Convert the available disk space into kilobytes
-    spaceAvailable = parseInt(spaceAvailable / 1024);
-
+    logComment("Disk space required: " + parseInt(spaceRequired / 1024) + "K");
     // do the verification
-    if(spaceAvailable < spaceRequired)
+    if (spaceAvailable < spaceRequired)
     {
         logComment("Insufficient disk space: " + dirPath);
-        logComment("  required : " + (spaceRequired / 1024) + " K");
-        logComment("  available: " + (spaceAvailable / 1024) + " K");
+        logComment("  required : " + parseInt(spaceRequired / 1024) + "K");
+        logComment("  available: " + parseInt(spaceAvailable / 1024) + "K");
         return INSUFFICIENT_DISK_SPACE;
     }
 
     return SUCCESS;
 }
 
-function FileToInstall(fileName, dirPath)
+function doAddFiles()
 {
-    this.name = fileName;
-    this.path = dirPath;
+    // Install plugin files
+    var folder = getFolder("Plugins");
+    // "Current User" is actually the current profile directory
+    var userFolder = getFolder("Current User", "../../plugins");
+    if (getPlatform() == "win")
+    {
+	// Windows has extra /Profiles/ path component
+	userFolder = getFolder("Current User", "../../../plugins");
+    }
+
+    err = verifyDiskSpace(folder, SPACE_REQD);
+    if (err == SUCCESS)
+    {
+	err = addFile(PLID, VERSION, NPAPIDLL, folder, null);
+	if ((err == ACCESS_DENIED) && (folder != userFolder)
+	    && (verifyDiskSpace(userFolder, SPACE_REQD) == SUCCESS)
+	    && confirm("Unable to install to \"" + folder + "\".\n" +
+		       "Attempt install to user-specific plugins folder \""
+		       + userFolder + "\"?"))
+	{
+	    File.dirCreate(userFolder); // we don't care about result
+	    folder = userFolder;
+	    err = addFile(PLID, VERSION, NPAPIDLL, folder, null);
+	}
+	if (err == SUCCESS)
+	{
+	    // We can't remove the folder first as it may contain modified
+	    // configuration files, but we need more checks on that.
+	    // Also, File.dirRemove ordering appears broken, in that the
+	    // installer (for FF1.5 at least) won't recreate this directory
+	    // and we get a -214 error.
+	    err = addDirectory(PLID, VERSION, NPTCLDIR, folder, NPTCLDIR,
+			       true);
+	}
+	if (err != SUCCESS)
+	{
+	    alert("Installation of " + NPAPIDLL +
+		  " failed.\nError code " + err);
+	    logComment("Adding file " + NPAPIDLL + " to " + folder +
+		       " failed. Error code: " + err);
+	    return err;
+	}
+    }
+    else
+    {
+	logComment("Cancelling current browser install due to lack of space...");
+    }
+    return err;
+}
+
+function getPlatform()
+{
+    var platformStr;
+    var platformNode;
+    if ('platform' in Install)
+    {
+        platformStr = new String(Install.platform);
+        if (!platformStr.search(/^Macintosh/))
+            platformNode = 'mac';
+        else if (!platformStr.search(/^Win/))
+            platformNode = 'win';
+        else
+            platformNode = 'unix';
+    }
+    else
+    {
+        var fOSMac  = getFolder("Mac System");
+        var fOSWin  = getFolder("Win System");
+        logComment("fOSMac: "  + fOSMac);
+        logComment("fOSWin: "  + fOSWin);
+        if (fOSMac != null)
+            platformNode = 'mac';
+        else if(fOSWin != null)
+            platformNode = 'win';
+        else
+            platformNode = 'unix';
+    }
+    return platformNode;
 }

@@ -27,55 +27,6 @@ static int nptcl_shutdown	= 0;
 
 TCL_DECLARE_MUTEX(pluginMutex)
 
-static int		Plugin_Init _ANSI_ARGS_((Tcl_Interp *interp,
-	                    int inBrowserFlag));
-
-
-/*
- *----------------------------------------------------------------------
- *
- * Plug_Init --
- *
- *	Sets the plugin version strings and library. Also adds utility
- *	commands to the interp.
- *
- * Results:
- *	A standard Tcl result.
- *
- * Side effects:
- *
- *----------------------------------------------------------------------
- */
-
-static int
-Plugin_Init(Tcl_Interp *interp, int externalFlag)
-{
-    /*
-     * Set the plugin versions and patchLevel.
-     */
-
-    Tcl_SetVar2(interp, "plugin", "version", NPTCL_VERSION, TCL_GLOBAL_ONLY);
-    Tcl_SetVar2(interp, "plugin", "patchLevel", NPTCL_PATCH_LEVEL,
-            TCL_GLOBAL_ONLY);
-    Tcl_SetVar2(interp, "plugin", "pkgVersion", NPTCL_INTERNAL_VERSION,
-            TCL_GLOBAL_ONLY);
-
-    if (Tcl_PkgRequire(interp, "plugin", NPTCL_VERSION, 0) == NULL) {
-	NpPlatformMsg(Tcl_GetStringResult(interp), "Plug_Init/PkgRequire");
-        return TCL_ERROR;
-    }
-
-    /*
-     * Perform platform specific initialization.
-     */
-
-    if (NpPlatformInit(interp, externalFlag) != TCL_OK) {
-	NpPlatformMsg(Tcl_GetStringResult(interp), "Plug_Init/NpPlatformInit");
-        return TCL_ERROR;
-    }
-
-    return TCL_OK;
-}
 
 /*
  *----------------------------------------------------------------------
@@ -96,6 +47,8 @@ Plugin_Init(Tcl_Interp *interp, int externalFlag)
 int
 NpInit(Tcl_Interp *interp)
 {
+    Tcl_DString dsAddPath;
+
     /*
      * Install hash tables for instance tokens and stream tokens.
      */
@@ -117,13 +70,50 @@ NpInit(Tcl_Interp *interp)
     }
 
     /*
-     * Common part of the initialization whether in netscape or as tclshp
+     * Set the plugin versions and patchLevel.
      */
 
-    NpLog("NpInit: Plugin_Init(%p, %d)\n", interp, 1);
-    if (Plugin_Init(interp, 1 /* inBrowser */) != TCL_OK) {
-	/* Error reporting has been done already */
-	return TCL_ERROR;
+    Tcl_SetVar2(interp, "plugin", "version", NPTCL_VERSION, TCL_GLOBAL_ONLY);
+    Tcl_SetVar2(interp, "plugin", "patchLevel", NPTCL_PATCH_LEVEL,
+            TCL_GLOBAL_ONLY);
+    Tcl_SetVar2(interp, "plugin", "pkgVersion", NPTCL_INTERNAL_VERSION,
+            TCL_GLOBAL_ONLY);
+
+    /*
+     * Check for plugin directory next to sharedlib.  If it exists, extend
+     * the auto_path before requiring the plugin package.
+     * plugin(sharedlib) is set in NpCreateMainInterp.
+     */
+    Tcl_DStringInit(&dsAddPath);
+    Tcl_DStringAppend(&dsAddPath,
+	    "set plugin(pkgPath) \"[file dirname $plugin(sharedlib)]/plugin"
+	    NPTCL_VERSION "\"\n"
+	    "if {[file exists $plugin(pkgPath)]} {\n"
+	    "    lappend ::auto_path $plugin(pkgPath)\n"
+	    "} else {\n"
+	    "    unset plugin(pkgPath)\n"
+	    "}\n", -1
+	);
+    if (Tcl_EvalEx(interp, Tcl_DStringValue(&dsAddPath), -1,
+		TCL_EVAL_GLOBAL | TCL_EVAL_DIRECT) != TCL_OK) {
+	NpPlatformMsg(Tcl_GetStringResult(interp), "Plug_Init/SetAutoPath");
+	Tcl_DStringFree(&dsAddPath);
+        return TCL_ERROR;
+    }
+    Tcl_DStringFree(&dsAddPath);
+
+    if (Tcl_PkgRequire(interp, "plugin", NPTCL_VERSION, 0) == NULL) {
+	NpPlatformMsg(Tcl_GetStringResult(interp), "Plug_Init/PkgRequire");
+        return TCL_ERROR;
+    }
+
+    /*
+     * Perform platform specific initialization.
+     */
+
+    if (NpPlatformInit(interp, 1 /* external */) != TCL_OK) {
+	NpPlatformMsg(Tcl_GetStringResult(interp), "Plug_Init/NpPlatformInit");
+        return TCL_ERROR;
     }
 
     NpLog(">>> NpInit finished OK\n");
@@ -260,19 +250,15 @@ NPP_Shutdown()
     /*
      * Deal with any pending events one last time:
      */
-    
     NpLeave("NPP_Shutdown", TCL_SERVICE_ALL);
 
     Tcl_ServiceAll();
 
-#ifdef TCL_THREADS
     Tcl_MutexFinalize(&pluginMutex);
-#endif
 
     /*
      * Shut down the main Tcl interpreter.
      */
-    
     NpDestroyMainInterp();
 
     /*
@@ -281,9 +267,8 @@ NPP_Shutdown()
      * level memory allocated for Tcl. Thus no Tcl code nor access to
      * memory allocated with ckalloc() should occur beyond that point.
      */
-    
     NpPlatformShutdown();
-    
+
     if (nptcl_stack != 0) {
 	NpLog("SERIOUS ERROR (potential crash): Invalid shutdown stack = %d\n",
 		nptcl_stack);
@@ -771,9 +756,7 @@ NpEnter(CONST char *msg)
 {
     int oldServiceMode;
 
-#ifdef TCL_THREADS
     Tcl_MutexLock(&pluginMutex);
-#endif
     oldServiceMode = Tcl_SetServiceMode(TCL_SERVICE_NONE);
     nptcl_stack++;
 
@@ -821,9 +804,7 @@ NpLeave(CONST char *msg, int oldServiceMode)
 	    nptcl_stack, nptcl_instances, NpTclStreams(0));
 
     Tcl_SetServiceMode(oldServiceMode);
-#ifdef TCL_THREADS
     Tcl_MutexUnlock(&pluginMutex);
-#endif
 }
 
 /*

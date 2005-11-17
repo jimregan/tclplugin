@@ -98,7 +98,7 @@ puts "Build with ActiveTcl $ver"
 if {$srcdll eq ""} {
     set srcdll [glob -nocomplain -directory $noedir base-tcl*[info shared]]
     if {[llength $srcdll] != 1} {
-	puts stderr "Found multilpe basedlls:\n\t[join $srcdll \n\t]"
+	puts stderr "Found multiple basedlls:\n\t[join $srcdll \n\t]"
 	puts stderr "Choose one with -basedll option"
 	exit 1
     }
@@ -115,6 +115,14 @@ if {$srcdll eq ""} {
 }
 
 set basekit ""
+if {$::tcl_platform(platform) eq "unix" && ![file exists $baseexe]} {
+    set baseexe [glob -nocomplain -directory $noedir base-tk*]
+    if {[llength $baseexe] != 1} {
+	puts stderr "Found multiple baseexes:\n\t[join $baseexe \n\t]"
+	puts stderr "Choose one with -baseexe option"
+	exit 1
+    }
+}
 if {[file exists $baseexe]} {
     set basekit $dir/[file tail $baseexe]
     puts "Basekit source:  $baseexe\nBasekit target: $basekit"
@@ -163,14 +171,18 @@ proc add_tk {kit} {
     file delete -force $kit/lib/tk$::tcl_version/tkAppInit.c
 }
 
-proc nptcl {kit} {
+proc nptcl_indll {kit} {
+    # nptcl doesn't belong in the dll anymore because we need it on
+    # disk to allow for runtime modification of the configuration and
+    # sharing with any external binaries that may be used
+    return
     puts "Copying in nptcl runtime to [file tail $kit] ..."
     set nptcldir $kit/lib/nptcl
     catch {file delete -force [glob $nptcldir*]}
-    foreach dir [list . config safetcl utils] {
-	set target [file join $nptcldir $dir]
+    foreach sdir [list . config safetcl utils] {
+	set target [file join $nptcldir $sdir]
 	file mkdir $target
-	set files [glob -type f [file join $::pluglib $dir *.*]]
+	set files [glob -type f [file join $::pluglib $sdir *.*]]
 	eval [list file copy] $files [list $target]
     }
 
@@ -190,12 +202,42 @@ proc nptcl {kit} {
     close $fid
 }
 
+proc nptcl_inxpi {} {
+    # nptcl doesn't belong in the dll anymore because we need it on
+    # disk to allow for runtime modification of the configuration and
+    # sharing with any external binaries that may be used
+    puts "Creating nptcl runtime dir for xpi ($::dir/nptcl) ..."
+    set nptcldir $::dir/nptcl
+    catch {file delete -force $nptcldir}
+    foreach sdir [list . config safetcl utils] {
+	set target [file join $nptcldir plugin$::version $sdir]
+	file mkdir $target
+	set files [glob -type f [file join $::pluglib $sdir *.*]]
+	eval [list file copy] $files [list $target]
+    }
+
+    puts "Modifying installed.cfg"
+    set fid [open $nptcldir/plugin$::version/installed.cfg a]
+    seek $fid 0 end
+    puts $fid ""
+    set wish $::wish
+    if {[file exists $::basekit]} {
+	# Need to modify to allow for self-referencing exe
+	set wish "\$::plugin(library)/../[file tail $::basekit]"
+	puts $fid "set ::plugin(executable) \[file normalize \"$wish\"\]"
+    } else {
+	puts $fid [list set ::plugin(executable) $wish]
+    }
+    puts "   External wish: $wish"
+    close $fid
+}
+
 proc add_modules {kit modules} {
     foreach mod $modules {
 	puts "Copying in $mod to [file tail $kit] ..."
 	set dirs [concat [list $::libdir] $::auto_path]
-	foreach dir $dirs {
-	    set real [glob -nocomplain $dir/$mod*]
+	foreach sdir $dirs {
+	    set real [glob -nocomplain $sdir/$mod*]
 	    if {[llength $real]} { break }
 	}
 	if {[llength $real] != 1} {
@@ -221,10 +263,10 @@ proc exclude_files {kit excludes} {
 # used for tclets.  However, both the dll and the basekit would need
 # the nptcl plugin packages and Tk.
 add_tk $basedll
-nptcl $basedll
+nptcl_indll $basedll
 if {[file exists $basekit]} {
     add_tk $basekit
-    nptcl $basekit
+    nptcl_indll $basekit
     add_modules $basekit $modules
     exclude_files $basekit $excludes
 } else {
@@ -239,6 +281,17 @@ if {[file exists $basekit]} {
     puts "Done - $basekit: [file size $basekit] bytes"
 }
 
+proc dirsize {dir size} {
+    foreach fd [glob -directory $dir *] {
+	if {[file isdirectory $fd]} {
+	    incr size [dirsize $fd 0]
+	} else {
+	    incr size [file size $fd]
+	}
+    }
+    return $size
+}
+
 proc xpi {xpi} {
     if {$xpi eq ""} { return }
     if {$xpi eq 1} {
@@ -251,13 +304,9 @@ proc xpi {xpi} {
 	}
 	append xpi ".xpi"
     }
-    if {[file exists $::basekit]} {
-	lappend ::wrap $::basekit
-    }
 
     puts "Creating XPI '$xpi'"
     file delete -force $xpi
-
 
     if {$::zip eq ""} {
 	set ::zip [auto_execok zip]
@@ -272,16 +321,19 @@ proc xpi {xpi} {
     set data [read $fid]
     close $fid
 
-    set size 0
-    incr size [file size $::basedll]
-    incr size [file size $::npdll]
+    nptcl_inxpi ; # will create ./nptcl/ subdir
+    file rename $::basedll $::dir/nptcl/
+    if {[file exists $::basekit]} {
+	file rename $::basekit $::dir/nptcl/
+    }
+
+    set size [file size $::npdll]
+    incr size [dirsize $::dir/nptcl $size]
     foreach file $::wrap {
 	incr size [file size $::wrap]
     }
     set map [list @NPAPIDLL@ [file tail $::npdll] \
-		 @TCLKITDLL@ [file tail $::basedll] \
-		 @TCLKITEXE@ [file tail $::basekit] \
-		 @TCLKIT_SIZE@ $size \
+		 @NPTCL_SIZE@ $size \
 		 @VERSION@ $::version \
 		]
 
@@ -290,8 +342,9 @@ proc xpi {xpi} {
     puts -nonewline $fid [string map $map $data]
     close $fid
 
-    puts "    Zip'ing [list $::basedll $js $::npdll] $::wrap"
-    # -j - store just by names, no dir prefixes
-    eval [list exec $::zip -9 -j $xpi $::basedll $js $::npdll] $::wrap
+    puts "    Install required size: [expr {$size/1024}]K"
+    puts "    Zip'ing [list $js $::npdll nptcl] $::wrap"
+    # -j would store just by names, no dir prefixes
+    eval [list exec $::zip -9 -r $xpi $js $::npdll nptcl] $::wrap
 }
 xpi $xpi

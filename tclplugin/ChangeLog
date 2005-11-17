@@ -1,5 +1,22 @@
 2005-11-17  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* configure.in, configure: bump patchlevel to 3.0.2
+
+	* tools/install.js.in: build XPI to place and install tclplugin
+	* tools/buildkit.tcl:  stardll and plugin pkg in nptcl/ subdir
+	next to nptcl NPAPI dll.
+	On install, if the global plugins dir is not writable, attempt to
+	install in user-specific plugins directory.
+	* win/npWin.c, unix/npUnix.c: search for TCL_KIT_DLL in nptcl/
+	sibling subdir.
+
+	* generic/npTcl.c (NpInit): inline Plugin_Init, set
+	plugin(pkgPath) to pkg location if found.
+	Remove TCL_THREADS checks around mutexes, Tcl 8.4+ handles the
+	stubs of these functions whether threaded or not.
+	* generic/npInterp.c (NpCreateMainInterp): set plugin(sharedlib)
+	to the Tcl dll name successfully loaded.
+
 	* library/plugmain.tcl (::plugin::init_extern): simplify to only
 	use the open|wish approach.  We don't need remoted.tcl to be on
 	the native fs, but we do need the plugin pkg native, so users can

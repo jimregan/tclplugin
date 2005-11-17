@@ -133,6 +133,7 @@ NpLoadLibrary(HMODULE *tclHandle, char *dllName, int dllNameSize)
     if (!handle) {
 	/*
 	 * Try based on current path by using dladdr.
+	 * We expect the tclkitdll in PLUGINS/nptcl/<tclkitdll>.
 	 * Grab any symbol - we just need one for reverse mapping
 	 */
 	char (* npgetmime)(void) =
@@ -142,8 +143,8 @@ NpLoadLibrary(HMODULE *tclHandle, char *dllName, int dllNameSize)
 	if (npgetmime && dladdr(npgetmime, &info)) {
 	    char *slash = strrchr(info.dli_fname, '/');
 	    if (slash) {
-		snprintf(libname, MAX_PATH, "%.*s/%s", slash - info.dli_fname,
-			info.dli_fname, TCL_KIT_DLL);
+		snprintf(libname, MAX_PATH, "%.*s/nptcl/%s",
+			slash - info.dli_fname, info.dli_fname, TCL_KIT_DLL);
 	    } else {
 		/*
 		 * No directory separator - assume current directory.

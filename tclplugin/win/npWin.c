@@ -68,12 +68,13 @@ NpLoadLibrary(HMODULE *tclHandle, char *dllName, int dllNameSize)
     if (!handle) {
 	/*
 	 * Try plugin basekit from plugin directory
+	 * We expect the tclkitdll in PLUGINS/nptcl/<tclkitdll>.
 	 */
 	TCHAR ourPath[MAX_PATH];
 	if ((nptclInst != NULL)
 		&& GetModuleFileName(nptclInst, ourPath, MAX_PATH)
 		&& PathRemoveFileSpec(ourPath)) {
-	    snprintf(libname, MAX_PATH, "%s/%s", ourPath, TCL_KIT_DLL);
+	    snprintf(libname, MAX_PATH, "%s/nptcl/%s", ourPath, TCL_KIT_DLL);
 	    NpLog("Attempt to load basekit dll (ourpath) '%s'\n", libname);
 	    handle = LoadLibrary(libname);
 	}

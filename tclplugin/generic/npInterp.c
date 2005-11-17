@@ -166,6 +166,13 @@ NpCreateMainInterp()
     }
 
     /*
+     * Set sharedlib in interp while we are here.  This will be used to
+     * base the location of the default pluginX.Y package in the stardll
+     * usage scenario.
+     */
+    Tcl_SetVar2(npInterp, "plugin", "sharedlib", dllName, TCL_GLOBAL_ONLY);
+
+    /*
      * The plugin doesn't directly call Tk C APIs - it's all managed at
      * the Tcl level, so we can just pkg req Tk here instead of calling
      * Tk_InitStubs.

@@ -8,7 +8,7 @@
 #	generic/np.h   (any version)
 #	win/npdll32.rc (major.minor only)
 AC_INIT([nptcl], [3.0])
-AC_DEFINE(PACKAGE_PATCHLEVEL, ["3.0.1"])
+AC_DEFINE(PACKAGE_PATCHLEVEL, ["3.0.2"])
 
 AC_CONFIG_AUX_DIR(tclconfig)
 

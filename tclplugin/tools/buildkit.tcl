@@ -16,6 +16,7 @@ package require vfs
 
 set noedir  [file dirname [info nameofexecutable]]
 set libdir  [file dirname $tcl_library]
+set windir  [file dirname [info script]]/../win
 set toollib [file dirname [info script]]
 set pluglib [file dirname [info script]]/../library
 set ext     [info sharedlibext]
@@ -327,6 +328,14 @@ proc xpi {xpi} {
 	file rename $::basekit $::dir/nptcl/
     }
 
+    set plughostdll ""
+    if {$::tcl_platform(platform) eq "windows"} {
+	puts "    Obtaining plughostctrl.dll ..."
+	file copy -force $::windir/pluginhostctrl.dll ./
+	set plughostdll pluginhostctrl.dll
+	lappend ::wrap $plughostdll
+    }
+
     set size [file size $::npdll]
     incr size [dirsize $::dir/nptcl $size]
     foreach file $::wrap {
@@ -335,6 +344,7 @@ proc xpi {xpi} {
     set map [list @NPAPIDLL@ [file tail $::npdll] \
 		 @NPTCL_SIZE@ $size \
 		 @VERSION@ $::version \
+		 @PLUGHOSTDLL@ $plughostdll \
 		]
 
     set js "install.js"

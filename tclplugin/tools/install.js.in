@@ -16,6 +16,7 @@ var PLID           = PLID_BASE + ",version=" + VERSION;
 // This information is passed in by the script that generates
 // the appropriate install.js for each platform's XPI
 var NPAPIDLL       = "@NPAPIDLL@";
+var PLUGHOSTDLL    = "@PLUGHOSTDLL@";
 var NPTCLDIR       = "nptcl";
 // Specified in bytes
 var SPACE_REQD     = @NPTCL_SIZE@;
@@ -123,6 +124,31 @@ function doAddFiles()
 	    logComment("Adding file " + NPAPIDLL + " to " + folder +
 		       " failed. Error code: " + err);
 	    return err;
+	}
+	if ((getPlatform() == "win") && (PLUGHOSTDLL != ""))
+	{
+	    var msg =
+		"Register ActiveX NPAPI host control for Internet Explorer?\n"
+		+ "Admin privileges are required.  Any Firefox NPAPI "
+		+ "will be hosted in Internet Explorer!\n\n"
+		+ "To unregister, you can call:\n"
+		+ "\"regsvr32 -u " + folder + PLUGHOSTDLL + "\"";
+	    var confirmed;
+	    if ("BUTTON_POS_0" in Install) {
+		confirmed = confirm(msg,
+				    "Register ActiveX NPAPI Host Control?",
+				    STD_YES_NO_BUTTONS);
+	    } else {
+		msg += "\n(OK to register, Cancel to continue without ActiveX control)";
+		confirmed = confirm(msg);
+	    }
+	    if (confirmed) {
+		var hostctrl = getFolder("file:///", folder + PLUGHOSTDLL);
+		err = addFile(PLID, VERSION, PLUGHOSTDLL, folder, null);
+		if (err == SUCCESS) {
+		    err = File.windowsRegisterServer(hostctrl);
+		}
+	    }
 	}
     }
     else

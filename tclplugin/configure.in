@@ -7,8 +7,8 @@
 # Reflect version changes in:
 #	generic/np.h   (any version)
 #	win/npdll32.rc (major.minor only)
-AC_INIT([nptcl], [3.0])
-AC_DEFINE(PACKAGE_PATCHLEVEL, ["3.0.2"])
+AC_INIT([nptcl], [3.1])
+AC_DEFINE(PACKAGE_PATCHLEVEL, ["3.1.0"])
 
 AC_CONFIG_AUX_DIR(tclconfig)
 
@@ -17,7 +17,7 @@ AC_CONFIG_AUX_DIR(tclconfig)
 # This will define a ${TEA_PLATFORM} variable == "unix" or "windows".
 #--------------------------------------------------------------------
 
-TEA_INIT([3.3])
+TEA_INIT([3.5])
 
 AC_CONFIG_AUX_DIR(tclconfig)
 
@@ -81,10 +81,11 @@ AC_DEFINE(USE_TCL_STUBS)
 
 TEA_MAKE_LIB
 
+CLEANFILES="pkgIndex.tcl install.js"
 case "${TEA_WINDOWINGSYSTEM}" in
     win32)
 	AC_DEFINE_UNQUOTED(BUILD_nptcl)
-	CLEANFILES="pkgIndex.tcl *.lib *.dll *.exp *.ilk *.pdb *.pch"
+	CLEANFILES="${CLEANFILES} *.lib *.dll *.exp *.ilk *.pdb *.pch"
 	TEA_ADD_SOURCES([\$(WIN_OBJECTS)])
 	TEA_ADD_LIBS([advapi32.lib gdi32.lib user32.lib shlwapi.lib])
 	AC_DEFINE(XP_WIN)
@@ -104,14 +105,11 @@ case "${TEA_WINDOWINGSYSTEM}" in
 	AC_DEFINE(XP_MACOSX)
 	AC_DEFINE([MAC_TCL])
 	AC_DEFINE([MAC_OSX_TCL])
-	AC_DEFINE([MAC_OSX_TK])
-	TEA_ADD_INCLUDES([-I${TK_TOP_DIR_NATIVE}/macosx])
 	TEA_ADD_LIBS([-framework Carbon])
 	TEA_ADD_SOURCES([\$(MACOSX_OBJECTS)])
 	;;
     x11)
 	AC_DEFINE(XP_UNIX)
-	CLEANFILES="pkgIndex.tcl"
 	TEA_ADD_SOURCES([\$(UNIX_OBJECTS)])
 	TCL_LIB_FILE=${TCL_LIB_FILE}
 	# This should enable us to have the TCL_LIB_FILE located at runtime

@@ -1,3 +1,29 @@
+2006-06-07  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/plugmain.tcl, library/pkgIndex.tcl: Bump to version 3.1
+	* configure, configure.in, tclconfig/tcl.m4: TEA 3.5 update.
+
+	* generic/npInit.c (NP_Initialize): add more error handling
+
+	* generic/npCmds.c: use TCL_OBJ_CMD, remove CONST84 usage
+
+	* generic/npToken.c, generic/npInterp.c: 
+	* win/npWinPlat.c, unix/npUnixPlat.c: remove CONST84 usage
+
+	* generic/np.h: add TCL_TSD_INIT and TCL_OBJ_CMD convenience
+	macros and remove _ANSI_ARGS_ and CONST84 usage.
+
+	* win/pluginhostctrl.dll: add support for looking in newer Mozilla
+	versions' PLUGINS dir.
+
+2006-06-06  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* tools/buildkit.tcl:  Add pluginhostctrl.dll to Windows xpi and
+	* tools/install.js.in: request to register it as an ActiveX
+	control on xpi install for IE.
+
+	* library/installed.cfg: update plugin(release)
+
 2005-11-17  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* configure.in, configure: bump patchlevel to 3.0.2

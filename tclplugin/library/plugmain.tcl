@@ -21,7 +21,7 @@ package require Tk 8.4
 
 # we provide plugin functionalities:
 # keep in sync with plugin version
-package provide plugin 3.0
+package provide plugin 3.1
 
 namespace eval ::plugin {
     # Set our base name (used for error reporting):

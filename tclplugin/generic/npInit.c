@@ -1,11 +1,11 @@
 /*
  * npinit.c --
  *
- *	Implements Windows plugin initialization.
+ *	Implements plugin initialization.
  *
- * CONTACT:		tclplugin-core@lists.sourceforge.net
+ * CONTACT:		tclplugin-core at lists.sourceforge.net
  *
- * Copyright (c) 2002-2005 ActiveState Corporation.
+ * Copyright (c) 2002-2006 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -17,6 +17,7 @@
  * Netscape Plugin APIs
  */
 #include "np.h"
+
 #include "npupp.h"
 
 
@@ -39,6 +40,7 @@ static NPError fillPluginFunctionTable(NPPluginFuncs* aNPPFuncs)
      */
 
     aNPPFuncs->version       = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
+    //aNPPFuncs->size          = sizeof(NPPluginFuncs);
     aNPPFuncs->newp          = NPP_New;
     aNPPFuncs->destroy       = NPP_Destroy;
     aNPPFuncs->setwindow     = NPP_SetWindow;
@@ -153,18 +155,43 @@ NP_Initialize(NPNetscapeFuncs* aNPNFuncs)
 NPError
 NP_Initialize(NPNetscapeFuncs* aNPNFuncs, NPPluginFuncs* aNPPFuncs)
 {
-  NPError rv = fillNetscapeFunctionTable(aNPNFuncs);
+    NPError rv = fillNetscapeFunctionTable(aNPNFuncs);
 
-  if (rv != NPERR_NO_ERROR) {
-      return rv;
-  }
+    if (rv != NPERR_NO_ERROR) {
+	return rv;
+    }
 
-  rv = fillPluginFunctionTable(aNPPFuncs);
-  if (rv != NPERR_NO_ERROR) {
-      return rv;
-  }
+    rv = fillPluginFunctionTable(aNPPFuncs);
+    if (rv != NPERR_NO_ERROR) {
+	return rv;
+    }
 
-  return NPP_Initialize();
+    return NPP_Initialize();
+}
+#elif defined(XP_MAC)
+// main ???
+NPError
+NP_Initialize(NPNetscapeFuncs* aNPNFuncs, NPPluginFuncs* aNPPFuncs,
+	NPP_ShutdownUPP* unloadUpp)
+{
+    NPError rv;
+
+    if (unloadUpp == NULL) {
+	return NPERR_INVALID_FUNCTABLE_ERROR;
+    }
+
+    rv = fillNetscapeFunctionTable(aNPNFuncs);
+    if (rv != NPERR_NO_ERROR) {
+	return rv;
+    }
+
+    rv = fillPluginFunctionTable(aNPPFuncs);
+    if (rv != NPERR_NO_ERROR) {
+	return rv;
+    }
+
+    *unloadUpp = NPP_Shutdown;
+    return NPP_Initialize();
 }
 #endif
 

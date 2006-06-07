@@ -105,7 +105,7 @@ NpRegisterToken(ClientData clientData, Tcl_Interp *interp, char *tableName)
                 tableName);
         NpPanic(panicBuf);
     }
-    hPtr = Tcl_CreateHashEntry(hTblPtr, (CONST84 char *) clientData, &isnew);
+    hPtr = Tcl_CreateHashEntry(hTblPtr, (CONST char *) clientData, &isnew);
     if (!isnew) {
         snprintf(panicBuf, PANIC_BUFSIZ,
 		"duplicate token key %ld in token table %s",
@@ -188,7 +188,7 @@ NpGetAndCheckToken(Tcl_Interp *interp, Tcl_Obj *objPtr, char *tableName,
     if (Tcl_GetLongFromObj(interp, objPtr, &longVal) != TCL_OK) {
 	return TCL_ERROR;
     }
-    hPtr = Tcl_FindHashEntry(hTblPtr, (CONST84 char *) longVal);
+    hPtr = Tcl_FindHashEntry(hTblPtr, (CONST char *) longVal);
     if (hPtr == (Tcl_HashEntry *) NULL) {
 	char buf[256];
 	snprintf(buf, 256, "invalid instance token \"%ld\" in table \"%s\"",

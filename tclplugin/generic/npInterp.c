@@ -3,11 +3,11 @@
  *
  *	Implements access to the main interpreter for the Tcl plugin.
  *
- * CONTACT:		tclplugin-core@lists.sourceforge.net
+ * CONTACT:		tclplugin-core at lists.sourceforge.net
  *
  * Copyright (c) 1995-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
- * Copyright (c) 2002-2005 ActiveState Corporation.
+ * Copyright (c) 2002-2006 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -156,7 +156,7 @@ NpCreateMainInterp()
 
     NpLog("tcl_Init(%p)\n", npInterp);
     if (tclKit_AppInit(npInterp) != TCL_OK) {
-	CONST84 char *msg = Tcl_GetVar(npInterp, "errorInfo", TCL_GLOBAL_ONLY);
+	CONST char *msg = Tcl_GetVar(npInterp, "errorInfo", TCL_GLOBAL_ONLY);
 	NpLog(">>> NpCreateMainInterp %s error:\n%s\n",
 		(tclKit_AppInit == Tcl_Init) ? "Tcl_Init" : "TclKit_AppInit",
 		msg);

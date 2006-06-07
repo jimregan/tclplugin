@@ -75,7 +75,7 @@ static LRESULT CALLBACK	ContainerProc _ANSI_ARGS_((HWND hwnd,
  */
 
 void
-NpPlatformMsg(CONST84 char *msg, char *title)
+NpPlatformMsg(CONST char *msg, char *title)
 {
     NpLog("MSG [%s]: %s\n", title, msg);
     MessageBox(NULL, msg, title, MB_OK);

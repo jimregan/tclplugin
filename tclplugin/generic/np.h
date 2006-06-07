@@ -4,11 +4,11 @@
  *	Declarations of functions and entry points for the Tcl Netscape
  *	plugin.
  *
- * CONTACT:		tclplugin-core@lists.sourceforge.net
+ * CONTACT:		tclplugin-core at lists.sourceforge.net
  *
  * Copyright (c) 1996-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
- * Copyright (c) 2002-2005 ActiveState Corporation.
+ * Copyright (c) 2002-2006 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -21,13 +21,20 @@
 
 #include <tcl.h>
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h> /* for getenv */
-#endif
-
 #if (TCL_MAJOR_VERSION < 8) \
 	|| ((TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION < 4))
 #error "Tcl Browser Plugin requires Tcl 8.4+"
+#endif
+
+#ifndef TCL_TSD_INIT
+#define TCL_TSD_INIT(keyPtr)	(ThreadSpecificData *)Tcl_GetThreadData((keyPtr), sizeof(ThreadSpecificData))
+#endif
+
+#define TCL_OBJ_CMD(cmd)	int (cmd)(ClientData clientData, \
+		Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
+
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h> /* for getenv */
 #endif
 
 #ifdef WIN32
@@ -84,7 +91,7 @@
 #	include <unistd.h>
 #  endif
 
-#  if defined(__hpux)
+#  if (!defined(HAVE_DLADDR) && defined(__hpux))
 
 /* HPUX requires shl_* routines */
 #    include <dl.h>
@@ -121,7 +128,7 @@
  * Shared functions:
  */
 
-EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
+EXTERN void		NpXtStopNotifier (void);
 
 #endif /* PLATFORM DEFS */
 
@@ -146,14 +153,6 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 #undef TCL_STORAGE_CLASS
 #define TCL_STORAGE_CLASS DLLEXPORT
 #endif /* BUILD_nptcl */
-
-/*
- * Tcl 8.4 introduced better CONST-ness in the APIs, but we use CONST84 in
- * some cases for compatibility with earlier Tcl headers to prevent warnings.
- */
-#ifndef CONST84
-#  define CONST84
-#endif
 
 /*
  * Netscape APIs (needs system specific headers)
@@ -184,9 +183,9 @@ EXTERN void		NpXtStopNotifier _ANSI_ARGS_((void));
 #define NP_LOG		((char *) NULL)
 #endif
 
-EXTERN void		NpLog _ANSI_ARGS_(TCL_VARARGS(CONST char *, format));
-EXTERN void		NpStartLog _ANSI_ARGS_((CONST char *filename));
-EXTERN void		NpStopLog _ANSI_ARGS_((void));
+EXTERN void		NpLog TCL_VARARGS(CONST char *, format);
+EXTERN void		NpStartLog(CONST char *filename);
+EXTERN void		NpStopLog(void);
 
 /*
  * Procedures shared between various modules in the plugin:
@@ -195,60 +194,55 @@ EXTERN void		NpStopLog _ANSI_ARGS_((void));
 /*
  * nptcl.c
  */
-extern int		NpInit _ANSI_ARGS_((Tcl_Interp *interp));
-extern void		NpShutdown _ANSI_ARGS_((Tcl_Interp *interp));
+extern int		NpInit(Tcl_Interp *interp);
+extern void		NpShutdown(Tcl_Interp *interp);
 
 /*
  * npinterp.c
  */
-extern void		NpDestroyMainInterp _ANSI_ARGS_((void));
-extern Tcl_Interp	*NpGetMainInterp _ANSI_ARGS_((void));
-extern Tcl_Interp	*NpCreateMainInterp _ANSI_ARGS_((void));
+extern void		NpDestroyMainInterp(void);
+extern Tcl_Interp	*NpGetMainInterp(void);
+extern Tcl_Interp	*NpCreateMainInterp(void);
 
 /*
  * npstream.c
  */
-extern int		NpTclStreams _ANSI_ARGS_((int incrVal));
-extern int		NpEnter _ANSI_ARGS_((CONST char *msg));
-extern void		NpLeave _ANSI_ARGS_((CONST char *msg,
-			    int oldMode));
-EXTERN void		NpPanic _ANSI_ARGS_((char *msg));
+extern int		NpTclStreams(int incrVal);
+extern int		NpEnter(CONST char *msg);
+extern void		NpLeave(CONST char *msg, int oldMode);
+EXTERN void		NpPanic(char *msg);
 
 /*
  * np***plat.c
  */
-extern int		NpPlatformInit _ANSI_ARGS_((Tcl_Interp *interp,
-			    int externalFlag));
-extern void		NpPlatformDestroy _ANSI_ARGS_((NPP This));
-extern void		NpPlatformMsg _ANSI_ARGS_((CONST84 char *msg,
-			    char *title));
-extern void		NpPlatformNew _ANSI_ARGS_((NPP instance));
-extern void		NpPlatformSetWindow _ANSI_ARGS_((NPP This,
-			    NPWindow *window));
-extern void		NpPlatformShutdown _ANSI_ARGS_((void));
+extern int		NpPlatformInit(Tcl_Interp *interp, int externalFlag);
+extern void		NpPlatformDestroy(NPP This);
+extern void		NpPlatformMsg(CONST char *msg, char *title);
+extern void		NpPlatformNew(NPP instance);
+extern void		NpPlatformSetWindow(NPP This, NPWindow *window);
+extern void		NpPlatformShutdown(void);
 extern int		NpLoadLibrary(HMODULE *tclHandle,
 				char *dllFilename, int dllFilenameSize);
 
 /*
  * nptoken.c
  */
-extern void		NpInitTokenTables _ANSI_ARGS_((Tcl_Interp *interp));
-extern void		NpDeleteTokenTables _ANSI_ARGS_((Tcl_Interp *interp));
-extern void		NpRegisterToken _ANSI_ARGS_((ClientData clientData,
-			    Tcl_Interp *interp, char *tokenTableID));
-extern void		NpUnregisterToken _ANSI_ARGS_((Tcl_Interp *interp,
-			    void *token, char *tokenTableID));
-extern char		*NpGetTokenName _ANSI_ARGS_((ClientData clientData,
-			    Tcl_Interp *interp, char *tableName));
-extern int		NpGetAndCheckToken _ANSI_ARGS_((Tcl_Interp *interp,
-			    Tcl_Obj *token, char *tableName,
-			    ClientData *clientDataPtr));
+extern void		NpInitTokenTables(Tcl_Interp *interp);
+extern void		NpDeleteTokenTables(Tcl_Interp *interp);
+extern void		NpRegisterToken(ClientData clientData,
+				Tcl_Interp *interp, char *tokenTableID);
+extern void		NpUnregisterToken(Tcl_Interp *interp,
+				void *token, char *tokenTableID);
+extern char		*NpGetTokenName(ClientData clientData,
+				Tcl_Interp *interp, char *tableName);
+extern int		NpGetAndCheckToken(Tcl_Interp *interp, Tcl_Obj *token,
+				char *tableName, ClientData *clientDataPtr);
 
 /*
  * npcmd.c
  */
-extern int		PnInit _ANSI_ARGS_((Tcl_Interp *interp));
-extern int		PnSafeInit _ANSI_ARGS_((Tcl_Interp *interp));
+extern int		PnInit(Tcl_Interp *interp);
+extern int		PnSafeInit(Tcl_Interp *interp);
 
 #if 0
 # undef TCL_STORAGE_CLASS

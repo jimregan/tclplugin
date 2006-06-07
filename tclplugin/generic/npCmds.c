@@ -27,30 +27,14 @@
  * Command functions:
  */
 
-static int		PnCloseStreamCmd _ANSI_ARGS_((
-                            ClientData dummy, Tcl_Interp *interp,
-			    int objc, Tcl_Obj *CONST objv[]));
-static int		PnDisplayStatusCmd _ANSI_ARGS_((
-                            ClientData dummy, Tcl_Interp *interp,
-			    int objc, Tcl_Obj *CONST objv[]));
-static int		PnWriteToStreamObjCmd _ANSI_ARGS_((
-                            ClientData dummy, Tcl_Interp *interp,
-			    int objc, Tcl_Obj *CONST objv[]));
-static int		PnGetURLCmd _ANSI_ARGS_((
-                            ClientData dummy, Tcl_Interp *interp,
-			    int objc, Tcl_Obj *CONST objv[]));
-static int		PnOpenStreamCmd _ANSI_ARGS_((
-                            ClientData dummy, Tcl_Interp *interp,
-			    int objc, Tcl_Obj *CONST objv[]));
-static int		PnPostURLObjCmd _ANSI_ARGS_((
-			    ClientData dummy, Tcl_Interp *interp,
-                            int objc, Tcl_Obj *CONST objv[]));
-static int		PnUserAgentCmd _ANSI_ARGS_((
-			    ClientData clientData, Tcl_Interp *interp,
-			    int objc, Tcl_Obj *CONST objv[]));
-static int		PnVersionCmd _ANSI_ARGS_((
-			    ClientData clientData, Tcl_Interp *interp,
-			    int objc, Tcl_Obj *CONST objv[]));
+static TCL_OBJ_CMD(PnDisplayStatusCmd);
+static TCL_OBJ_CMD(PnOpenStreamCmd);
+static TCL_OBJ_CMD(PnWriteToStreamObjCmd);
+static TCL_OBJ_CMD(PnCloseStreamCmd);
+static TCL_OBJ_CMD(PnGetURLCmd);
+static TCL_OBJ_CMD(PnPostURLObjCmd);
+static TCL_OBJ_CMD(PnUserAgentCmd);
+static TCL_OBJ_CMD(PnVersionCmd);
 
 /*
  *----------------------------------------------------------------------
@@ -68,13 +52,7 @@ static int		PnVersionCmd _ANSI_ARGS_((
  *----------------------------------------------------------------------
  */
 
-static int
-PnDisplayStatusCmd(
-    ClientData dummy,		/* Not used. */
-    Tcl_Interp *interp,		/* Current interpreter. */
-    int objc,			/* Number of arguments. */
-    Tcl_Obj *CONST objv[]	/* The argument objects. */
-    )
+static TCL_OBJ_CMD(PnDisplayStatusCmd)
 {
     NPP instance;
 
@@ -116,13 +94,7 @@ PnDisplayStatusCmd(
  *----------------------------------------------------------------------
  */
 
-static int
-PnOpenStreamCmd(
-    ClientData dummy,		/* Not used. */
-    Tcl_Interp *interp,		/* Current interpreter. */
-    int objc,			/* Number of arguments. */
-    Tcl_Obj *CONST objv[]	/* The argument objects. */
-    )
+static TCL_OBJ_CMD(PnOpenStreamCmd)
 {
     NPP instance;
     char *mtype, *frame;
@@ -202,13 +174,7 @@ PnOpenStreamCmd(
  *----------------------------------------------------------------------
  */
 
-static int
-PnWriteToStreamObjCmd(
-    ClientData dummy,		/* Not used. */
-    Tcl_Interp *interp,		/* Current interpreter. */
-    int objc,			/* Number of arguments. */
-    Tcl_Obj *CONST objv[]	/* The argument objects. */
-    )
+static TCL_OBJ_CMD(PnWriteToStreamObjCmd)
 {
     NPStream *streamPtr;
     NPP instance;
@@ -266,13 +232,7 @@ PnWriteToStreamObjCmd(
  *----------------------------------------------------------------------
  */
 
-static int
-PnCloseStreamCmd(
-    ClientData dummy,		/* Not used. */
-    Tcl_Interp *interp,		/* Current interpreter. */
-    int objc,			/* Number of arguments. */
-    Tcl_Obj *CONST objv[]	/* The argument objects. */
-    )
+static TCL_OBJ_CMD(PnCloseStreamCmd)
 {
     NPP instance;
     NPStream *streamPtr;
@@ -356,16 +316,10 @@ PnCloseStreamCmd(
  *----------------------------------------------------------------------
  */
 
-static int
-PnGetURLCmd(
-    ClientData dummy,		/* Not used. */
-    Tcl_Interp *interp,		/* Current interpreter. */
-    int objc,			/* Number of arguments. */
-    Tcl_Obj *CONST objv[]	/* The argument objects. */
-    )
+static TCL_OBJ_CMD(PnGetURLCmd)
 {
     NPP instance;
-    CONST84 char *url, *frame = NULL;
+    CONST char *url, *frame = NULL;
 
     NpLog("ENTERING PnGetUrl\n");
 
@@ -420,13 +374,7 @@ PnGetURLCmd(
  *----------------------------------------------------------------------
  */
 
-static int
-PnPostURLObjCmd(
-    ClientData dummy,		/* Not used. */
-    Tcl_Interp *interp,		/* Current interpreter. */
-    int objc,			/* Number of arguments. */
-    Tcl_Obj *CONST objv[]	/* The argument objects. */
-    )
+static TCL_OBJ_CMD(PnPostURLObjCmd)
 {
     NPP instance;
     int dataLen, len;
@@ -494,13 +442,7 @@ PnPostURLObjCmd(
  *----------------------------------------------------------------------
  */
 
-static int
-PnUserAgentCmd(
-    ClientData dummy,		/* Not used. */
-    Tcl_Interp *interp,		/* Current interpreter. */
-    int objc,			/* Number of arguments. */
-    Tcl_Obj *CONST objv[]	/* The argument objects. */
-    )
+static TCL_OBJ_CMD(PnUserAgentCmd)
 {
     NPP instance;
     char *userAgentPtr;
@@ -557,13 +499,7 @@ PnUserAgentCmd(
  *----------------------------------------------------------------------
  */
 
-static int
-PnVersionCmd(
-    ClientData dummy,		/* Not used. */
-    Tcl_Interp *interp,		/* Current interpreter. */
-    int objc,			/* Number of arguments. */
-    Tcl_Obj *CONST objv[]	/* The argument objects. */
-    )
+static TCL_OBJ_CMD(PnVersionCmd)
 {
     int pMaj, pMin, bMaj, bMin;
     Tcl_Obj *objPtr;

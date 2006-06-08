@@ -45,7 +45,7 @@ set excludes ""
 set xpi      ""
 set wrap     ""
 set zip      ""
-set version  "3.0"
+set version  "3.1"
 set wish     [auto_execok wish]
 set install_js $toollib/install.js.in
 
@@ -297,11 +297,16 @@ proc xpi {xpi} {
     if {$xpi eq ""} { return }
     if {$xpi eq 1} {
 	set xpi "$::prefix[string map {. {}} $::version]-"
-	if {$::tcl_platform(platform) eq "windows"} {
-	    append xpi "win32"
+	if {[catch {package require platform}]} {
+	    puts "No 'platform' package - using tcl_platform"
+	    if {$::tcl_platform(platform) eq "windows"} {
+		append xpi "win32"
+	    } else {
+		# Unix currently needs a basekit exe as well
+		append xpi "$::tcl_platform(os)"
+	    }
 	} else {
-	    # Unix currently needs a basekit exe as well
-	    append xpi "$::tcl_platform(os)"
+	    append xpi [platform::identify]
 	}
 	append xpi ".xpi"
     }

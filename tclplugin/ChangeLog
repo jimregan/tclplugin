@@ -1,5 +1,7 @@
 2006-06-07  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* tools/buildkit.tcl (xpi): use platform::identify if available
+
 	* library/plugmain.tcl, library/pkgIndex.tcl: Bump to version 3.1
 	* configure, configure.in, tclconfig/tcl.m4: TEA 3.5 update.
 

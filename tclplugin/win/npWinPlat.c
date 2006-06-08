@@ -139,13 +139,20 @@ NpPlatformSetWindow(NPP instance, NPWindow *window)
      */
 
     curProc = (WNDPROC) GetWindowLongPtr(hwnd, GWLP_WNDPROC);
+    NpLog("NpPlatformSetWindow instance %p hwnd %p WNDPROC == %p (ContainerProc == %p)\n",
+	    instance, hwnd, curProc, ContainerProc);
     if (curProc == (WNDPROC) ContainerProc) {
         return;
     }
 
     for (cPtr = firstContainerPtr; cPtr != NULL; cPtr = cPtr->nextPtr) {
         if (cPtr->instance == instance) {
-            break;
+	    if (cPtr->hwnd == hwnd) {
+		/* we are already subclassed - return */
+		return;
+	    } else {
+		break;
+	    }
         }
     }
 
@@ -160,12 +167,8 @@ NpPlatformSetWindow(NPP instance, NPWindow *window)
         firstContainerPtr = cPtr;
     }
 
-#if 1
-    /*
-     * NPP_SetWindow calls this - is this necessary?
-     */
-    Tcl_ServiceAll();
-#endif
+    NpLog("NpPlatformSetWindow instance %p SUBCLASS %p -> WNDPROC %p\n",
+	    instance, hwnd, ContainerProc);
     (void) SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR) ContainerProc);
 }
 
@@ -226,20 +229,16 @@ NpPlatformDestroy(NPP instance)
     }
 
     /*
-     * Unsubclass only if the current window proc is what we installed.
+     * XXX Unsubclass only if the current window proc is what we installed.
+     * It appears we need to uninstall ourselves regardless, as Firefox
+     * subclasses us again and doesn't undo that prior to this call - hobbs
      */
 
     hwnd = cPtr->hwnd;
     curProc = (WNDPROC) GetWindowLongPtr(hwnd, GWLP_WNDPROC);
-    if (curProc == (WNDPROC) ContainerProc) {
-	(void) SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR) cPtr->oldProc);
-    } else {
-	NpLog("NpPlatformDestroy: "
-		"SetWindowLong(%p, WNDPROC, %p) not called (%p != %p)\n",
-		hwnd, cPtr->oldProc, curProc, ContainerProc);
-    }
-
-    NpLog("NpPlatformDestroy instance %p hwnd %p\n", instance, hwnd);
+    NpLog("NpPlatformDestroy instance %p SetWindow %p to WNDPROC %p (was %p, should be %p)\n",
+	    instance, hwnd, cPtr->oldProc, curProc, ContainerProc);
+    (void) SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR) cPtr->oldProc);
 
     ckfree((char *) cPtr);
 }
@@ -268,8 +267,8 @@ ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     ContainerInfo *ptr, *prevPtr = NULL;
     WNDPROC oldProc;
 
-    NpLog("CONTAINERPROC message 0x%x wParam 0x%x hwnd %p\n",
-	    message, wParam, hwnd);
+    NpLog("CONTAINERPROC %p msg 0x%x wParam 0x%x hwnd %p\n",
+	    ContainerProc, message, wParam, hwnd);
 
     for (ptr = firstContainerPtr; ptr != NULL; ptr = ptr->nextPtr) {
 	if (ptr->hwnd == hwnd) {
@@ -281,9 +280,8 @@ ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     if (!ptr) {
 	/*
 	 * This used to be a panic condition, but it was changed to call
-	 * DefWindowProc.  The panics occured after moving to AT 8.4.11.2
-	 * (threaded), so this may need further examination (possible
-	 * threading bug, possibly always OK to pass to DefWindowProc).
+	 * DefWindowProc.  The panics can occur in unsafe threaded builds, as
+	 * IE uses a separate thread for each window.
 	 */
         NpLog("ContainerProc: hwnd %p not recognized - pass to DefWindowProc",
 		hwnd);
@@ -345,6 +343,8 @@ ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	    } else {
 		firstContainerPtr = ptr->nextPtr;
 	    }
+	    NpLog("CONTAINERPROC %p msg 0x%x (WM_DESTROY) hwnd %p -> %p\n",
+		    ContainerProc, message, wParam, hwnd, oldProc);
 	    SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR) oldProc);
 	    ckfree((char*) ptr);
 	    break;

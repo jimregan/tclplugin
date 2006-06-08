@@ -1,5 +1,10 @@
 2006-06-07  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* win/npWinPlat.c (NpPlatformSetWindow): ensure we don't subclass
+	the same hwnd more than once.  Don't bother with Tcl_ServiceAll.
+	(NpPlatformDestroy): unsubclass no matter what, as Firefox has
+	some wacky subclass semantics, and this works.
+
 	* tools/buildkit.tcl (xpi): use platform::identify if available
 
 	* library/plugmain.tcl, library/pkgIndex.tcl: Bump to version 3.1

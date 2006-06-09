@@ -1,5 +1,9 @@
 2006-06-09  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* library/browser.tcl, library/utils/cfg.tcl, library/utils/log.tcl:
+	* library/utils/rpi.tcl, library/utils/url.tcl, library/utils/wait.tcl:
+	* library/utils/policy.tcl: use 8.4 'eq/ne' ops.
+
 	* library/plugmain.tcl (npShutDown): don't bother with 'destroy .'
 
 	* generic/np.h:       add modifications towards better thread-safety

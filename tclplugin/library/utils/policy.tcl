@@ -126,7 +126,7 @@ namespace eval ::safe {
 
 	set pname [PolicyName $slave]
 
-        if {[string equal {} $policy]} {
+        if {$policy eq {}} {
 	    if {[Exists $pname]} {
 		return [Set $pname]
 	    }
@@ -137,7 +137,7 @@ namespace eval ::safe {
 
 	if {[Exists $pname]} {
 	    set current [Set $pname]
-	    if {[string equal $args $current]} {
+	    if {$args eq $current} {
 		# same arguments, nothing to do
 		return $current
 	    } else {
@@ -245,7 +245,7 @@ namespace eval ::safe {
     proc interpAlias {slave nameInSlave nameInMaster args} {
 	::pluglog::log $slave "new alias: \"$nameInSlave\" -> (invoke) \"$nameInMaster $args\""
 	set previous [interp alias $slave $nameInSlave]
-	if {![string equal $previous ""]} {
+	if {$previous ne ""} {
 	    ::pluglog::log $slave "replacing previous alias: \"$previous\""
 	}
 	interp alias $slave $nameInSlave \
@@ -267,7 +267,7 @@ namespace eval ::safe {
     # save the errorInfo, unless there is one already
 
     proc SaveErrorInfo {} {
-	if {[string equal [set [namespace current]::errorInfo] ""]} {
+	if {[set [namespace current]::errorInfo] eq ""} {
 	    global errorInfo
 	    set [namespace current]::errorInfo $errorInfo
 	}
@@ -288,7 +288,7 @@ namespace eval ::safe {
 	ResetErrors
 	# Check if we want the generic alias (which just invokes
 	# the hidden command of the same name in the slave)
-	if {[string equal $command {}]} {
+	if {$command eq {}} {
 	    if {[catch {eval interp invokehidden [list $slave] \
 			    $alias $argsList $args} res]} {
 		::pluglog::log $slave "error in slave while executing \"$alias $args\":\
@@ -298,7 +298,7 @@ namespace eval ::safe {
 	} else {
 	    if {[catch {uplevel #0 $command [list $slave] $argsList $args} res]} {
 		variable errorMessage
-		if {[string equal $errorMessage ""]} {
+		if {$errorMessage eq ""} {
 		    # no special error message was set,
 		    # the current message is maybe unsafe
 		    # We check if its a direct argument mismatch tough:
@@ -330,7 +330,7 @@ namespace eval ::safe {
 
     proc error {msg {more_msg ""}} {
 	variable errorMessage;
-	if {[string equal $more_msg ""]} {
+	if {$more_msg eq ""} {
 	    set more_msg "in \"[info level -1]\"";
 	}
 	set errorMessage $more_msg

@@ -65,7 +65,7 @@ namespace eval ::url {
 		return -code error \
 		    "invalid url \"$url\": unknown protocol $proto"
 	    }
-	    if {[string equal $port ""]} {
+	    if {$port eq ""} {
 		set port $tabProtos($proto)
 	    } elseif {[catch {set port [expr {int($port)}]}]} {
 		if {[file exists $host:$port]} {
@@ -90,14 +90,14 @@ namespace eval ::url {
     # The inverse of "parse": build a URL from components:
 
     proc format {proto host port path key} {
-	if {[string equal $host ""]} {
-	    if {[string equal $proto file]} {
+	if {$host eq ""} {
+	    if {$proto eq "file"} {
 		return "$proto:/$path$key"
 	    } else {
 		return "$proto:$path$key"
 	    }
 	} else {
-	    if {[string equal $port ""]} {
+	    if {$port eq ""} {
 		return "$proto://$host/$path$key"
 	    } else {
 		return "$proto://$host:$port/$path$key"
@@ -131,7 +131,7 @@ namespace eval ::url {
 
 	    # if url2 is empty we have to return origin path less one level
 	    # with trailing /
-	    if {[string equal $url2 ""]} {
+	    if {$url2 eq ""} {
 		if {[llength $pathL] == 0} {
 		    return [format $proto $host $port {} {}]
 		} else {
@@ -151,13 +151,13 @@ namespace eval ::url {
 	    }
 
 	    foreach newP [split $url2 /] {
-		if {[string equal $newP ""]} {
+		if {$newP eq ""} {
 		    # Leading / or two consecutive // -- start from top.
 		    set pathL {}
-		} elseif {[string equal $newP "."]} {
+		} elseif {$newP eq "."} {
 		    # "./" -- Means nothing, skip.
 		    continue
-		} elseif {[string equal $newP ".."]} {
+		} elseif {$newP eq ".."} {
 		    # ".." -- Go up one dir.
 		    set pathL [lrange $pathL 0 [expr {[llength $pathL]-2}]]
 		} else {

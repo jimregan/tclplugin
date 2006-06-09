@@ -3,11 +3,11 @@
 #	Application specific implementation of the APIs,
 #	Tcl Plugin implementation.
 #
-# CONTACT:      tclplugin-core@lists.sourceforge.net
+# CONTACT:      tclplugin-core at lists.sourceforge.net
 #
 # Copyright (c) 1996-1997 Sun Microsystems, Inc.
 # Copyright (c) 2000 by Scriptics Corporation.
-# Copyright (c) 2002-2004 ActiveState Corporation.
+# Copyright (c) 2002-2006 ActiveState Software Inc.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -121,7 +121,7 @@ proc ${::cfg::implNs}::IUnset {slave args} {
 
 # The alias that the slave will use to get controlled access to the state:
 proc ${::cfg::implNs}::IGetAlias {slave {attribute ""}} {
-    if {[string equal "" $attribute]} {
+    if {$attribute eq ""} {
 	# everything is wanted
 	set res {}
 	foreach attribute $::cfg::safeAttributes {
@@ -342,7 +342,7 @@ proc ${::cfg::implNs}::SetWindow {slave win x y width height \
     if {[iexists $slave window]} {
 	# Check if the window is the same.
 	set oldwin [iget $slave window]
-	if {![string equal $oldwin $win]} {
+	if {$oldwin ne $win} {
 	    # On Unix (at least) Netscape (specially NS3)
 	    # tend to "change" the X window sometimes
 	    # (particularly when you resize but sometimes at
@@ -360,7 +360,7 @@ proc ${::cfg::implNs}::SetWindow {slave win x y width height \
 	}
 
 	# Check if something actually changed
-	if {[string equal [iget $slave windowGeometry] $winGeom]} {
+	if {[iget $slave windowGeometry] eq $winGeom} {
 	    ::pluglog::log $slave "Bogus setWindow with nothing new ?"
 	} else {
 	    # This is a resize event:
@@ -649,7 +649,7 @@ proc ${::cfg::implNs}::WriteStream {slave stream length chunk} {
 
     set handler [iget $slave stream,$stream,writeHandler]
 
-    if {![string equal $handler ""]} {
+    if {$handler ne ""} {
 	::pluglog::log $slave \
 	    "evaling write handler $handler $slave $stream $length $chunk"
 	eval [linsert $handler end $slave $stream $length $chunk]
@@ -752,7 +752,7 @@ proc ${::cfg::implNs}::InitState {slave originURL} {
 
     ISet $slave rawOriginURL $originURL
 
-    if {[string equal $originURL ""]} {
+    if {$originURL eq ""} {
 	# Empty URL == UNKNOWN
 	foreach var {URL Proto Host Port Path Key HomeDirURL SocketHost} {
 	    # We intentionally put a space in here so the field
@@ -781,7 +781,7 @@ proc ${::cfg::implNs}::InitState {slave originURL} {
 	# We compute what host to use in socket requests with special
 	# handling for "file:" URLs that have no specified host.
 
-	if {[string equal $Proto "file"] && [string equal $Host ""]} {
+	if {$Proto eq "file" && $Host eq ""} {
 	    ISet $slave originSocketHost localhost
 	} else {
 	    ISet $slave originSocketHost $Host
@@ -867,7 +867,7 @@ proc ${::cfg::implNs}::DonePageOrigin {slave stream reason data} {
     # Remove the 'lock' on originURL
     IUnset $slave originURL
 
-    if {[string equal $reason "EOF"]} {
+    if {$reason eq "EOF"} {
 	::pluglog::log $slave "got page source url ($stream): \"$data\""
 	InitState $slave $data
     } else {
@@ -918,7 +918,7 @@ proc ${::cfg::implNs}::installArgs {slave arguments} {
 	# Special handling for height and width for backward compatibility
 	# (used in ResizeWindow)   - removed until proved necessary.
 	#foreach v {height width} {
-	#    if {[string equal $ntag $v]} {
+	#    if {$ntag eq $v} {
 	#	ISet $slave ${v}Set $value
 	#	break
 	#    }
@@ -1093,7 +1093,7 @@ proc ${::cfg::implNs}::AddToScript {slave script} {
 # Start a tclet coming from a stream:
 
 proc ${::cfg::implNs}::EvalInTclet {slave stream reason data} {
-    if {[string equal $reason "EOF"]} {
+    if {$reason eq "EOF"} {
 	if {[string length $data] == 0} {
 	    NotifyError $slave "document [iget $slave originURL]\
 			contains no data"
@@ -1174,26 +1174,26 @@ proc ${::cfg::implNs}::CommonFetcher \
     {op slave url data fromFile newCB writeCB endCB aTimeout} {
 
     # Compute the various callbacks:
-    if {[string equal $newCB {}]} {
+    if {$newCB eq {}} {
 	set newCallBackHandler {}
     } else {
 	set newCallBackHandler [list streamCallBackHandler $newCB]
     }
 
-    if {[string equal $writeCB {}]} {
+    if {$writeCB eq {}} {
 	set writeCallBackHandler {}
     } else {
 	set writeCallBackHandler [list streamCallBackHandler $writeCB]
     }
 
-    if {[string equal $endCB {}]} {
+    if {$endCB eq {}} {
 	set blocking 1
 	set token [::wait::token]
 	set endCallBackHandler [list genericEndHandler $token]
 	# Check the validity of the timeout argument
 
 	# If no timeout was specified, use the default value:
-	if {[string equal $aTimeout {}]} {
+	if {$aTimeout eq {}} {
 	    variable timeout
 	    set aTimeout $timeout
 	} elseif {![string is integer -strict $aTimeout]} {
@@ -1257,7 +1257,7 @@ proc ${::cfg::implNs}::streamCallBackHandler {callback slave stream args} {
 proc ${::cfg::implNs}::genericEndHandler {token slave stream reason data} {
     ::pluglog::log $slave \
 	"calling endGenericHandler $slave $stream $reason"
-    if {[string equal $reason "EOF"]} {
+    if {$reason eq "EOF"} {
 	::wait::release $token $slave "endGenericHandler" ok $data
     } else {
 	::wait::release $token $slave "endGenericHandler" error \

@@ -8,7 +8,7 @@
 #
 # General Remote Procedure Invocation package (Class).
 #
-#         Developped for the Tcl Plugin, based on previous work
+#         Developed for the Tcl Plugin, based on previous work
 #         done during Laurent Demailly's PhD on multi-agents control system.
 #
 # Key Features :
@@ -22,7 +22,7 @@
 #      the answer which will finally return to A, and everything works
 #      ok and in the  right order!
 #    + All the Tcl exceptions and special return codes are passed
-#      transparently (it is really like and remote eval).
+#      transparently (it is really like remote eval).
 #    + Supports multi-clients per server and any combinations of any
 #      number of servers and clients per process/interp
 # Missing features:
@@ -82,7 +82,7 @@ namespace eval ::rpi {
 # returns it's value
 # Empty or not given attribute will return the a-list of public attributes
 proc ::rpi::iget {this {attribute ""}} {
-    if {[string equal $attribute ""]} {
+    if {$attribute eq ""} {
 	variable PublicGetAttributes
 	set res {}
 	foreach attribute $PublicGetAttributes {
@@ -190,7 +190,7 @@ proc ::rpi::newServer {{port 0} {myaddr {}}} {
     # (make sure we listen only on localhost loopback wherever possible)
 
     # Lets use the myaddr argument only if provided.
-    if {[string equal {} $myaddr]} {
+    if {$myaddr eq {}} {
 	set socket [socket -server\
 			[list [namespace current]::Accept $this] $port]
     } else {
@@ -253,7 +253,7 @@ proc ::rpi::serverWaitConnect {this {varName {}}} {
     # If we are given a varname we'll use it as the token
     # and Accept will store the peer in that varname just
     # before releasing.
-    if {[string equal $varName {}]} {
+    if {$varName eq {}} {
 	# use a token not starting we :: so Accept will not
 	# try to store any result in it
 	set token WT_${this}
@@ -277,7 +277,7 @@ proc ::rpi::serverWaitConnect {this {varName {}}} {
 proc ::rpi::newClient {host port {myaddr {}}} {
     set this [New cli]
     # Lets use the myaddr argument only if provided.
-    if {[string equal {} $myaddr]} {
+    if {$myaddr eq {}} {
 	set socket [socket $host $port]
     } else {
 	set socket [socket -myaddr $myaddr $host $port]
@@ -321,7 +321,7 @@ proc ::rpi::invoke {this script {aReference {}} {aTimeout {}}} {
     incr MsgNum
 
     # If no reference argument was given (or empty), lets generate one
-    if {[string equal $aReference {}]} {
+    if {$aReference eq {}} {
 	set aReference $MsgNum
     }
 
@@ -331,7 +331,7 @@ proc ::rpi::invoke {this script {aReference {}} {aTimeout {}}} {
 
     # If no timeout argument was given, lets use the current
     # 'class' timeout:
-    if {[string equal $aTimeout {}]} {
+    if {$aTimeout eq {}} {
 	set aTimeout $timeout
     }
 
@@ -350,7 +350,7 @@ proc ::rpi::spawn {this script {aReference {}}} {
     incr MsgNum
 
     # If no reference argument was given (or empty), lets generate one
-    if {[string equal $aReference {}]} {
+    if {$aReference eq {}} {
 	set aReference $MsgNum
     }
 

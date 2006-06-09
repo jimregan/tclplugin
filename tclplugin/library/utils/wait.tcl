@@ -115,7 +115,7 @@ namespace eval ::wait {
 	variable Rcount
 	variable WaitStack
 
-	set scriptGiven [string compare $script {}]
+	set scriptGiven [string length $script]
 
 	set l [llength $WaitStack]
 
@@ -140,7 +140,7 @@ namespace eval ::wait {
 	while {$i<$l} {
 	    set vname [lindex $WaitStack $i]
 	    set vstat [lindex [set $vname] 0]
-	    if {[string equal $vstat "waiting"]} {
+	    if {$vstat eq "waiting"} {
 		# Found !
 		::pluglog::log $logname "WALL $i -> $vname for $msg : $InWait"
 		vwait $vname
@@ -149,7 +149,6 @@ namespace eval ::wait {
 	    }
 	    incr i
 	}
-
 
 	if {$scriptGiven} {
 	    ::pluglog::log $logname "WALL DONE for $msg: $InWait / $Rcount - re-queing"

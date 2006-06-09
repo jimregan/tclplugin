@@ -1,7 +1,6 @@
 # log.tcl --
 #
-#	A general logging package
-#       (used by the Tcl plugin).
+#	A general logging package (used by the Tcl plugin).
 #
 # ORIGINAL AUTHORS:	Jacob Levy			Laurent Demailly
 #
@@ -228,7 +227,7 @@ proc ::pluglog::RegTag {w tagname attribs} {
     # configure tag
     eval [list $w tag configure $tagname] $attribs
     # restore tag positions
-    if {![string equal "" $rg]} {eval [list $w tag add $tagname] $rg}
+    if {$rg ne ""} {eval [list $w tag add $tagname] $rg}
 }
 
 proc ::pluglog::addTxt {txt taglist} {

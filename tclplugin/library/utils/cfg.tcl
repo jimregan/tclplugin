@@ -103,13 +103,13 @@ proc ::cfg::init {baseName {masterConfigFile ""} {aConfigDir ""}} {
 
     set name $baseName
 
-    if {![string equal $aConfigDir ""]} {
+    if {$aConfigDir ne ""} {
 	# arg given:
 	::pluglog::log $name "setting config dir to $aConfigDir"
 	set configDir $aConfigDir
     }
 
-    if {[string equal $masterConfigFile ""]} {
+    if {$masterConfigFile eq ""} {
 	# arg not given:
 	set masterConfigFile [file join $configDir $name.cfg]
 	if {[file exists $masterConfigFile]} {
@@ -383,7 +383,7 @@ proc ::cfg::EventuallySourceConfigFile {logToken config {configFile ""}} {
 
 	set _CurrentSrcConfig $config
 
-	if {[string equal $configFile ""]} {
+	if {$configFile eq ""} {
 	    set configFile [file join $configDir $config.cfg]
 	}
 
@@ -531,7 +531,7 @@ proc ::cfg::MatchItem {logToken rawItem arg} {
 
     # Match rule #1:
     # Match rule #2:
-    if {[string equal $item $arg] || [string match $item $arg]} {
+    if {($item eq $arg) || [string match $item $arg]} {
 	return 1
     }
 

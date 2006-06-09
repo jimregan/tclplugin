@@ -200,9 +200,11 @@ extern void		NpShutdown(Tcl_Interp *interp);
 /*
  * npinterp.c
  */
-extern void		NpDestroyMainInterp(void);
-extern Tcl_Interp	*NpGetMainInterp(void);
 extern Tcl_Interp	*NpCreateMainInterp(void);
+extern Tcl_Interp	*NpGetMainInterp(void);
+extern void		NpDestroyMainInterp(void);
+extern Tcl_Interp	*NpGetInstanceInterp(void);
+extern void		NpDestroyInstanceInterp(Tcl_Interp *interp);
 
 /*
  * npstream.c

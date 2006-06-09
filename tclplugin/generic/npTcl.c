@@ -4,11 +4,11 @@
  *	Implements the glue between Tcl script and
  *	the plugin stub in the WWW browser.
  *
- * CONTACT:		tclplugin-core@lists.sourceforge.net
+ * CONTACT:		tclplugin-core at lists.sourceforge.net
  *
  * Copyright (c) 1995-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
- * Copyright (c) 2002-2005 ActiveState Corporation.
+ * Copyright (c) 2002-2006 ActiveState Corporation.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -153,9 +153,10 @@ NPP_Initialize()
     nptcl_instances	= 0;
     nptcl_shutdown	= 0;
 
-    NpLog("NPP_Initialize [STACK=%d, INSTANCES=%d, STREAMS=%d]\n",
-	    nptcl_stack, nptcl_instances, NpTclStreams(0));
-
+    /*
+     * No using Tcl functions until this point - they aren't guaranteed to be
+     * initialized in a stubs-based interp.
+     */
     interp = NpCreateMainInterp();
     if (interp == NULL) {
 	NpLog("NPP_Initialize: interp == NULL\n");
@@ -177,11 +178,11 @@ NPP_Initialize()
      */
 
     if (NpInit(interp) != TCL_OK) {
-	NpLog("NPP_Initialize: NpInterp != TCL_OK\n");
+	NpLog("NPP_Initialize: NpInit(%p) != TCL_OK\n", interp);
 	return NPERR_GENERIC_ERROR;
     }
 
-    NpLog("NPP_Initialize FINISHED OK\n");
+    NpLog("NPP_Initialize FINISHED OK in thread %p\n", Tcl_GetCurrentThread());
     return NPERR_NO_ERROR;
 }
 
@@ -220,7 +221,8 @@ NpShutdown(Tcl_Interp *interp)
  * NPP_Shutdown --
  *
  *	Shuts down the main interpreter and prepare the unloading of
- *      Tcl plugin library
+ *      Tcl plugin library.  This may be called in a separate thread
+ *	from NPP_Initialize.
  *
  * Results:
  *	None.
@@ -233,19 +235,21 @@ NpShutdown(Tcl_Interp *interp)
 
 void
 NPP_Shutdown()
-{ 
+{
     int oldServiceMode = NpEnter("NPP_Shutdown");
-
+    Tcl_Interp *interp;
 
     if (oldServiceMode != TCL_SERVICE_ALL) {
 	NpLog("Old service mode is not TCL_SERVICE_ALL!\n");
     }
+    NpLog("NPP_Shutdown in thread %p\n", Tcl_GetCurrentThread());
 
     /*
      * Let Tcl know about the impending shutdown.
      */
 
-    NpShutdown(NpGetMainInterp());
+    interp = NpGetMainInterp();
+    NpShutdown(interp);
 
     /*
      * Deal with any pending events one last time:
@@ -257,17 +261,16 @@ NPP_Shutdown()
     Tcl_MutexFinalize(&pluginMutex);
 
     /*
-     * Shut down the main Tcl interpreter.
-     */
-    NpDestroyMainInterp();
-
-    /*
      * Last platform dependant cleanup before the library becomes unloaded.
-     * On Unix it will stop the notifier. On the Mac it will free the low
-     * level memory allocated for Tcl. Thus no Tcl code nor access to
-     * memory allocated with ckalloc() should occur beyond that point.
      */
     NpPlatformShutdown();
+
+    /*
+     * Shut down the main Tcl interpreter.  No Tcl code nor access to memory
+     * allocated with ckalloc() should occur beyond that point.
+     */
+
+    NpDestroyMainInterp();
 
     if (nptcl_stack != 0) {
 	NpLog("SERIOUS ERROR (potential crash): Invalid shutdown stack = %d\n",
@@ -329,15 +332,19 @@ NPP_New(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc,
     }
 
     oldServiceMode = NpEnter("NPP_New");
-    
+
     nptcl_instances++;
 
     /*
-     * Ensure that instance->pdata has a distinguished uninitialized (NULL)
-     * value.
+     * Get an instance interpreter and store it as instance pdata
      */
 
-    instance->pdata = (void *) NULL;
+    interp = NpGetInstanceInterp();
+    if (interp == NULL) {
+	NpLog("NPP_New: interp == NULL\n");
+	return NPERR_GENERIC_ERROR;
+    }
+    instance->pdata = (void *) interp;
 
     /*
      * Platform specific initialization. 
@@ -345,12 +352,6 @@ NPP_New(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc,
      */
 
     NpPlatformNew(instance);
-
-    /*
-     * Get the main interpreter.
-     */
-    
-    interp = NpGetMainInterp();
 
     /*
      * Register this instance of the Tcl plugin.
@@ -435,12 +436,12 @@ NPP_Destroy(NPP instance, NPSavedData **savePtrPtr)
 
     oldServiceMode = NpEnter("NPP_Destroy");
 
-    interp = NpGetMainInterp();
+    interp = (Tcl_Interp *) instance->pdata;
 
     /*
      * Tell Tcl that we are destroying this instance:
      */
-    
+
     objPtr = Tcl_NewObj();
     Tcl_ListObjAppendElement(NULL, objPtr,
 	    Tcl_NewStringObj("npDestroyInstance", -1));
@@ -462,6 +463,8 @@ NPP_Destroy(NPP instance, NPSavedData **savePtrPtr)
     NpPlatformDestroy(instance);
 
     NpUnregisterToken(interp, (void *) instance, NPTCL_INSTANCE);
+
+    NpDestroyInstanceInterp(interp);
 
     nptcl_instances--;
 
@@ -507,20 +510,17 @@ NPP_SetWindow(NPP instance, NPWindow *window)
     NpLog("*** NPP_SetWindow instance %p window %p\n",
 	    instance, window);
 
-    interp = NpGetMainInterp();
+    interp = (Tcl_Interp *) instance->pdata;
 
     if (window->window == NULL) {
 	NpLog(">>> Ignoring NPP_SetWindow with NULL window (%d x %d)\n",
 		window->width, window->height);
     } else {
-	char buf[256];
 	Tcl_Obj *objPtr;
 
-	snprintf(buf, 256, "0x%x +%d+%d %dx%d",
-		(int) window->window,
-		(int) window->x, (int) window->y,
+	NpLog("*** NPP_SetWindow %p +%d+%d %dx%d\n",
+		window->window, (int) window->x, (int) window->y,
 		(int) window->width, (int) window->height);
-	NpLog("*** NPP_SetWindow %s\n", buf);
 
 	/*
 	 * Call platform specific call which will remember that 
@@ -630,7 +630,7 @@ NPP_GetValue(NPP instance, NPPVariable variable, void *value)
             break;
         case NPPVpluginDescriptionString:
             snprintf(msgBuf, 512,
-		    "TCL Plugin %s (%s). Executes tclets found in Web pages.\
+		    "Tcl Plugin %s (%s). Executes tclets found in Web pages.\
 See the <a href=\"http://www.tcl.tk/software/plugin/\">Tcl Plugin</a> \
 home page for more details.",
                     NPTCL_PATCH_LEVEL, NPTCL_INTERNAL_VERSION);

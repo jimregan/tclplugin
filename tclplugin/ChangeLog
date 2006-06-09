@@ -1,3 +1,21 @@
+2006-06-09  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/np.h:       add modifications towards better thread-safety
+	* generic/npInterp.c: by clearly denoting use of main (master) and
+	* generic/npStream.c: instance interpreters.  We are not yet ready
+	* generic/npTcl.c:    for a multi-thread calling host, but this
+	gets us closer.
+
+	* win/npWinPlat.c (ContainerProc, NpPlatformDestroy):
+	(NpPlatformSetWindow): move global data to thread-specific.
+	(NpPlatformNew): don't modify instance->pdata.
+
+	* win/pluginhostctrl.dll: remove ThreadingModel (was Apartment) to
+	ensure prue single-threaded operation.  This prevents the need to
+	marshall all calls as IE would otherwise call in from different
+	threads.  See http://support.microsoft.com/kb/q150777/ for more
+	details on in-proc server threading.
+
 2006-06-07  Jeff Hobbs  <jeffh@ActiveState.com>
 
 	* win/npWinPlat.c (NpPlatformSetWindow): ensure we don't subclass

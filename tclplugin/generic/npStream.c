@@ -5,15 +5,15 @@
  *	into the plugin, and functions that implement commands to request
  *	that Navigator initiate loading of new URLs. 
  *
- * CONTACT:		tclplugin-core@lists.sourceforge.net
+ * CONTACT:		tclplugin-core at lists.sourceforge.net
  *
- * ORIGINAL AUTHORS:	Jacob Levy			Laurent Demailly
+ * ORIGINAL AUTHORS:	Jacob Levy, Laurent Demailly
  *
  * Please contact us directly for questions, comments and enhancements.
  *
  * Copyright (c) 1996-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
- * Copyright (c) 2002 ActiveState Corporation.
+ * Copyright (c) 2002-2006 ActiveState Software Inc.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -21,9 +21,13 @@
  * RCS:  @(#) $Id$
  */
 
-#include	"np.h"
+#include "np.h"
 
-static int nptcl_streams	= 0;
+/*
+ * This could be thread-specific, but global is OK as well, and simplifies
+ * acess to allow pre-Tcl-init and post-Tcl-shutdown.
+ */
+static int nptcl_streams = 0;
 
 /*
  *----------------------------------------------------------------------
@@ -86,7 +90,7 @@ NPP_NewStream(NPP instance, NPMIMEType type, NPStream *stream, NPBool seekable,
     oldServiceMode = NpEnter("NPP_NewStream");
     nptcl_streams++;
 
-    interp = NpGetMainInterp();
+    interp = (Tcl_Interp *) instance->pdata;
 
     NpLog("NPP_NewStream(0x%x, %s, %s)\n", stream, stream->url, type);
 
@@ -182,7 +186,7 @@ NPP_Write(NPP instance, NPStream *stream, int32 offset, int32 len, void *buffer)
     }
 
     oldServiceMode = NpEnter("NPP_Write");
-    interp = NpGetMainInterp();
+    interp = (Tcl_Interp *) instance->pdata;
 
     Tcl_ResetResult(interp);
 
@@ -206,7 +210,7 @@ NPP_Write(NPP instance, NPStream *stream, int32 offset, int32 len, void *buffer)
     Tcl_ListObjAppendElement(NULL, objPtr, Tcl_NewLongObj((long) stream));
     Tcl_ListObjAppendElement(NULL, objPtr, Tcl_NewIntObj((int) len));
     Tcl_ListObjAppendElement(NULL, objPtr,
-	    Tcl_NewByteArrayObj((char *) buffer, len));
+	    Tcl_NewByteArrayObj((const unsigned char *) buffer, len));
 
     Tcl_IncrRefCount(objPtr);
     if (Tcl_EvalObjEx(interp, objPtr, TCL_EVAL_GLOBAL|TCL_EVAL_DIRECT)
@@ -257,7 +261,7 @@ NPP_DestroyStream(NPP instance, NPStream *stream, NPError reason)
     }
 
     oldServiceMode = NpEnter("NPP_DestroyStream");
-    interp = NpGetMainInterp();
+    interp = (Tcl_Interp *) instance->pdata;
     Tcl_ResetResult(interp);
 
     /*
@@ -322,7 +326,7 @@ error:
     }
     nptcl_streams--;
     NpLeave("NPP_DestroyStream", oldServiceMode);
-    return rv;	   
+    return rv;
 }
 
 /*

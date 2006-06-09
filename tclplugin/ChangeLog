@@ -1,5 +1,7 @@
 2006-06-09  Jeff Hobbs  <jeffh@ActiveState.com>
 
+	* library/plugmain.tcl (npShutDown): don't bother with 'destroy .'
+
 	* generic/np.h:       add modifications towards better thread-safety
 	* generic/npInterp.c: by clearly denoting use of main (master) and
 	* generic/npStream.c: instance interpreters.  We are not yet ready

@@ -339,11 +339,14 @@ proc npShutDown {} {
     }
     ::pluglog::log npShutDown $msg
 
-    # Work around a Tk bug where Tk can try to map a destroyed but never
-    # mapped window when the interpreter is deleted.
-    # nb: This might kill the current interp (so code after this statement
-    #     might never be executed)
-    catch {destroy .}
+    if {0} {
+	# [hobbs] - this appears old and no longer necessary for v3.
+	# Work around a Tk bug where Tk can try to map a destroyed but never
+	# mapped window when the interpreter is deleted.
+	# nb: This might kill the current interp (so code after this statement
+	#     might never be executed)
+	destroy .
+    }
 
     ::pluglog::log npShutDown "Plugin done with npShutDown"
 }

@@ -4,13 +4,13 @@
  *	Routines that are called from the generic part and that are
  *	reimplemented differently for each platform.
  *
- * CONTACT:		tclplugin-core@lists.activestate.com
+ * CONTACT:		tclplugin-core at lists.activestate.com
  *
- * ORIGINAL AUTHORS:	Jacob Levy			Laurent Demailly
+ * ORIGINAL AUTHORS:	Jacob Levy, Laurent Demailly
  *
  * Copyright (c) 1995-1997 Sun Microsystems, Inc.
  * Copyright (c) 2000 by Scriptics Corporation.
- * Copyright (c) 2002 ActiveState Corporation.
+ * Copyright (c) 2002-2006 ActiveState Software Inc.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -49,7 +49,11 @@ typedef struct ContainerInfo {
     struct ContainerInfo *nextPtr;
 } ContainerInfo;
 
-static ContainerInfo *firstContainerPtr = NULL;
+typedef struct ThreadSpecificData {
+    ContainerInfo *firstContainerPtr;
+} ThreadSpecificData;
+
+static Tcl_ThreadDataKey dataKey;
 
 /*
  * Static functions in this file:
@@ -130,6 +134,7 @@ NpPlatformInit(Tcl_Interp *interp, int inBrowser)
 void
 NpPlatformSetWindow(NPP instance, NPWindow *window)
 {
+    ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
     ContainerInfo *cPtr;
     HWND hwnd = (HWND) window->window;
     WNDPROC curProc;
@@ -142,10 +147,11 @@ NpPlatformSetWindow(NPP instance, NPWindow *window)
     NpLog("NpPlatformSetWindow instance %p hwnd %p WNDPROC == %p (ContainerProc == %p)\n",
 	    instance, hwnd, curProc, ContainerProc);
     if (curProc == (WNDPROC) ContainerProc) {
-        return;
+	return;
     }
 
-    for (cPtr = firstContainerPtr; cPtr != NULL; cPtr = cPtr->nextPtr) {
+    for (cPtr = tsdPtr->firstContainerPtr;
+	 cPtr != NULL; cPtr = cPtr->nextPtr) {
         if (cPtr->instance == instance) {
 	    if (cPtr->hwnd == hwnd) {
 		/* we are already subclassed - return */
@@ -157,14 +163,14 @@ NpPlatformSetWindow(NPP instance, NPWindow *window)
     }
 
     if (cPtr == (ContainerInfo *) NULL) {
-        cPtr = (ContainerInfo *) ckalloc(sizeof(ContainerInfo));
-        cPtr->hwnd = hwnd;
-        cPtr->instance = instance;
-        cPtr->nextPtr = firstContainerPtr;
-        cPtr->child = NULL;
-        cPtr->oldProc = curProc;
+	cPtr = (ContainerInfo *) ckalloc(sizeof(ContainerInfo));
+	cPtr->hwnd = hwnd;
+	cPtr->instance = instance;
+	cPtr->nextPtr = tsdPtr->firstContainerPtr;
+	cPtr->child = NULL;
+	cPtr->oldProc = curProc;
 
-        firstContainerPtr = cPtr;
+	tsdPtr->firstContainerPtr = cPtr;
     }
 
     NpLog("NpPlatformSetWindow instance %p SUBCLASS %p -> WNDPROC %p\n",
@@ -192,6 +198,7 @@ NpPlatformSetWindow(NPP instance, NPWindow *window)
 void
 NpPlatformDestroy(NPP instance)
 {
+    ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
     ContainerInfo *cPtr, *prevPtr;
     HWND hwnd;
     WNDPROC curProc;
@@ -200,13 +207,12 @@ NpPlatformDestroy(NPP instance)
      * Find the container.
      */
 
-    for (prevPtr = (ContainerInfo *) NULL, cPtr = firstContainerPtr;
-         cPtr != (ContainerInfo *) NULL;
-         cPtr = cPtr->nextPtr) {
-        if (cPtr->instance == instance) {
-            break;
-        }
-        prevPtr = cPtr;
+    for (prevPtr = (ContainerInfo *) NULL, cPtr = tsdPtr->firstContainerPtr;
+	 cPtr != (ContainerInfo *) NULL;   cPtr = cPtr->nextPtr) {
+	if (cPtr->instance == instance) {
+	    break;
+	}
+	prevPtr = cPtr;
     }
 
     /*
@@ -215,7 +221,7 @@ NpPlatformDestroy(NPP instance)
 
     if (cPtr == (ContainerInfo *) NULL) {
 	NpLog("NpPlatformDestroy instance %p no hwnd found\n", instance);
-        return;
+	return;
     }
 
     /*
@@ -223,9 +229,9 @@ NpPlatformDestroy(NPP instance)
      */
 
     if (prevPtr == (ContainerInfo *) NULL) {
-        firstContainerPtr = cPtr->nextPtr;
+	tsdPtr->firstContainerPtr = cPtr->nextPtr;
     } else {
-        prevPtr->nextPtr = cPtr->nextPtr;
+	prevPtr->nextPtr = cPtr->nextPtr;
     }
 
     /*
@@ -264,13 +270,14 @@ NpPlatformDestroy(NPP instance)
 static LRESULT CALLBACK
 ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
     ContainerInfo *ptr, *prevPtr = NULL;
     WNDPROC oldProc;
 
     NpLog("CONTAINERPROC %p msg 0x%x wParam 0x%x hwnd %p\n",
 	    ContainerProc, message, wParam, hwnd);
 
-    for (ptr = firstContainerPtr; ptr != NULL; ptr = ptr->nextPtr) {
+    for (ptr = tsdPtr->firstContainerPtr; ptr != NULL; ptr = ptr->nextPtr) {
 	if (ptr->hwnd == hwnd) {
 	    break;
 	}
@@ -341,7 +348,7 @@ ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	    if (prevPtr != NULL) {
 		prevPtr->nextPtr = ptr->nextPtr;
 	    } else {
-		firstContainerPtr = ptr->nextPtr;
+		tsdPtr->firstContainerPtr = ptr->nextPtr;
 	    }
 	    NpLog("CONTAINERPROC %p msg 0x%x (WM_DESTROY) hwnd %p -> %p\n",
 		    ContainerProc, message, wParam, hwnd, oldProc);
@@ -372,7 +379,6 @@ ContainerProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 void
 NpPlatformNew(NPP instance)
 {
-    instance->pdata = (void *) GetCurrentThreadId();
 }
 
 /*

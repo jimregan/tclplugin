@@ -750,7 +750,10 @@ NPP_SetWindow(This, window)
 	    Tcl_DStringAppend(&ds, buf, -1);
 
 	    if (Np_Eval(interp, Tcl_DStringValue(&ds)) != TCL_OK) {
-		NpPlatformMsg(Tcl_GetStringResult(interp), "npSetWindow");
+		char *errorInfo = Tcl_GetVar(interp, "errorInfo",
+			TCL_GLOBAL_ONLY);
+		NpPlatformMsg(errorInfo != NULL ? errorInfo :
+			Tcl_GetStringResult(interp), "npSetWindow");
 		Tcl_DStringFree(&ds);
 		NpLeave("NPP_SetWindow err", oldServiceMode);
 		return NPERR_GENERIC_ERROR;    

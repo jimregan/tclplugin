@@ -450,13 +450,16 @@ namespace eval $::cfg::implNs {
 	# re-exposed by a security policy.
 
 	if {[lsearch -exact [interp hidden $name] wm] >= 0} {
-	    interp invokehidden $name wm geometry . $winGeom
+	    set code [catch {
+		interp invokehidden $name wm geometry . $winGeom
+	    } msg]
 	} else {
-	    if {[catch {interp eval $name wm geometry . $winGeom}\
-		    msg]} {
-		log $name "Changing the geometry in the slave: $msg"\
-			ERROR
-	    }
+	    set code [catch {
+		interp eval $name wm geometry . $winGeom
+	    } msg]
+	}
+	if {$code} {
+	    log $name "Changing the geometry in the slave: $msg" ERROR
 	}
 
 	# Only update the embed_args if there are no values for width

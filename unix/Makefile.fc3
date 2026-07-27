@@ -1,0 +1,50 @@
+CC ?= gcc
+CFLAGS ?= -O2 -g
+RPM_OPT_FLAGS ?= $(CFLAGS)
+TCL_INCLUDE_DIR ?= /usr/include
+TCL_PRIVATE_DIR ?= /usr/include/tcl-private
+TCL_LIB ?= -ltcl8.4
+TK_LIB ?= -ltk8.4
+X_LIBS ?= -lXt -lX11
+
+BUILD_DIR = build-fc3
+PLUGIN = $(BUILD_DIR)/libtclp2.1.so
+TCLSHP = $(BUILD_DIR)/tclshp2.1
+INCLUDES = -I$(BUILD_DIR) -Igeneric -Iunix -I$(TCL_INCLUDE_DIR) \
+	-I$(TCL_PRIVATE_DIR)/generic -I$(TCL_PRIVATE_DIR)/unix
+CPPFLAGS += -DXP_UNIX -DHAVE_UNISTD_H=1 \
+	-DTCL_LIB_FILE='"libtcl8.4.so"'
+PICFLAGS = -fPIC
+
+PLUGIN_SOURCES = \
+	unix/npunix.c unix/npunixspec.c unix/npunixplatf.c unix/npxtnotify.c \
+	generic/nptcl.c generic/npstream.c generic/nplog.c generic/npcmd.c \
+	generic/npinterp.c generic/nptoken.c generic/tclMiscUtils.c
+PLUGIN_OBJECTS = $(patsubst %.c,$(BUILD_DIR)/%.o,$(PLUGIN_SOURCES))
+
+.PHONY: all clean
+
+all: $(PLUGIN) $(TCLSHP)
+
+$(BUILD_DIR)/npconfig.h: unix/npconfig.fc3.h
+	mkdir -p $(BUILD_DIR)
+	cp $< $@
+
+$(BUILD_DIR)/%.o: %.c $(BUILD_DIR)/npconfig.h
+	mkdir -p $(dir $@)
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c $< -o $@
+
+$(PLUGIN): $(PLUGIN_OBJECTS)
+	$(CC) -shared -o $@ $(PLUGIN_OBJECTS) $(TK_LIB) $(TCL_LIB) $(X_LIBS) -ldl -lm
+
+$(BUILD_DIR)/unix/tclAppInit.o: unix/tclAppInit.c $(BUILD_DIR)/npconfig.h
+	mkdir -p $(dir $@)
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
+
+$(TCLSHP): $(BUILD_DIR)/unix/tclAppInit.o $(PLUGIN)
+	$(CC) -o $@ $(BUILD_DIR)/unix/tclAppInit.o -L$(BUILD_DIR) \
+		-Wl,-rpath,/usr/lib/mozilla/plugins -ltclp2.1 \
+		$(TK_LIB) $(TCL_LIB) $(X_LIBS) -ldl -lm
+
+clean:
+	rm -rf $(BUILD_DIR)

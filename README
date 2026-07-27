@@ -11,10 +11,9 @@ Contacts for questions, updates, etc... :
    on your platform, see the URL above for a binary (executable)
    distribution for your platform }
 
- You need to use the provided version of Tcl and Tk to
- build the plugin from source. It is based on version 8.3.1,
- but it should build equally well with any higher Tcl/Tk
- version.
+ The original standalone build is based on Tcl/Tk 8.3.1, but accepts
+ matching Tcl/Tk releases from 8.3 onward.  Fedora Core 3 RPM builds use
+ the system Tcl/Tk 8.4 development packages via unix/Makefile.fc3.
 
  Unix Build Instructions:
  ------------------------
@@ -124,4 +123,3 @@ Contacts for questions, updates, etc... :
     tclplugin-core@lists.sourceforge.net
 
  See also http://www.demailly.com/tcl/plugin/
-

@@ -138,17 +138,15 @@ file=$TCL_BIN_DIR/tclConfig.sh
 AC_MSG_RESULT(read ok)
 
 
-# Check that the correct version of Tcl is used
-# It is not easy (impossible?) to check for 8.3.1 *or higher*
-# and it is most likely that this version of the plugin will not
-# work without modifications with any version other the one it
-# was initially built on anyway... (specially it will not work
-# properly with 8.1)
+# Check that Tcl is new enough for the plugin APIs used here.
 AC_MSG_CHECKING(Tcl version and patch level)
-FV="${TCL_VERSION}${TCL_PATCH_LEVEL}"
-EV="$TCLTK_EXPECTED_VERSION"
-if test "${FV}" != "${EV}" ; then
-	AC_MSG_ERROR(Version mismatch\n  You need to use Tcl '${EV}' to build the plugin - not '${FV}')
+FV="${TCL_PATCH_LEVEL}"
+case "${TCL_VERSION}" in
+    8.[[3-9]]|[[9-9]].*) ;;
+    *) AC_MSG_ERROR(Tcl 8.3 or newer is required - found '${FV}') ;;
+esac
+if test -z "${FV}"; then
+	AC_MSG_ERROR(Could not determine the Tcl patch level)
 fi
 AC_MSG_RESULT(${FV} - ok)
 
@@ -159,12 +157,11 @@ file=$TK_BIN_DIR/tkConfig.sh
 AC_MSG_RESULT(read ok)
 
 
-# Check that the correct version of Tk is used (see above)
+# Check that Tcl and Tk have the same major and minor version.
 AC_MSG_CHECKING(Tk version and patch level)
-FV="${TK_VERSION}${TK_PATCH_LEVEL}"
-# EV is the same
-if test "${FV}" != "${EV}" ; then
-	AC_MSG_ERROR(Version mismatch\n  You need to use Tk '${EV}' to build the plugin - not '${FV}')
+FV="${TK_PATCH_LEVEL}"
+if test "${TK_VERSION}" != "${TCL_VERSION}" ; then
+	AC_MSG_ERROR(Tcl/Tk version mismatch: Tcl '${TCL_VERSION}', Tk '${TK_VERSION}')
 fi
 AC_MSG_RESULT(${FV} - ok)
 

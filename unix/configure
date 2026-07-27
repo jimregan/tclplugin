@@ -695,18 +695,16 @@ file=$TCL_BIN_DIR/tclConfig.sh
 echo "$ac_t""read ok" 1>&6
 
 
-# Check that the correct version of Tcl is used
-# It is not easy (impossible?) to check for 8.3.1 *or higher*
-# and it is most likely that this version of the plugin will not
-# work without modifications with any version other the one it
-# was initially built on anyway... (specially it will not work
-# properly with 8.1)
+# Check that Tcl is new enough for the plugin APIs used here.
 echo $ac_n "checking Tcl version and patch level""... $ac_c" 1>&6
 echo "configure:703: checking Tcl version and patch level" >&5
-FV="${TCL_VERSION}${TCL_PATCH_LEVEL}"
-EV="$TCLTK_EXPECTED_VERSION"
-if test "${FV}" != "${EV}" ; then
-	{ echo "configure: error: Version mismatch\n  You need to use Tcl '${EV}' to build the plugin - not '${FV}'" 1>&2; exit 1; }
+FV="${TCL_PATCH_LEVEL}"
+case "${TCL_VERSION}" in
+    8.[3-9]|[9-9].*) ;;
+    *) { echo "configure: error: Tcl 8.3 or newer is required - found '${FV}'" 1>&2; exit 1; } ;;
+esac
+if test -z "${FV}"; then
+	{ echo "configure: error: Could not determine the Tcl patch level" 1>&2; exit 1; }
 fi
 echo "$ac_t""${FV} - ok" 1>&6
 
@@ -718,13 +716,12 @@ file=$TK_BIN_DIR/tkConfig.sh
 echo "$ac_t""read ok" 1>&6
 
 
-# Check that the correct version of Tk is used (see above)
+# Check that Tcl and Tk have the same major and minor version.
 echo $ac_n "checking Tk version and patch level""... $ac_c" 1>&6
 echo "configure:721: checking Tk version and patch level" >&5
-FV="${TK_VERSION}${TK_PATCH_LEVEL}"
-# EV is the same
-if test "${FV}" != "${EV}" ; then
-	{ echo "configure: error: Version mismatch\n  You need to use Tk '${EV}' to build the plugin - not '${FV}'" 1>&2; exit 1; }
+FV="${TK_PATCH_LEVEL}"
+if test "${TK_VERSION}" != "${TCL_VERSION}" ; then
+	{ echo "configure: error: Tcl/Tk version mismatch: Tcl '${TCL_VERSION}', Tk '${TK_VERSION}'" 1>&2; exit 1; }
 fi
 echo "$ac_t""${FV} - ok" 1>&6
 
@@ -1755,4 +1752,3 @@ EOF
 chmod +x $CONFIG_STATUS
 rm -fr confdefs* $ac_clean_files
 test "$no_create" = yes || ${CONFIG_SHELL-/bin/sh} $CONFIG_STATUS || exit 1
-

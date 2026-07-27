@@ -1,0 +1,15 @@
+#ifndef NP_CONFIG
+#define NP_CONFIG
+
+#define HAVE_UNISTD_H 1
+
+#define NPTCL_VERSION "2.1"
+#define NPTCL_PATCH_LEVEL "2.1b1"
+#define NPTCL_INTERNAL_VERSION "2.1.101"
+
+#define NPTCL_MAJOR_VERSION 2
+#define NPTCL_MINOR_VERSION 1
+#define NPTCL_RELEASE_LEVEL 1
+#define NPTCL_RELEASE_SERIAL 1
+
+#endif

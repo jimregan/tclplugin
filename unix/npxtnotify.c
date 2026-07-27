@@ -93,13 +93,57 @@ static void		CreateFileHandler _ANSI_ARGS_((int fd,
 			    int mask, Tcl_FileProc *proc, ClientData clientData));
 static void		DeleteFileHandler _ANSI_ARGS_((int fd));
 static int		WaitForEvent _ANSI_ARGS_((Tcl_Time *timePtr));
+#if TCL_MAJOR_VERSION > 8 || \
+        (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION >= 4)
+static ClientData	InitNotifierThread _ANSI_ARGS_((void));
+static void		FinalizeNotifierThread _ANSI_ARGS_((ClientData clientData));
+static void		AlertNotifierThread _ANSI_ARGS_((ClientData clientData));
+static void		ServiceModeHook _ANSI_ARGS_((int mode));
+#endif
 
 static Tcl_NotifierProcs procs = {
     SetTimer,
     WaitForEvent,
     CreateFileHandler,
     DeleteFileHandler
+#if TCL_MAJOR_VERSION > 8 || \
+        (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION >= 4)
+    ,InitNotifierThread,
+    FinalizeNotifierThread,
+    AlertNotifierThread,
+    ServiceModeHook
+#endif
 };
+
+#if TCL_MAJOR_VERSION > 8 || \
+        (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION >= 4)
+static ClientData
+InitNotifierThread(void)
+{
+    return (ClientData) &notifier;
+}
+
+static void
+FinalizeNotifierThread(clientData)
+    ClientData clientData;
+{
+    (void) clientData;
+}
+
+static void
+AlertNotifierThread(clientData)
+    ClientData clientData;
+{
+    (void) clientData;
+}
+
+static void
+ServiceModeHook(mode)
+    int mode;
+{
+    (void) mode;
+}
+#endif
 
 
 /*

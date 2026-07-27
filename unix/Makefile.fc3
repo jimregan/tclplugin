@@ -16,11 +16,13 @@ CPPFLAGS += -DXP_UNIX -DHAVE_UNISTD_H=1 \
 	-DTCL_LIB_FILE='"libtcl8.4.so"'
 PICFLAGS = -fPIC
 
-PLUGIN_SOURCES = \
-	unix/npunix.c unix/npunixspec.c unix/npunixplatf.c unix/npxtnotify.c \
-	generic/nptcl.c generic/npstream.c generic/nplog.c generic/npcmd.c \
-	generic/npinterp.c generic/nptoken.c generic/tclMiscUtils.c
-PLUGIN_OBJECTS = $(patsubst %.c,$(BUILD_DIR)/%.o,$(PLUGIN_SOURCES))
+PLUGIN_OBJECTS = \
+	$(BUILD_DIR)/npunix.o $(BUILD_DIR)/npunixspec.o \
+	$(BUILD_DIR)/npunixplatf.o $(BUILD_DIR)/npxtnotify.o \
+	$(BUILD_DIR)/nptcl.o $(BUILD_DIR)/npstream.o \
+	$(BUILD_DIR)/nplog.o $(BUILD_DIR)/npcmd.o \
+	$(BUILD_DIR)/npinterp.o $(BUILD_DIR)/nptoken.o \
+	$(BUILD_DIR)/tclMiscUtils.o
 
 .PHONY: all clean
 
@@ -30,19 +32,37 @@ $(BUILD_DIR)/npconfig.h: unix/npconfig.fc3.h
 	mkdir -p $(BUILD_DIR)
 	cp $< $@
 
-$(BUILD_DIR)/%.o: %.c $(BUILD_DIR)/npconfig.h
-	mkdir -p $(dir $@)
-	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c $< -o $@
+$(BUILD_DIR)/npunix.o: unix/npunix.c $(BUILD_DIR)/npconfig.h
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c unix/npunix.c -o $@
+$(BUILD_DIR)/npunixspec.o: unix/npunixspec.c $(BUILD_DIR)/npconfig.h
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c unix/npunixspec.c -o $@
+$(BUILD_DIR)/npunixplatf.o: unix/npunixplatf.c $(BUILD_DIR)/npconfig.h
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c unix/npunixplatf.c -o $@
+$(BUILD_DIR)/npxtnotify.o: unix/npxtnotify.c $(BUILD_DIR)/npconfig.h
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c unix/npxtnotify.c -o $@
+$(BUILD_DIR)/nptcl.o: generic/nptcl.c $(BUILD_DIR)/npconfig.h
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c generic/nptcl.c -o $@
+$(BUILD_DIR)/npstream.o: generic/npstream.c $(BUILD_DIR)/npconfig.h
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c generic/npstream.c -o $@
+$(BUILD_DIR)/nplog.o: generic/nplog.c $(BUILD_DIR)/npconfig.h
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c generic/nplog.c -o $@
+$(BUILD_DIR)/npcmd.o: generic/npcmd.c $(BUILD_DIR)/npconfig.h
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c generic/npcmd.c -o $@
+$(BUILD_DIR)/npinterp.o: generic/npinterp.c $(BUILD_DIR)/npconfig.h
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c generic/npinterp.c -o $@
+$(BUILD_DIR)/nptoken.o: generic/nptoken.c $(BUILD_DIR)/npconfig.h
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c generic/nptoken.c -o $@
+$(BUILD_DIR)/tclMiscUtils.o: generic/tclMiscUtils.c $(BUILD_DIR)/npconfig.h
+	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c generic/tclMiscUtils.c -o $@
 
 $(PLUGIN): $(PLUGIN_OBJECTS)
 	$(CC) -shared -o $@ $(PLUGIN_OBJECTS) $(TK_LIB) $(TCL_LIB) $(X_LIBS) -ldl -lm
 
-$(BUILD_DIR)/unix/tclAppInit.o: unix/tclAppInit.c $(BUILD_DIR)/npconfig.h
-	mkdir -p $(dir $@)
+$(BUILD_DIR)/tclAppInit.o: unix/tclAppInit.c $(BUILD_DIR)/npconfig.h
 	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
 
-$(TCLSHP): $(BUILD_DIR)/unix/tclAppInit.o $(PLUGIN)
-	$(CC) -o $@ $(BUILD_DIR)/unix/tclAppInit.o -L$(BUILD_DIR) \
+$(TCLSHP): $(BUILD_DIR)/tclAppInit.o $(PLUGIN)
+	$(CC) -o $@ $(BUILD_DIR)/tclAppInit.o -L$(BUILD_DIR) \
 		-Wl,-rpath,/usr/lib/mozilla/plugins -ltclp2.1 \
 		$(TK_LIB) $(TCL_LIB) $(X_LIBS) -ldl -lm
 

@@ -5,6 +5,7 @@ TCL_INCLUDE_DIR ?= /usr/include
 TCL_PRIVATE_DIR ?= /usr/include/tcl-private
 TCL_LIB ?= -ltcl8.4
 TK_LIB ?= -ltk8.4
+X_LDFLAGS ?= -L/usr/X11R6/lib
 X_LIBS ?= -lXt -lX11
 
 BUILD_DIR = build-fc3
@@ -56,7 +57,8 @@ $(BUILD_DIR)/tclMiscUtils.o: generic/tclMiscUtils.c $(BUILD_DIR)/npconfig.h
 	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) $(PICFLAGS) -c generic/tclMiscUtils.c -o $@
 
 $(PLUGIN): $(PLUGIN_OBJECTS)
-	$(CC) -shared -o $@ $(PLUGIN_OBJECTS) $(TK_LIB) $(TCL_LIB) $(X_LIBS) -ldl -lm
+	$(CC) -shared -o $@ $(PLUGIN_OBJECTS) $(X_LDFLAGS) \
+		$(TK_LIB) $(TCL_LIB) $(X_LIBS) -ldl -lm
 
 $(BUILD_DIR)/tclAppInit.o: unix/tclAppInit.c $(BUILD_DIR)/npconfig.h
 	$(CC) $(RPM_OPT_FLAGS) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
@@ -64,7 +66,7 @@ $(BUILD_DIR)/tclAppInit.o: unix/tclAppInit.c $(BUILD_DIR)/npconfig.h
 $(TCLSHP): $(BUILD_DIR)/tclAppInit.o $(PLUGIN)
 	$(CC) -o $@ $(BUILD_DIR)/tclAppInit.o -L$(BUILD_DIR) \
 		-Wl,-rpath,/usr/lib/mozilla/plugins -ltclp2.1 \
-		$(TK_LIB) $(TCL_LIB) $(X_LIBS) -ldl -lm
+		$(X_LDFLAGS) $(TK_LIB) $(TCL_LIB) $(X_LIBS) -ldl -lm
 
 clean:
 	rm -rf $(BUILD_DIR)

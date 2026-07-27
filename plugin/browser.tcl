@@ -523,11 +523,15 @@ namespace eval $::cfg::implNs {
 	# Set the font scaling to 1.0 has it has no meaning in the plugin
 	# context where things are expressed in pixels and not in points
 
-	InvokeTk $name scaling 1.0
+	if {[catch {InvokeTk $name scaling 1.0} msg]} {
+	    log $name "Could not set Tk scaling: $msg" WARNING
+	}
 
 	# Set the appname
 
-	InvokeTk $name appname $name
+	if {[catch {InvokeTk $name appname $name} msg]} {
+	    log $name "Could not set Tk appname: $msg" WARNING
+	}
 
 	# Set up the "wm" alias
 
@@ -1578,4 +1582,3 @@ namespace eval $::cfg::implNs {
 
 
 }
-

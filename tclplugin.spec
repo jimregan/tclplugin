@@ -33,8 +33,13 @@ install -d %{buildroot}%{_libexecdir}/tclplugin
 install -m 0755 build-fc3/tclshp2.1 \
     %{buildroot}%{_libexecdir}/tclplugin/tclshp2.1
 install -d %{buildroot}%{_libdir}/mozilla/tclplug/2.1
-cp -a plugin library safetcl config \
+cp -a plugin safetcl config \
     %{buildroot}%{_libdir}/mozilla/tclplug/2.1/
+cp -a library %{buildroot}%{_libdir}/mozilla/tclplug/2.1/utils
+ln -s %{_datadir}/tcl8.4 \
+    %{buildroot}%{_libdir}/mozilla/tclplug/2.1/tcl
+ln -s %{_datadir}/tk8.4 \
+    %{buildroot}%{_libdir}/mozilla/tclplug/2.1/tk
 echo 'set ::plugin(executable) {%{_libexecdir}/tclplugin/tclshp2.1}' >> \
     %{buildroot}%{_libdir}/mozilla/tclplug/2.1/plugin/installed.cfg
 echo 'set ::plugin(sharedLibraryDir) {%{_libdir}/mozilla/plugins}' >> \

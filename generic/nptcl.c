@@ -420,7 +420,10 @@ NPP_Initialize()
 
     NpLog("before NpInit\n", 0, 0, 0);
 
-    NpInit(interp);
+    if (NpInit(interp) != TCL_OK) {
+	NpDestroyMainInterp();
+	return NPERR_GENERIC_ERROR;
+    }
 
 
     NpLog("Done with NPP_Initialize\n", 0, 0, 0);

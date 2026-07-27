@@ -9,6 +9,8 @@ X_LDFLAGS ?= -L/usr/X11R6/lib
 X_LIBS ?= -lXt -lX11
 
 BUILD_DIR = build-fc3
+MOZILLA_DIR ?= /usr/lib/mozilla-1.7
+PLUGIN_DIR = $(MOZILLA_DIR)/plugins
 PLUGIN = $(BUILD_DIR)/libtclp2.1.so
 TCLSHP = $(BUILD_DIR)/tclshp2.1
 INCLUDES = -I$(BUILD_DIR) -Igeneric -Iunix -I$(TCL_INCLUDE_DIR) \
@@ -65,7 +67,7 @@ $(BUILD_DIR)/tclAppInit.o: unix/tclAppInit.c $(BUILD_DIR)/npconfig.h
 
 $(TCLSHP): $(BUILD_DIR)/tclAppInit.o $(PLUGIN)
 	$(CC) -o $@ $(BUILD_DIR)/tclAppInit.o -L$(BUILD_DIR) \
-		-Wl,-rpath,/usr/lib/mozilla/plugins -ltclp2.1 \
+		-Wl,-rpath,$(PLUGIN_DIR) -ltclp2.1 \
 		$(X_LDFLAGS) $(TK_LIB) $(TCL_LIB) $(X_LIBS) -ldl -lm
 
 clean:

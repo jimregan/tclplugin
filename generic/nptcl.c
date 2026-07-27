@@ -421,7 +421,6 @@ NPP_Initialize()
     NpLog("before NpInit\n", 0, 0, 0);
 
     if (NpInit(interp) != TCL_OK) {
-	NpDestroyMainInterp();
 	return NPERR_GENERIC_ERROR;
     }
 

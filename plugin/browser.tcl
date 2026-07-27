@@ -191,6 +191,13 @@ namespace eval $::cfg::implNs {
 		$window]
     }
 
+    proc InvokeTk {slave args} {
+	if {[lsearch -exact [interp hidden $slave] tk] >= 0} {
+	    return [eval [linsert $args 0 interp invokehidden $slave tk]]
+	}
+	return [interp eval $slave [linsert $args 0 tk]]
+    }
+
     ######### START of Tcl side implementation of NPP_ APIs ########
 
     #
@@ -516,11 +523,11 @@ namespace eval $::cfg::implNs {
 	# Set the font scaling to 1.0 has it has no meaning in the plugin
 	# context where things are expressed in pixels and not in points
 
-	interp invokehidden $name tk scaling 1.0
+	InvokeTk $name scaling 1.0
 
 	# Set the appname
 
-	interp invokehidden $name tk appname $name
+	InvokeTk $name appname $name
 
 	# Set up the "wm" alias
 
@@ -1571,5 +1578,4 @@ namespace eval $::cfg::implNs {
 
 
 }
-
 

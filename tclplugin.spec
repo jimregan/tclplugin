@@ -6,6 +6,7 @@ License:        BSD
 Group:          Applications/Internet
 URL:            http://tcl.sourceforge.net/
 Source0:        %{name}-%{version}.tar.gz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  gcc
 BuildRequires:  tcl-devel >= 8.4
 BuildRequires:  tk-devel >= 8.4

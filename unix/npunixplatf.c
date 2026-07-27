@@ -129,6 +129,7 @@ if {[info exists env(MOZILLA_HOME)]} {\n\
 }\n\
 lappend dirlist /usr/local/lib/netscape\n\
 lappend dirlist /usr/local/netscape\n\
+lappend dirlist /usr/lib/mozilla-1.7\n\
 lappend dirlist /usr/lib/mozilla\n\
 lappend dirlist /opt/netscape\n\
 #lappend dirlist [file dirname [file dirname [info nameofexecutable]]]\n\

@@ -307,9 +307,10 @@ set npAPIbody {
     set name $::id2name($id)
     log $name "called API $args" DEBUG;
     if {[catch {EXEC API $name $args} res]} {
+	set detail $::errorInfo
 	set msg "in API: $res";
 	log $name $msg ERROR
-	return -code error $msg
+	return -code error -errorinfo $detail $msg
     }
 }
 
@@ -522,8 +523,9 @@ proc SetupExecute {inproc} {
 	}
 	proc npEval {cmd name aList} {
 	    if {[catch {eval $cmd $name $aList} res]} {
-		set ::savedErrorInfo($cmd) $::errorInfo
-		return -code error $res
+		set detail $::errorInfo
+		set ::savedErrorInfo($cmd) $detail
+		return -code error -errorinfo $detail $res
 	    }
 	    return $res
 	}
@@ -598,4 +600,3 @@ proc bgerror {msg} {
 npInit
 
 log {} "pluginmain.tcl initialized."
-

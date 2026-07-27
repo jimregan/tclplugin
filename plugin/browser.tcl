@@ -576,9 +576,13 @@ namespace eval $::cfg::implNs {
 		label .l.l2 -text "Please Wait..." 
 		pack .l.l2 .l.l1 -side bottom
 		if {$TclpDisplayLogo} {
-		    image create photo TclpLogo -format gif -data $TclpLogoData
-		    label .l.i -image TclpLogo
-		    pack .l.i
+		    if {![catch {
+			image create photo TclpLogo -format gif \
+				-data $TclpLogoData
+		    }]} {
+			label .l.i -image TclpLogo
+			pack .l.i
+		    }
 		}
 		place .l -relx .5 -rely .5 -anchor center
 		update idletasks
